@@ -207,10 +207,14 @@ public class Builder : EditorWindow
 
         var assetPath = "Assets/ComboSDK/Resources/ComboSDKSettings.asset";
 
-        Combo.Configuration scriptableObject = AssetDatabase.LoadAssetAtPath<Combo.Configuration>(assetPath);
+        var scriptableObject = AssetDatabase.LoadAssetAtPath<Combo.Configuration>(assetPath);
 
         if (scriptableObject == null)
         {
+            if (!AssetDatabase.IsValidFolder(Path.GetDirectoryName(assetPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
+            }
             scriptableObject = ScriptableObject.CreateInstance<Combo.Configuration>();
             AssetDatabase.CreateAsset(scriptableObject, assetPath);
         }

@@ -83,4 +83,7 @@ crashlytics-build.properties
 
 # iOS
 /[Ff]rameworks
+
+# ComboSDK Related
 /[Pp]ackages/com.seayoo.sdk*
+/[Aa]ssets/ComboSDK/Resources/ComboSDKSettings.asset*
