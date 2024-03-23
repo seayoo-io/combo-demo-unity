@@ -106,7 +106,7 @@ pipeline {
                 }
             }
         }
-        stage('UnitySDK Assembly') {
+        stage('Integrate UnitySDK') {
             steps {
                 script {
                     downloadUnitySDK()
