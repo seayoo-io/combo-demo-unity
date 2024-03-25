@@ -65,25 +65,6 @@ public class Builder : EditorWindow
         GetWindow<Builder>("Build Demo");
     }
 
-    [MenuItem("ComboSDK/Archive", false, 1)]
-    static void Archive()
-    {
-        AssetDatabase.Refresh();
-        var rootDir = GetRootDir();
-        var archiveDir = Path.Combine(rootDir, "Archive", "com.seayoo.sdk");
-        if (Directory.Exists(archiveDir))
-        {
-            Directory.Delete(archiveDir, true);
-        }
-
-        Directory.CreateDirectory(archiveDir);
-        var sourceDirName = Path.Combine(rootDir, "Packages/com.seayoo.sdk");
-        DirectoryCopy(sourceDirName, archiveDir);
-        CopyFile(Path.Combine(rootDir, "CHANGELOG.md"), Path.Combine(archiveDir, "CHANGELOG.md"));
-
-        UnityEngine.Debug.Log("Finished to Archive => " + sourceDirName);
-    }
-
     static void BuildWindowsDemo()
     {
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
