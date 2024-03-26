@@ -37,10 +37,23 @@ public class Builder : EditorWindow
 
     internal static class GlobalProps
     {
-        public static string gameId = "demo";
-        public static string publishableKey = "";
-        public static string endpoint = "https://api.dev.seayoo.com";
-        public static string demoEndpoint = "https://combo-demo.dev.seayoo.com";
+        public static string GameId
+        {
+            get => EditorPrefs.GetString("COMBOSDK_GAME_ID", "");
+            set => EditorPrefs.SetString("COMBOSDK_GAME_ID", value);
+        }
+        public static string PublishableKey {
+            get => EditorPrefs.GetString("COMBOSDK_PUBLISHABLE_KEY", "");
+            set => EditorPrefs.SetString("COMBOSDK_PUBLISHABLE_KEY", value);
+        }
+        public static string Endpoint {
+            get => EditorPrefs.GetString("COMBOSDK_ENDPOINT", "https://api.dev.seayoo.com");
+            set => EditorPrefs.SetString("COMBOSDK_ENDPOINT", value);
+        }
+        public static string DemoEndpoint {
+            get => EditorPrefs.GetString("COMBOSDK_DEMO_ENDPOINT", "https://combo-demo.dev.seayoo.com");
+            set => EditorPrefs.SetString("COMBOSDK_DEMO_ENDPOINT", value);
+        }
 
         public static string exportPath = "outputs/android";
         public static string bundleVersion = "1.0.0";
@@ -50,53 +63,6 @@ public class Builder : EditorWindow
     static void BuildDemo()
     {
         GetWindow<Builder>("Build Demo");
-    }
-
-    [MenuItem("ComboSDK/Archive", false, 1)]
-    static void Archive()
-    {
-        AssetDatabase.Refresh();
-        var rootDir = GetRootDir();
-        var archiveDir = Path.Combine(rootDir, "Archive", "com.seayoo.sdk");
-        if (Directory.Exists(archiveDir))
-        {
-            Directory.Delete(archiveDir, true);
-        }
-
-        Directory.CreateDirectory(archiveDir);
-        var sourceDirName = Path.Combine(rootDir, "Packages/com.seayoo.sdk");
-        DirectoryCopy(sourceDirName, archiveDir);
-        CopyFile(Path.Combine(rootDir, "CHANGELOG.md"), Path.Combine(archiveDir, "CHANGELOG.md"));
-
-        UnityEngine.Debug.Log("Finished to Archive => " + sourceDirName);
-    }
-
-    private static void BuildProject()
-    {
-        Process process = new Process();
-
-        process.StartInfo = new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        process.Start();
-
-        process.StandardInput.WriteLine("call build.bat");
-
-        process.StandardInput.Close();
-
-        // 读取命令的输出结果
-        string output = process.StandardOutput.ReadToEnd();
-
-        UnityEngine.Debug.LogWarning(output);
-
-        // 关闭进程
-        process.Close();
     }
 
     static void BuildWindowsDemo()
@@ -293,15 +259,15 @@ public class Builder : EditorWindow
 
         GUILayout.Label("General Build Parameters", largeFontBoldStyle);
 
-        GlobalProps.gameId = EditorGUILayout.TextField("GameId", GlobalProps.gameId);
-        GlobalProps.publishableKey = EditorGUILayout.TextField(
+        GlobalProps.GameId = EditorGUILayout.TextField("GameId", GlobalProps.GameId);
+        GlobalProps.PublishableKey = EditorGUILayout.TextField(
             "PublishableKey",
-            GlobalProps.publishableKey
+            GlobalProps.PublishableKey
         );
-        GlobalProps.endpoint = EditorGUILayout.TextField("Endpoint", GlobalProps.endpoint);
-        GlobalProps.demoEndpoint = EditorGUILayout.TextField(
+        GlobalProps.Endpoint = EditorGUILayout.TextField("Endpoint", GlobalProps.Endpoint);
+        GlobalProps.DemoEndpoint = EditorGUILayout.TextField(
             "DemoEndpoint",
-            GlobalProps.demoEndpoint
+            GlobalProps.DemoEndpoint
         );
         GlobalProps.bundleVersion = EditorGUILayout.TextField(
             "BundleVersion",
@@ -336,13 +302,13 @@ public class Builder : EditorWindow
 
         if (GUILayout.Button("Start Build"))
         {
-            Environment.SetEnvironmentVariable("COMBOSDK_GAME_ID", GlobalProps.gameId);
+            Environment.SetEnvironmentVariable("COMBOSDK_GAME_ID", GlobalProps.GameId);
             Environment.SetEnvironmentVariable(
                 "COMBOSDK_PUBLISHABLE_KEY",
-                GlobalProps.publishableKey
+                GlobalProps.PublishableKey
             );
-            Environment.SetEnvironmentVariable("COMBOSDK_ENDPOINT", GlobalProps.endpoint);
-            Environment.SetEnvironmentVariable("DEMO_ENDPOINT", GlobalProps.demoEndpoint);
+            Environment.SetEnvironmentVariable("COMBOSDK_ENDPOINT", GlobalProps.Endpoint);
+            Environment.SetEnvironmentVariable("DEMO_ENDPOINT", GlobalProps.DemoEndpoint);
             Environment.SetEnvironmentVariable("BUNDLE_VERSION", GlobalProps.bundleVersion);
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
