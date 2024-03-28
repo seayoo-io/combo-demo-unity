@@ -23,7 +23,7 @@ public class MetaInfo : MonoBehaviour
     }
 
     void Start()
-    {  
+    {
         var paramz = BuildParams.Load();
         metaText.text =
             $@"DeviceId:{ComboSDK.GetDeviceId()} - Branch:{paramz.branchName} - BuildNum:{paramz.buildNumber}
