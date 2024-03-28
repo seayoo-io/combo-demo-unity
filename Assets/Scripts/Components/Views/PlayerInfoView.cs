@@ -10,8 +10,14 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Text playerId;
     public Button copyBtn;
     public Button cancelBtn;
+    public Button accountSettingsBtn;
+    public Button deleteAccountBtn;
+    public Button customerServiceBtn;
     private Action OnCopy;
     private Action OnCancel;
+    private Action OnAccountSettings;
+    private Action OnDeleteAccount;
+    private Action OnCustomerService;
 
     void Awake()
     {
@@ -37,6 +43,18 @@ internal class PlayerInfoView : View<PlayerInfoView>
     {
         OnCancel.Invoke();
     }
+    void OnAccountSettingsConfigBtn()
+    {
+        OnAccountSettings.Invoke();
+    }
+    void OnDeleteAccountConfigBtn()
+    {
+        OnDeleteAccount.Invoke();
+    }
+    void OnOnCustomerServiceConfigBtn()
+    {
+        OnCustomerService.Invoke();
+    }
     public void SetCopyCallback(Action OnCopy)
     {
         this.OnCopy = OnCopy;
@@ -44,6 +62,18 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public void SetCancelCallback(Action OnCancel)
     {
         this.OnCancel = OnCancel;
+    }
+    public void SetAccountSettingsCallback(Action OnAccountSettings)
+    {
+        this.OnAccountSettings = OnAccountSettings;
+    }
+    public void SetDeleteAccountCallback(Action OnDeleteAccount)
+    {
+        this.OnDeleteAccount = OnDeleteAccount;
+    }
+    public void SetOnCustomerServiceCallback(Action OnOnCustomerService)
+    {
+        this.OnCustomerService = OnOnCustomerService;
     }
     protected override IEnumerator OnHide()
     {
