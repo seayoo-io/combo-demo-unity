@@ -7,10 +7,19 @@ using UnityEngine.UI;
 public class MetaInfo : MonoBehaviour
 {
     public Text metaText;
+    private static bool isCreated = false;
 
     void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        if (!isCreated)
+        {
+            DontDestroyOnLoad(gameObject);
+            isCreated = true;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()
