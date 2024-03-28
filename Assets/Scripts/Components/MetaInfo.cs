@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class MetaInfo : MonoBehaviour
 {
     public Text metaText;
-    private static bool isCreated = false;
 
     void Awake()
     {
