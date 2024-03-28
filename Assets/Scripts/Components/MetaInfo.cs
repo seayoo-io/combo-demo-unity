@@ -11,15 +11,7 @@ public class MetaInfo : MonoBehaviour
 
     void Awake()
     {
-        if (!isCreated)
-        {
-            DontDestroyOnLoad(gameObject);
-            isCreated = true;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
