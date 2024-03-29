@@ -43,6 +43,7 @@ public class Login : MonoBehaviour
         } else {
             LoginInit();
         }
+        SoundManager.Instance.PlayMusic("background");
     }
 
     void OnDestroy() {
