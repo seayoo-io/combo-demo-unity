@@ -6,12 +6,17 @@ using UnityEngine;
 
 public static class PlayerInfoViewController
 {
-    public static void ShowPlayerInfoView(string playerId)
+    public static void ShowPlayerInfoView()
     {
         var playerInfoView = PlayerInfoView.Instantiate();
-        playerInfoView.SetPlayerId(playerId);
+        InitView(playerInfoView);
         playerInfoView.SetCopyCallback(() => OnCopy());
+        playerInfoView.SetManageAccountCallback(() => OnManageAccount());
+        playerInfoView.SetChangePasswordCallback(() => OnChangePassword());
+        playerInfoView.SetDeleteAccountCallback(() => OnDeleteAccount());
+        playerInfoView.SetOnContactSupportCallback(() => OnContactSupport());
         playerInfoView.SetCancelCallback(() => playerInfoView.Destroy());
+
         playerInfoView.Show();
     }
 
@@ -30,6 +35,56 @@ public static class PlayerInfoViewController
         }
         UnityEngine.GUIUtility.systemCopyBuffer = info.comboId;
         Toast.Show("复制成功");
+    }
+
+    public static void OnManageAccount()
+    {
+        ComboSDK.SeayooAccount.ManageAccount();
+    }
+
+    public static void OnChangePassword()
+    {
+        ComboSDK.SeayooAccount.ChangePassword();
+    }
+
+    public static void OnDeleteAccount()
+    {
+        ComboSDK.SeayooAccount.DeleteAccount();
+    }
+
+    public static void OnContactSupport()
+    {
+        ComboSDK.ContactSupport();
+    }
+
+    private static void InitView(PlayerInfoView view)
+    {
+        string accountName;
+        string playerId;
+        if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
+        {
+            accountName = "世游通行证 ID :";
+            playerId = ComboSDK.SeayooAccount.GetUserId();
+            view.manageAccountBtn.gameObject.SetActive(true);
+            view.changePasswordBtn.gameObject.SetActive(true);
+            view.deleteAccountBtn.gameObject.SetActive(true);
+            Log.I($"GetUserInfo: ${accountName} = {playerId}");
+        }
+        else
+        {
+            var info = ComboSDK.GetLoginInfo();
+            playerId = info.comboId;
+            accountName = "Combo ID :";
+            Log.I($"GetUserInfo: ${accountName} = {playerId}," + $"identityToken = {info.identityToken}");
+        }
+
+        if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
+        {
+            view.contactSupportBtn.gameObject.SetActive(false);
+        }
+
+        view.SetPlayerId(playerId);
+        view.SetAccountName(accountName);
     }
 
 }

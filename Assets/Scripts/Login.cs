@@ -14,6 +14,7 @@ public class Login : MonoBehaviour
     public Button enterGameBtn;
     public Button loginBtn;
     public Button logoutBtn;
+    public Button contactSupportBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -47,6 +48,9 @@ public class Login : MonoBehaviour
         else
         {
             LoginInit();
+        }
+        if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
+            contactSupportBtn.gameObject.SetActive(false);
         }
     }
 
@@ -151,6 +155,11 @@ public class Login : MonoBehaviour
                 }
             });
         }
+    }
+
+    public void OnContactSupport() 
+    {
+        ComboSDK.ContactSupport();
     }
 
     private void LoginGame(Action onSuccess, Action onFail)
