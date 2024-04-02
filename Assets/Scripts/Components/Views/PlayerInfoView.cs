@@ -8,31 +8,46 @@ using UnityEngine.UI;
 internal class PlayerInfoView : View<PlayerInfoView>
 {
     public Text playerId;
+    public Text accountName;
     public Button copyBtn;
     public Button cancelBtn;
-    public Button accountSettingsBtn;
+    public Button manageAccountBtn;
+    public Button changePasswordBtn;
     public Button deleteAccountBtn;
-    public Button customerServiceBtn;
+    public Button contactSupportBtn;
     private Action OnCopy;
     private Action OnCancel;
-    private Action OnAccountSettings;
+    private Action OnManageAccount;
+    private Action OnChangePassword;
     private Action OnDeleteAccount;
-    private Action OnCustomerService;
+    private Action OnContactSupport;
 
     void Awake()
     {
         copyBtn.onClick.AddListener(OnCopyConfigBtn);
         cancelBtn.onClick.AddListener(OnCancelConfigBtn);
+        manageAccountBtn.onClick.AddListener(OnManageAccountConfigBtn);
+        changePasswordBtn.onClick.AddListener(OnChangePasswordConfigBtn);
+        deleteAccountBtn.onClick.AddListener(OnDeleteAccountConfigBtn);
+        contactSupportBtn.onClick.AddListener(OnContactSupportConfigBtn);
     }
 
     void OnDestroy()
     {
         copyBtn.onClick.RemoveListener(OnCopyConfigBtn);
         cancelBtn.onClick.RemoveListener(OnCancelConfigBtn);
+        manageAccountBtn.onClick.RemoveListener(OnManageAccountConfigBtn);
+        changePasswordBtn.onClick.RemoveListener(OnChangePasswordConfigBtn);
+        deleteAccountBtn.onClick.RemoveListener(OnDeleteAccountConfigBtn);
+        contactSupportBtn.onClick.RemoveListener(OnContactSupportConfigBtn);
     }
     
     public void SetPlayerId(string id) {
         playerId.text = id;
+    }
+
+    public void SetAccountName(string name) {
+        accountName.text = name;
     }
 
     void OnCopyConfigBtn()
@@ -43,17 +58,21 @@ internal class PlayerInfoView : View<PlayerInfoView>
     {
         OnCancel.Invoke();
     }
-    void OnAccountSettingsConfigBtn()
+    void OnManageAccountConfigBtn()
     {
-        OnAccountSettings.Invoke();
+        OnManageAccount.Invoke();
+    }
+    void OnChangePasswordConfigBtn()
+    {
+        OnChangePassword.Invoke();
     }
     void OnDeleteAccountConfigBtn()
     {
         OnDeleteAccount.Invoke();
     }
-    void OnOnCustomerServiceConfigBtn()
+    void OnContactSupportConfigBtn()
     {
-        OnCustomerService.Invoke();
+        OnContactSupport.Invoke();
     }
     public void SetCopyCallback(Action OnCopy)
     {
@@ -63,17 +82,21 @@ internal class PlayerInfoView : View<PlayerInfoView>
     {
         this.OnCancel = OnCancel;
     }
-    public void SetAccountSettingsCallback(Action OnAccountSettings)
+    public void SetManageAccountCallback(Action OnManageAccount)
     {
-        this.OnAccountSettings = OnAccountSettings;
+        this.OnManageAccount = OnManageAccount;
+    }
+    public void SetChangePasswordCallback(Action OnChangePassword)
+    {
+        this.OnChangePassword = OnChangePassword;
     }
     public void SetDeleteAccountCallback(Action OnDeleteAccount)
     {
         this.OnDeleteAccount = OnDeleteAccount;
     }
-    public void SetOnCustomerServiceCallback(Action OnOnCustomerService)
+    public void SetOnContactSupportCallback(Action OnContactSupport)
     {
-        this.OnCustomerService = OnOnCustomerService;
+        this.OnContactSupport = OnContactSupport;
     }
     protected override IEnumerator OnHide()
     {

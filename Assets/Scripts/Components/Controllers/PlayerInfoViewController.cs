@@ -6,25 +6,18 @@ using UnityEngine;
 
 public static class PlayerInfoViewController
 {
-    public static void ShowPlayerInfoView(string playerId)
+    public static void ShowPlayerInfoView()
     {
         var playerInfoView = PlayerInfoView.Instantiate();
-        playerInfoView.SetPlayerId(playerId);
+        InitView(playerInfoView);
         playerInfoView.SetCopyCallback(() => OnCopy());
-        playerInfoView.SetAccountSettingsCallback(() => OnAccountSettings());
+        playerInfoView.SetManageAccountCallback(() => OnManageAccount());
+        playerInfoView.SetChangePasswordCallback(() => OnChangePassword());
         playerInfoView.SetDeleteAccountCallback(() => OnDeleteAccount());
-        playerInfoView.SetOnCustomerServiceCallback(() => OnCustomerService());
+        playerInfoView.SetOnContactSupportCallback(() => OnContactSupport());
         playerInfoView.SetCancelCallback(() => playerInfoView.Destroy());
+
         playerInfoView.Show();
-        if(!ComboSDK.IsFeatureAvailable(Feature.ACCOUNT_SETTINGS)){
-            playerInfoView.accountSettingsBtn.gameObject.SetActive(false);
-        }
-        if(!ComboSDK.IsFeatureAvailable(Feature.DELETE_ACCOUNT)){
-            playerInfoView.deleteAccountBtn.gameObject.SetActive(false);
-        }
-        if(!ComboSDK.IsFeatureAvailable(Feature.CUSTOMER_SERVICE)){
-            playerInfoView.customerServiceBtn.gameObject.SetActive(false);
-        }
     }
 
     public static void HidePlayerInfoView()
@@ -44,19 +37,54 @@ public static class PlayerInfoViewController
         Toast.Show("复制成功");
     }
 
-    public static void OnAccountSettings()
+    public static void OnManageAccount()
     {
-        ComboSDK.AccountSettings();
+        ComboSDK.SeayooAccount.ManageAccount();
+    }
+
+    public static void OnChangePassword()
+    {
+        ComboSDK.SeayooAccount.ChangePassword();
     }
 
     public static void OnDeleteAccount()
     {
-        ComboSDK.DeleteAccount();
+        ComboSDK.SeayooAccount.DeleteAccount();
     }
 
-    public static void OnCustomerService()
+    public static void OnContactSupport()
     {
-        ComboSDK.CustomerService();
+        ComboSDK.ContactSupport();
+    }
+
+    private static void InitView(PlayerInfoView view)
+    {
+        string accountName;
+        string playerId;
+        if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
+        {
+            accountName = "世游通行证 ID :";
+            playerId = ComboSDK.SeayooAccount.GetUserId();
+            view.manageAccountBtn.gameObject.SetActive(true);
+            view.changePasswordBtn.gameObject.SetActive(true);
+            view.deleteAccountBtn.gameObject.SetActive(true);
+            Log.I($"GetUserInfo: ${accountName} = {playerId}");
+        }
+        else
+        {
+            var info = ComboSDK.GetLoginInfo();
+            playerId = info.comboId;
+            accountName = "Combo ID :";
+            Log.I($"GetUserInfo: ${accountName} = {playerId}," + $"identityToken = {info.identityToken}");
+        }
+
+        if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
+        {
+            view.contactSupportBtn.gameObject.SetActive(false);
+        }
+
+        view.SetPlayerId(playerId);
+        view.SetAccountName(accountName);
     }
 
 }
