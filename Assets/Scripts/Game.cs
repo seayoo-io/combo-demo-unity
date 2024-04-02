@@ -49,8 +49,6 @@ public class Game : MonoBehaviour
 
     public void OnPlayerInfo()
     {
-        var info = ComboSDK.GetLoginInfo();
-        PlayerInfoViewController.ShowPlayerInfoView(info.comboId);
-        Log.I($"GetUserInfo: comboId = {info.comboId}," + $"identityToken = {info.identityToken}");
+        PlayerInfoViewController.ShowPlayerInfoView();
     }
 }
