@@ -17,7 +17,8 @@ public class Login : MonoBehaviour
 
     private int loginRetryCount = 0;
 
-    void Awake() {
+    void Awake()
+    {
         EventSystem.Register(this);
         ComboSDK.OnKickOut(result =>
         {
@@ -38,82 +39,112 @@ public class Login : MonoBehaviour
     {
         var buildParams = BuildParams.Load();
 
-        if (buildParams.hotUpdate || buildParams.forceUpdate) {
+        if (buildParams.hotUpdate || buildParams.forceUpdate)
+        {
             UpdateGameViewController.Show(buildParams.forceUpdate);
-        } else {
+        }
+        else
+        {
             LoginInit();
         }
     }
 
-    void OnDestroy() {
+    void OnDestroy()
+    {
         EventSystem.UnRegister(this);
     }
 
     [EventSystem.BindEvent]
-    void OnUpdateGame(UpdateGameFinishedEvent evt) {
-        
+    void OnUpdateGame(UpdateGameFinishedEvent evt)
+    {
+
         LoginInit();
     }
 
-    void LoginInit() {
-        if (isFirstStart) {
+    void LoginInit()
+    {
+        if (isFirstStart)
+        {
             LoadingBar.Show();
             enterGameBtn.interactable = false;
         }
-        
+
         loginRetryCount = 0;
         ShowLoginBtn();
         AutoLogin();
         isFirstStart = false;
     }
 
-    public void OnLogin() {
-        LoginGame(()=>{
+    public void OnLogin()
+    {
+        LoginGame(() =>
+        {
             ShowEnterGameBtn();
-        }, ()=>{
+        }, () =>
+        {
             ShowLoginBtn();
         });
     }
 
-    public void OnEnterGame() {
+    public void OnEnterGame()
+    {
         PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
         SceneManager.LoadScene("Game");
     }
 
-    public void OnLogout() {
-        ComboSDK.Logout(result => {
-            if (result.IsSuccess) {
+    public void OnLogout()
+    {
+        ComboSDK.Logout(result =>
+        {
+            if (result.IsSuccess)
+            {
                 Toast.Show($"玩家 {result.Data.comboId} 退出登录");
                 ShowLoginBtn();
-            } else {
+            }
+            else
+            {
                 Toast.Show($"登出失败: {result.Error.Message}");
                 Log.E("登出失败：" + result.Error.ToString());
             }
         });
     }
 
-    private void CheckAndUpdateGame(Action OnCancel) {
-        if (ComboSDK.IsFeatureAvailable(Feature.UPDATE_GAME)) {
-            ComboSDK.UpdateGame(result => {
-                if (result.IsSuccess) {
+    private void CheckAndUpdateGame(Action OnCancel)
+    {
+        if (ComboSDK.IsFeatureAvailable(Feature.UPDATE_GAME))
+        {
+            ComboSDK.UpdateGame(result =>
+            {
+                if (result.IsSuccess)
+                {
                     Toast.Show("更新成功");
                     CheckAndUpdateGame(OnCancel);
-                } else {
+                }
+                else
+                {
                     Toast.Show("更新失败：" + result.Error.ToString());
                     OnCancel.Invoke();
                 }
             });
-        } else {
-            ComboSDK.GetDownloadUrl(result => {
-                if(result.IsSuccess) {
+        }
+        else
+        {
+            ComboSDK.GetDownloadUrl(result =>
+            {
+                if (result.IsSuccess)
+                {
                     Log.D("GameUpdateUrl: " + result.Data.downloadUrl);
-                    UIController.Alert(UIAlertType.Stackable, "更新游戏", "检测到游戏有新版本，请更新游戏", "确定更新", "取消更新", () => {
+                    UIController.Alert(UIAlertType.Stackable, "更新游戏", "检测到游戏有新版本，请更新游戏", "确定更新", "取消更新", () =>
+                    {
                         Application.OpenURL(result.Data.downloadUrl);
                         CheckAndUpdateGame(OnCancel);
-                    }, () => {
+                    }, () =>
+                    {
                         OnCancel.Invoke();
                     });
-                } else {
+                }
+                else
+                {
                     Log.W("Failed to get game update url:" + result.Error.ToString());
                     OnCancel.Invoke();
                 }
@@ -160,12 +191,6 @@ public class Login : MonoBehaviour
                     "sdk_login",
                     new Dictionary<string, object>() { { "role_name", "test_player" } }
                 );
-
-                SentrySdk.ConfigureScope(scope =>
-                {
-                    scope.User.Id = result.loginInfo.comboId;
-                });
-
                 GameClientLogin(result);
             }
             else
@@ -175,7 +200,9 @@ public class Login : MonoBehaviour
                 if (error.Code == Combo.ErrorCode.UserCancelled)
                 {
                     Toast.Show("用户取消登录");
-                } else {
+                }
+                else
+                {
                     Toast.Show($"登录失败：{error.Message}");
                 }
                 Log.E("登录失败: " + error.DetailMessage);
@@ -188,34 +215,41 @@ public class Login : MonoBehaviour
     private void AutoLogin()
     {
 
-        LoginGame(()=>{
+        LoginGame(() =>
+        {
             ShowEnterGameBtn();
-        },()=>{
+        }, () =>
+        {
             if (++loginRetryCount > MAX_LOGIN_RETRY)
             {
                 ShowLoginBtn();
                 return;
-            } else {
+            }
+            else
+            {
                 Toast.Show($"登录失败，正在重试 ({loginRetryCount}/{MAX_LOGIN_RETRY})");
                 Invoke(nameof(AutoLogin), 0.3f);
             }
         });
     }
 
-    private void ShowLoginBtn() {
+    private void ShowLoginBtn()
+    {
         enterGameBtn.gameObject.SetActive(false);
         loginBtn.gameObject.SetActive(true);
         logoutBtn.gameObject.SetActive(false);
     }
 
-    private void ShowEnterGameBtn() {
+    private void ShowEnterGameBtn()
+    {
         enterGameBtn.gameObject.SetActive(true);
         loginBtn.gameObject.SetActive(false);
         logoutBtn.gameObject.SetActive(true);
     }
 
     [EventSystem.BindEvent]
-    private void OnLoadGameFinished(GameLoadFinishedEvent evt) {
+    private void OnLoadGameFinished(GameLoadFinishedEvent evt)
+    {
         loginBtn.interactable = true;
         enterGameBtn.interactable = true;
         logoutBtn.interactable = true;
