@@ -64,7 +64,7 @@ public static class PlayerInfoViewController
         if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
         {
             accountName = "世游通行证 ID :";
-            playerId = ComboSDK.SeayooAccount.GetUserId();
+            playerId = ComboSDK.SeayooAccount.UserId;
             view.manageAccountBtn.gameObject.SetActive(true);
             view.changePasswordBtn.gameObject.SetActive(true);
             view.deleteAccountBtn.gameObject.SetActive(true);
