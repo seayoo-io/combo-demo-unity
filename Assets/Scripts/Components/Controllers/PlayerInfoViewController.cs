@@ -27,13 +27,17 @@ public static class PlayerInfoViewController
 
     public static void OnCopy()
     {
-        var info = ComboSDK.GetLoginInfo();
-        if (info == null || string.IsNullOrEmpty(info.comboId))
+        string playerId;
+         if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
         {
-            Toast.Show("用户未登录");
-            return;
+            playerId = ComboSDK.SeayooAccount.UserId;
         }
-        UnityEngine.GUIUtility.systemCopyBuffer = info.comboId;
+        else
+        {
+            playerId = ComboSDK.GetLoginInfo().comboId;
+        }
+
+        UnityEngine.GUIUtility.systemCopyBuffer = playerId;
         Toast.Show("复制成功");
     }
 
