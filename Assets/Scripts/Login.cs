@@ -16,6 +16,7 @@ public class Login : MonoBehaviour
     public Button logoutBtn;
 
     private int loginRetryCount = 0;
+    private string lastError = "";
 
     void Awake()
     {
@@ -199,10 +200,12 @@ public class Login : MonoBehaviour
                 var error = r.Error;
                 if (error.Code == Combo.ErrorCode.UserCancelled)
                 {
+                    lastError = Combo.ErrorCode.UserCancelled;
                     Toast.Show("用户取消登录");
                 }
                 else
                 {
+                    lastError = "";
                     Toast.Show($"登录失败：{error.Message}");
                 }
                 Log.E("登录失败: " + error.DetailMessage);
@@ -227,6 +230,12 @@ public class Login : MonoBehaviour
             }
             else
             {
+                if (lastError == Combo.ErrorCode.UserCancelled)
+                {
+                    ShowLoginBtn();
+                    Toast.Show("用户取消登录");
+                    return;
+                }
                 Toast.Show($"登录失败，正在重试 ({loginRetryCount}/{MAX_LOGIN_RETRY})");
                 Invoke(nameof(AutoLogin), 0.3f);
             }
