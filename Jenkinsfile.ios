@@ -45,7 +45,8 @@ def downloadComboSDKJson() {
 }
 
 def installComboCLI() {
-    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
+    def credentialsId = "combo-${params.GAME_ID}.build-key"
+    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
@@ -79,7 +80,7 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
         choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         string(name: 'IOS_PROJECT_NAME',
@@ -199,7 +200,8 @@ pipeline {
                             PROVISIONING_PROFILE_SPECIFIER=dev_provision \
                             -archivePath demo.xcarchive
                         """
-                        def credentialsId = "combo-${params.GAME_ID}.export-options"
+                        // hardcode: 先使用 demo 证书配置
+                        def credentialsId = "combo-demo.export-options"
                         withCredentials([file(variable: 'EXPORT_OPTIONS_PLIST', credentialsId: credentialsId)]) {
                             sh """xcodebuild -exportArchive \
                             -archivePath demo.xcarchive \
