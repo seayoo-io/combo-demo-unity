@@ -45,7 +45,8 @@ def downloadComboSDKJson() {
 }
 
 def installComboCLI() {
-    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
+    def credentialsId = "combo-${params.GAME_ID}.build-key"
+    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
