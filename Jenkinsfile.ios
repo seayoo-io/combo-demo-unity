@@ -11,6 +11,7 @@ def callUnity(Map map = [:]) {
 }
 
 def downloadUnitySDK() {
+    build job: params.UNITY_SDK_PROJECT_NAME, propagate: true, wait: true
     def unitySDKZip = "*.zip"
     copyArtifacts projectName: "${params.UNITY_SDK_PROJECT_NAME}", selector: lastSuccessful(), filter: unitySDKZip
 
