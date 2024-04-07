@@ -214,7 +214,7 @@ pipeline {
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
-                            PROVISIONING_PROFILE_SPECIFIER=dev_provision \
+                            PROVISIONING_PROFILE_SPECIFIER=${environmentParams[params.GAME_ID]['provesion'].toString()} \
                             -archivePath demo.xcarchive
                         """
                         // hardcode: 先使用 demo 证书配置
