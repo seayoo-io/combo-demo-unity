@@ -117,10 +117,10 @@ pipeline {
         FRAMEWORK_PATH = "${env.WORKSPACE}/Frameworks"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId']
-        CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId']
-        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provesion']
-        DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam']
+        PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId'].toString()
+        CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId'].toString()
+        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provesion'].toString()
+        DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
     }
     stages {
         stage('Clean and Setup') {
