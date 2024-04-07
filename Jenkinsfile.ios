@@ -48,15 +48,17 @@ def environmentParams = [
     'demo': [
         'bundleId': 'com.ksDemo.omni', 
         'codeSignId': 'Apple Development: TingTing Liu (QWVQYB57WJ)', 
-        'provesion': 'dev_provision',
+        'provision': 'dev_provision',
         'developmentTeam': 'SP537S8Q2J',
-        'capabilities': 'SignInWithApple'
+        'capabilities': 'SignInWithApple',
+        'exportOptionsPlist': 'combo-demo.export-options'
     ],
     'catsnsoup': [
         'bundleId': 'com.mt.zhuoli', 
         'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
-        'provesion': 'MaoTang Dev',
+        'provision': 'MaoTang Dev',
         'developmentTeam': 'G7ZC763G33',
+        'exportOptionsPlist': 'combo-catsnsoup.export-options'
     ]
 ] 
 
@@ -120,7 +122,7 @@ pipeline {
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId'].toString()
         CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId'].toString()
-        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provesion'].toString()
+        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provision'].toString()
         DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
         CAPABILITIES = environmentParams[params.GAME_ID]['capabilities'].toString()
     }
@@ -214,11 +216,11 @@ pipeline {
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
-                            PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provesion'].toString()}" \
+                            PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
                             -archivePath demo.xcarchive
                         """
                         // hardcode: 先使用 demo 证书配置
-                        def credentialsId = "combo-demo.export-options"
+                        def credentialsId = "combo-${params.GAME_ID}.export-options"
                         withCredentials([file(variable: 'EXPORT_OPTIONS_PLIST', credentialsId: credentialsId)]) {
                             sh """xcodebuild -exportArchive \
                             -archivePath demo.xcarchive \
