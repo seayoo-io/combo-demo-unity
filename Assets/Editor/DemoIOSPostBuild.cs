@@ -141,6 +141,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid, string unityFrameworkTargetGuid)
     {
+        Debug.Log("[Demo] Start to SetBuildProperty");
         // Sign
         pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_STYLE", "Manual");
@@ -150,10 +151,12 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         // Framework search path
         pbxProject.SetBuildProperty(mainTargetGuid, "FRAMEWORK_SEARCH_PATHS", $"$(PROJECT_DIR)/{ComboSDKFrameworks}");
         pbxProject.SetBuildProperty(unityFrameworkTargetGuid, "FRAMEWORK_SEARCH_PATHS", $"$(PROJECT_DIR)/{ComboSDKFrameworks}");
+        Debug.Log("[Demo] End to SetBuildProperty");
     }
 
     private void AddAppleSignInCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
     {
+        Debug.Log("[Demo] Start to AddAppleSignInCapability");
         var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
         var entitlements = new PlistDocument();
         var array = entitlements.root.CreateArray("com.apple.developer.applesignin");
@@ -162,16 +165,19 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
         pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
         pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
+        Debug.Log("[Demo] End to AddAppleSignInCapability");
     }
 
     private void CopyAndAddComboSDKJson(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
     {
+        Debug.Log("[Demo] Start to CopyAndAddComboSDKJson");
         string destJsonFilePath = Path.Combine(report.summary.outputPath, ComboSDKFrameworks, "ComboSDK.json");
 
         Builder.CopyFile(BuildArguments.ComboSDKConfigPath, destJsonFilePath);
 
         var guid = pbxProject.AddFile(destJsonFilePath, $"{ComboSDKFrameworks}/ComboSDK.json", PBXSourceTree.Source);
         pbxProject.AddFileToBuild(mainTargetGuid, guid);
+        Debug.Log("[Demo] End to CopyAndAddComboSDKJson");
     }
 
     private void UpdatePListFile(BuildReport report)
