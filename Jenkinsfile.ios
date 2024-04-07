@@ -50,7 +50,7 @@ def environmentParams = [
         'codeSignId': 'Apple Development: TingTing Liu (QWVQYB57WJ)', 
         'provesion': 'dev_provision',
         'developmentTeam': 'SP537S8Q2J',
-        'capabilities': 'SignInWithApple'
+        'capabilities': ''
     ],
     'catsnsoup': [
         'bundleId': 'com.mt.zhuoli', 
