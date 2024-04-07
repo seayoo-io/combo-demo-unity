@@ -150,7 +150,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         // Sign
         pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_STYLE", "Manual");
-        pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_IDENTITY", BuildArguments.SignIdentity);
+        pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_IDENTITY", "iPhone Developer: fei gao (KDF9BF4JFY)");
         pbxProject.SetBuildProperty(mainTargetGuid, "PROVISIONING_PROFILE_SPECIFIER", BuildArguments.Provision);
         pbxProject.SetBuildProperty(mainTargetGuid, "DEVELOPMENT_TEAM", BuildArguments.DevelopmentTeam);
         // Framework search path
