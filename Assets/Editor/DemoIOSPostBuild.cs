@@ -46,6 +46,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             var unityMainFrameworksBuildPhase = pbxProject.GetFrameworksBuildPhaseByTarget(unityMainTargetGuid);
             var unityFrameworkBuildPhase = pbxProject.GetFrameworksBuildPhaseByTarget(unityFrameworkTargetGuid);
 
+            Debug.Log($"[Demo] BuildArguments.BundleId: {BuildArguments.BundleId} success!");
+            Debug.Log($"[Demo] DEVELOPMENT_TEAM: {BuildArguments.DevelopmentTeam} success!");
+
             // Add Frameworks
             AddFrameworks(szFrameworkPath, report, pbxProject, unityMainTargetGuid, unityMainFrameworksBuildPhase, unityFrameworkTargetGuid, unityFrameworkBuildPhase);
 
@@ -126,7 +129,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
                     pbxProject.AddFileToEmbedFrameworks(mainTargetGuid, fileGuid);
                     pbxProject.AddFileToBuildSection(mainTargetGuid, mainFrameworksBuildPhase, fileGuid);
                     pbxProject.AddFileToBuildSection(frameworkTargetGuid, frameworkBuildPhase, fileGuid);
-                    Debug.Log($"[Demo] add {frameworkName} success!");
+                    Debug.Log($"{frameworkName} add!");
                 }
                 else
                 {
