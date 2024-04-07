@@ -60,17 +60,20 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
             // Add Sign In With Apple Capability
             Debug.Log($"[Demo] BuildArguments.Capabilities: {BuildArguments.Capabilities}");
-            string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
-            foreach (string capability in capabilitiesArray)
+            if (!string.IsNullOrEmpty(BuildArguments.Capabilities))
             {
-                Debug.Log("[Demo] Capability: " + capability);
+                string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
+                foreach (string capability in capabilitiesArray)
+                {
+                    Debug.Log("[Demo] Capability: " + capability);
+                }
+                if (capabilitiesArray.Contains("SignInWithApple"))
+                {
+                    Debug.Log("[Demo] add signInWithApple");
+                    AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+                }
             }
-            if (capabilitiesArray.Contains("SignInWithApple"))
-            {
-                Debug.Log("[Demo] add signInWithApple");
-                AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
-            }
-
+            
             pbxProject.WriteToFile(projectPath);
 
             // Info.plist
