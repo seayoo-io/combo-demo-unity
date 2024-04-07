@@ -59,6 +59,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
             if (capabilitiesArray.Contains("SignInWithApple"))
             {
+                Debug.Log("[Demo] add signInWithApple");
                 AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
             }
 
@@ -120,6 +121,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
                     pbxProject.AddFileToEmbedFrameworks(mainTargetGuid, fileGuid);
                     pbxProject.AddFileToBuildSection(mainTargetGuid, mainFrameworksBuildPhase, fileGuid);
                     pbxProject.AddFileToBuildSection(frameworkTargetGuid, frameworkBuildPhase, fileGuid);
+                    Debug.Log($"[Demo] add {frameworkName} success!");
                 }
                 else
                 {
