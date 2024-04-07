@@ -17,6 +17,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER");
         public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM");
         public static string ComboSDKConfigPath => System.Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
+        public static string Capabilities => System.Environment.GetEnvironmentVariable("CAPABILITIES");
     }
 
     public int callbackOrder { get { return 1; } }
@@ -55,7 +56,11 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             CopyAndAddComboSDKJson(report, pbxProject, unityMainTargetGuid);
 
             // Add Sign In With Apple Capability
-            AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+            string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
+            if (capabilitiesArray.Contains("SignInWithApple"))
+            {
+                AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+            }
 
             pbxProject.WriteToFile(projectPath);
 
