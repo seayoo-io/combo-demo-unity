@@ -56,7 +56,12 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             CopyAndAddComboSDKJson(report, pbxProject, unityMainTargetGuid);
 
             // Add Sign In With Apple Capability
+            Debug.Log($"[Demo] BuildArguments.Capabilities: {BuildArguments.Capabilities}");
             string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
+            foreach (string capability in capabilitiesArray)
+            {
+                Debug.Log("[Demo] Capability: " + capability);
+            }
             if (capabilitiesArray.Contains("SignInWithApple"))
             {
                 Debug.Log("[Demo] add signInWithApple");
