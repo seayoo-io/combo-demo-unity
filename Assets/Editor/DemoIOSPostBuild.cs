@@ -47,6 +47,8 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             var unityFrameworkBuildPhase = pbxProject.GetFrameworksBuildPhaseByTarget(unityFrameworkTargetGuid);
 
             Debug.Log($"[Demo] BuildArguments.BundleId: {BuildArguments.BundleId} success!");
+            Debug.Log($"[Demo] SignIdentity: {BuildArguments.SignIdentity} success!");
+            Debug.Log($"[Demo] Provision: {BuildArguments.Provision} success!");
             Debug.Log($"[Demo] DEVELOPMENT_TEAM: {BuildArguments.DevelopmentTeam} success!");
 
             // Add Frameworks
