@@ -44,6 +44,21 @@ def downloadComboSDKJson() {
     '''
 }
 
+def environmentParams = [
+    'demo': [
+        'bundleId': 'com.ksDemo.omni', 
+        'codeSignId': 'Apple Development: TingTing Liu (QWVQYB57WJ)', 
+        'provesion': 'dev_provision',
+        'developmentTeam': 'SP537S8Q2J'
+    ],
+    'catsnsoup': [
+        'bundleId': 'com.mt.zhuoli', 
+        'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
+        'provesion': 'MaoTang Dev',
+        'developmentTeam': 'G7ZC763G33'
+    ]
+] 
+
 def installComboCLI() {
     def credentialsId = "combo-${params.GAME_ID}.build-key"
     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
@@ -102,10 +117,10 @@ pipeline {
         FRAMEWORK_PATH = "${env.WORKSPACE}/Frameworks"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        PRODUCT_BUNDLE_IDENTIFIER = 'com.ksDemo.omni'
-        CODE_SIGN_IDENTITY = 'Apple Development: TingTing Liu (QWVQYB57WJ)'
-        PROVISIONING_PROFILE_SPECIFIER = 'dev_provision'
-        DEVELOPMENT_TEAM = 'SP537S8Q2J'
+        PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId']
+        CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId']
+        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provesion']
+        DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam']
     }
     stages {
         stage('Clean and Setup') {
