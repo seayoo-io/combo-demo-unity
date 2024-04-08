@@ -233,7 +233,7 @@ pipeline {
                             sh """xcodebuild -exportArchive \
                             -archivePath ${params.GAME_ID}.xcarchive \
                             -exportPath ipa \
-                            -exportOptionsPlist \${EXPORT_OPTIONS_PLIST}
+                            -exportOptionsPlist ${EXPORT_OPTIONS_PLIST}
                             """
                         }
                     }
