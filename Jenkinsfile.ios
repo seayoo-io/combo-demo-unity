@@ -44,6 +44,14 @@ def downloadComboSDKJson() {
     '''
 }
 
+def updateCodeSigningSettings() {
+    sh """
+        export LC_ALL=en_US.UTF-8
+        export LANG=en_US.UTF-8
+        fastlane run update_code_signing_settings path:"${BUILD_DIR}/Unity-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"Unity-iPhone"
+    """
+}
+
 def environmentParams = [
     'demo': [
         'bundleId': 'com.ksDemo.omni', 
@@ -211,13 +219,13 @@ pipeline {
             steps {
                 script {
                     dir(env.BUILD_DIR) {
+                        updateCodeSigningSettings()
                         keychainUnlock()
                         sh """xcodebuild clean archive \
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
                             PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
-                            CODE_SIGN_IDENTITY="Apple Development" \
                             -archivePath ${params.GAME_ID}.xcarchive
                         """
                         // hardcode: 先使用 demo 证书配置
