@@ -223,7 +223,7 @@ pipeline {
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
-                            PROVISIONING_PROFILE_SPECIFIER=\${gameParams[params.GAME_ID]['provision']} \
+                            PROVISIONING_PROFILE_SPECIFIER=\${gameParams[${params.GAME_ID}]['provision']} \
                             -archivePath ${params.GAME_ID}.xcarchive
                         """
                         def credentialsId = "combo-${params.GAME_ID}.export-options"
