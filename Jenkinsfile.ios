@@ -52,7 +52,7 @@ def updateCodeSigningSettings() {
     """
 }
 
-def environmentParams = [
+def gameParams = [
     'demo': [
         'bundleId': 'com.ksDemo.omni', 
         'codeSignId': 'Apple Development: TingTing Liu (QWVQYB57WJ)', 
@@ -128,11 +128,11 @@ pipeline {
         FRAMEWORK_PATH = "${env.WORKSPACE}/Frameworks"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId'].toString()
-        CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId'].toString()
-        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provision'].toString()
-        DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
-        CAPABILITIES = environmentParams[params.GAME_ID]['capabilities'].toString()
+        PRODUCT_BUNDLE_IDENTIFIER = gameParams[params.GAME_ID]['bundleId'].toString()
+        CODE_SIGN_IDENTITY = gameParams[params.GAME_ID]['codeSignId'].toString()
+        PROVISIONING_PROFILE_SPECIFIER = gameParams[params.GAME_ID]['provision'].toString()
+        DEVELOPMENT_TEAM = gameParams[params.GAME_ID]['developmentTeam'].toString()
+        CAPABILITIES = gameParams[params.GAME_ID]['capabilities'].toString()
     }
     stages {
         stage('Clean and Setup') {
@@ -225,7 +225,7 @@ pipeline {
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
-                            PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
+                            PROVISIONING_PROFILE_SPECIFIER="${gameParams[params.GAME_ID]['provision']}" \
                             -archivePath ${params.GAME_ID}.xcarchive
                         """
                         // hardcode: 先使用 demo 证书配置
