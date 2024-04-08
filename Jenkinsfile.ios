@@ -217,7 +217,7 @@ pipeline {
             steps {
                 script {
                     dir(env.BUILD_DIR) {
-                        updateCodeSigningSettings()
+                        // updateCodeSigningSettings()
                         keychainUnlock()
                         sh """xcodebuild clean archive \
                             -project Unity-iPhone.xcodeproj \
