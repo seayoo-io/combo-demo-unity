@@ -218,6 +218,7 @@ pipeline {
                             -destination generic/platform=iOS \
                             PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
                             CODE_SIGN_IDENTITY="${environmentParams[params.GAME_ID]['codeSignId'].toString()}" \
+                            "CODE_SIGN_IDENTITY[sdk=iphoneos*]"="${environmentParams[params.GAME_ID]['codeSignId'].toString()}" \
                             -archivePath ${params.GAME_ID}.xcarchive
                         """
                         // hardcode: 先使用 demo 证书配置
