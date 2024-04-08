@@ -228,7 +228,6 @@ pipeline {
                             PROVISIONING_PROFILE_SPECIFIER="${gameParams[params.GAME_ID]['provision']}" \
                             -archivePath ${params.GAME_ID}.xcarchive
                         """
-                        // hardcode: 先使用 demo 证书配置
                         def credentialsId = "combo-${params.GAME_ID}.export-options"
                         withCredentials([file(variable: 'EXPORT_OPTIONS_PLIST', credentialsId: credentialsId)]) {
                             sh """xcodebuild -exportArchive \
