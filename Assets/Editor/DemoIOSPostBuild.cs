@@ -116,7 +116,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
                     pbxProject.AddFileToEmbedFrameworks(mainTargetGuid, fileGuid);
                     pbxProject.AddFileToBuildSection(mainTargetGuid, mainFrameworksBuildPhase, fileGuid);
                     pbxProject.AddFileToBuildSection(frameworkTargetGuid, frameworkBuildPhase, fileGuid);
-                    Debug.Log($"{frameworkName} add!");
                 }
                 else
                 {
@@ -147,9 +146,11 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
             if (capabilitiesArray.Contains("SignInWithApple"))
             {
+                Debug.Log($"[Demo] add SignInWithApple capability.");
                 AddAppleSignInCapability(report, pbxProject, mainTargetGuid);
             }
         }
+        Debug.Log($"[Demo] has no capabilities.");
     }
 
     private void AddAppleSignInCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
