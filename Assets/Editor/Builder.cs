@@ -55,6 +55,16 @@ public class Builder : EditorWindow
             set => EditorPrefs.SetString("COMBOSDK_DEMO_ENDPOINT", value);
         }
 
+        public static string IOSXCFrameworks {
+            get => EditorPrefs.GetString("FRAMEWORK_PATH", "");
+            set => EditorPrefs.SetString("FRAMEWORK_PATH", value);
+        }
+
+        public static string IOSComboSDKJson {
+            get => EditorPrefs.GetString("COMBOSDK_CONFIG_PATH", "");
+            set => EditorPrefs.SetString("COMBOSDK_CONFIG_PATH", value);
+        }
+
         public static string exportPath = "outputs/android";
         public static string bundleVersion = "1.0.0";
     }
@@ -232,13 +242,42 @@ public class Builder : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GlobalProps.exportPath = EditorGUILayout.TextField("ExportPath", GlobalProps.exportPath);
+        GlobalProps.exportPath = EditorGUILayout.TextField("ExportPath", GlobalProps.exportPath);       
+        
         if (GUILayout.Button("Choose", GUILayout.Width(60)))
         {
             GlobalProps.exportPath = EditorUtility.OpenFolderPanel("ExportPath", "", "");
             Repaint();
         }
         EditorGUILayout.EndHorizontal();
+
+        if ((int)GUIProps.selectedPlatform == 1)
+        {
+            EditorGUILayout.HelpBox("可填入 ComboSDK.json 和 XCFrameworks 的文件夹路径，PostBuild 会自动装配至 Xcode Project", MessageType.Info);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(new GUIContent("ComboSDK.json", "填入 ComboSDK.json 的文件路径"), GUILayout.Width(120));
+            GlobalProps.IOSComboSDKJson = EditorGUILayout.TextField(GlobalProps.IOSComboSDKJson);
+            if (GUILayout.Button("Choose", GUILayout.Width(60)))
+            {
+                GlobalProps.IOSComboSDKJson = EditorUtility.OpenFilePanel("Select ComboSDK.json File", "", "json");
+                Repaint();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(new GUIContent("XCFrameworks Dir", "填入含有 XCFrameworks 的文件夹"), GUILayout.Width(120));
+            GlobalProps.IOSXCFrameworks = EditorGUILayout.TextField(GlobalProps.IOSXCFrameworks );
+            if (GUILayout.Button("Choose", GUILayout.Width(60)))
+            {
+                GlobalProps.IOSXCFrameworks  = EditorUtility.OpenFolderPanel("Select XCFrameworks Files", "", "");
+                Repaint();
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.EndDisabledGroup();
+
+            EditorGUILayout.Space();
+        }
 
         if (GUILayout.Button("Start Build"))
         {
@@ -252,6 +291,8 @@ public class Builder : EditorWindow
             Environment.SetEnvironmentVariable("BUNDLE_VERSION", GlobalProps.bundleVersion);
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
+            Environment.SetEnvironmentVariable("FRAMEWORK_PATH", GlobalProps.IOSXCFrameworks);
+            Environment.SetEnvironmentVariable("COMBOSDK_CONFIG_PATH", GlobalProps.IOSComboSDKJson);
             UpdateComboSDKSettings();
 
             switch (GUIProps.selectedPlatform)
