@@ -46,13 +46,13 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             var unityFrameworkBuildPhase = pbxProject.GetFrameworksBuildPhaseByTarget(unityFrameworkTargetGuid);
 
             // Add Frameworks
-            AddFrameworks(szFrameworkPath, report, pbxProject, unityMainTargetGuid, unityMainFrameworksBuildPhase, unityFrameworkTargetGuid, unityFrameworkBuildPhase);
+            // AddFrameworks(szFrameworkPath, report, pbxProject, unityMainTargetGuid, unityMainFrameworksBuildPhase, unityFrameworkTargetGuid, unityFrameworkBuildPhase);
 
             // Build Setting
             SetBuildProperty(pbxProject, unityMainTargetGuid, unityFrameworkTargetGuid);
 
             // ComboSDK.json
-            CopyAndAddComboSDKJson(report, pbxProject, unityMainTargetGuid);
+            // CopyAndAddComboSDKJson(report, pbxProject, unityMainTargetGuid);
 
             // Add Sign In With Apple Capability
             AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
