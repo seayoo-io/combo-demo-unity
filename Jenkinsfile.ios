@@ -166,6 +166,7 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
+                COMBOSDK_CONFIG_PATH = "${WORKSPACE}/ComboSDK.json"
             }
             steps {
                 script {
@@ -181,7 +182,6 @@ pipeline {
                 EXPORT_PATH = "build"
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
-                COMBOSDK_CONFIG_PATH = "${WORKSPACE}/ComboSDK.json"
             }
             steps {
                 script {

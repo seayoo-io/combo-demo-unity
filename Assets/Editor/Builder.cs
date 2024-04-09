@@ -55,6 +55,16 @@ public class Builder : EditorWindow
             set => EditorPrefs.SetString("COMBOSDK_DEMO_ENDPOINT", value);
         }
 
+        public static string IOSXCFrameworks {
+            get => EditorPrefs.GetString("FRAMEWORK_PATH", "");
+            set => EditorPrefs.SetString("FRAMEWORK_PATH", value);
+        }
+
+        public static string IOSComboSDKJson {
+            get => EditorPrefs.GetString("COMBOSDK_CONFIG_PATH", "");
+            set => EditorPrefs.SetString("COMBOSDK_CONFIG_PATH", value);
+        }
+
         public static string exportPath = "outputs/android";
         public static string bundleVersion = "1.0.0";
     }
@@ -149,27 +159,14 @@ public class Builder : EditorWindow
         return false;
     }
 
-    public static bool CopyFile(string sourcePath, string targetPath)
-    {
-        try
-        {
-            File.Copy(sourcePath, targetPath, true);
-            UnityEngine.Debug.Log("Copy \"" + sourcePath + "\" to \"" + targetPath + "\" succeed");
-            return true;
-        }
-        catch (Exception e)
-        {
-            UnityEngine.Debug.LogError("Copy failed：" + e.Message);
-        }
-        return false;
-    }
-
     // Used for Jenkins
     public static void UpdateComboSDKSettings()
     {
         var gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
         var publishableKey = Environment.GetEnvironmentVariable("COMBOSDK_PUBLISHABLE_KEY");
         var endpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT");
+        var iosXCFrameworks = Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
+        var iosComboSDKJson = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
 
         var assetPath = "Assets/ComboSDK/Resources/ComboSDKSettings.asset";
 
@@ -188,6 +185,8 @@ public class Builder : EditorWindow
         scriptableObject.GameId = gameId;
         scriptableObject.PublishableKey = publishableKey;
         scriptableObject.Endpoint = endpoint;
+        scriptableObject.IOSXCFrameworks = iosXCFrameworks;
+        scriptableObject.IOSComboSDKJson = iosComboSDKJson;
 
         // Mark the ScriptableObject as dirty so Unity knows it needs to save changes
         EditorUtility.SetDirty(scriptableObject);
@@ -196,55 +195,6 @@ public class Builder : EditorWindow
         AssetDatabase.Refresh();
 
         UnityEngine.Debug.Log($"gameId = {gameId}, publishableKey = {publishableKey}, endpoint = {endpoint}");
-    }
-
-    public static void DirectoryCopy(
-        string sourceDirName,
-        string destDirName,
-        bool copySubDirs = true
-    )
-    {
-        DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-        DirectoryInfo[] dirs = dir.GetDirectories();
-
-        // If the source directory does not exist, throw an exception.
-        if (!dir.Exists)
-        {
-            throw new DirectoryNotFoundException(
-                "Source directory does not exist or could not be found: " + sourceDirName
-            );
-        }
-
-        // If the destination directory does not exist, create it.
-        if (!Directory.Exists(destDirName))
-        {
-            Directory.CreateDirectory(destDirName);
-        }
-
-        // Get the file contents of the directory to copy.
-        FileInfo[] files = dir.GetFiles();
-
-        foreach (FileInfo file in files)
-        {
-            // Create the path to the new copy of the file.
-            string temppath = Path.Combine(destDirName, file.Name);
-
-            // Copy the file.
-            file.CopyTo(temppath, true);
-        }
-
-        // If copySubDirs is true, copy the subdirectories.
-        if (copySubDirs)
-        {
-            foreach (DirectoryInfo subdir in dirs)
-            {
-                // Create the subdirectory.
-                string temppath = Path.Combine(destDirName, subdir.Name);
-
-                // Copy the subdirectories.
-                DirectoryCopy(subdir.FullName, temppath, copySubDirs);
-            }
-        }
     }
 
     private static string GetRootDir()
@@ -292,13 +242,42 @@ public class Builder : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GlobalProps.exportPath = EditorGUILayout.TextField("ExportPath", GlobalProps.exportPath);
+        GlobalProps.exportPath = EditorGUILayout.TextField("ExportPath", GlobalProps.exportPath);       
+        
         if (GUILayout.Button("Choose", GUILayout.Width(60)))
         {
             GlobalProps.exportPath = EditorUtility.OpenFolderPanel("ExportPath", "", "");
             Repaint();
         }
         EditorGUILayout.EndHorizontal();
+
+        if ((int)GUIProps.selectedPlatform == 1)
+        {
+            EditorGUILayout.HelpBox("可填入 ComboSDK.json 和 XCFrameworks 的文件夹路径，PostBuild 会自动装配至 Xcode Project", MessageType.Info);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(new GUIContent("ComboSDK.json", "填入 ComboSDK.json 的文件路径"), GUILayout.Width(120));
+            GlobalProps.IOSComboSDKJson = EditorGUILayout.TextField(GlobalProps.IOSComboSDKJson);
+            if (GUILayout.Button("Choose", GUILayout.Width(60)))
+            {
+                GlobalProps.IOSComboSDKJson = EditorUtility.OpenFilePanel("Select ComboSDK.json File", "", "json");
+                Repaint();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(new GUIContent("XCFrameworks Dir", "填入含有 XCFrameworks 的文件夹"), GUILayout.Width(120));
+            GlobalProps.IOSXCFrameworks = EditorGUILayout.TextField(GlobalProps.IOSXCFrameworks );
+            if (GUILayout.Button("Choose", GUILayout.Width(60)))
+            {
+                GlobalProps.IOSXCFrameworks  = EditorUtility.OpenFolderPanel("Select XCFrameworks Files", "", "");
+                Repaint();
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.EndDisabledGroup();
+
+            EditorGUILayout.Space();
+        }
 
         if (GUILayout.Button("Start Build"))
         {
@@ -312,6 +291,8 @@ public class Builder : EditorWindow
             Environment.SetEnvironmentVariable("BUNDLE_VERSION", GlobalProps.bundleVersion);
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
+            Environment.SetEnvironmentVariable("FRAMEWORK_PATH", GlobalProps.IOSXCFrameworks);
+            Environment.SetEnvironmentVariable("COMBOSDK_CONFIG_PATH", GlobalProps.IOSComboSDKJson);
             UpdateComboSDKSettings();
 
             switch (GUIProps.selectedPlatform)
