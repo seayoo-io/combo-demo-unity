@@ -12,11 +12,10 @@ using System.Collections.Generic;
 public class DemoIOSPostBuild : IPostprocessBuildWithReport
 {
     public static class BuildArguments {
-        public static string BundleId => System.Environment.GetEnvironmentVariable("PRODUCT_BUNDLE_IDENTIFIER");
-        public static string SignIdentity => System.Environment.GetEnvironmentVariable("CODE_SIGN_IDENTITY");
-        public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER");
-        public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM");
-        public static string ComboSDKConfigPath => System.Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
+        public static string BundleId => System.Environment.GetEnvironmentVariable("PRODUCT_BUNDLE_IDENTIFIER") ?? "com.ksDemo.omni";
+        public static string SignIdentity => System.Environment.GetEnvironmentVariable("CODE_SIGN_IDENTITY") ?? "Apple Development: TingTing Liu (QWVQYB57WJ)";
+        public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER") ?? "dev_provision";
+        public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM") ?? "SP537S8Q2J";
     }
 
     public int callbackOrder { get { return 1; } }
@@ -33,7 +32,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     public void OnPostprocessBuild(BuildReport report)
     {
-        var szFrameworkPath = System.Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
         if (report.summary.platform == BuildTarget.iOS)
         {
             string projectPath = report.summary.outputPath + "/Unity-iPhone.xcodeproj/project.pbxproj";
