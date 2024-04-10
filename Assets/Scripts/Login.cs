@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Combo;
-using Sentry;
 using ThinkingData.Analytics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -218,7 +217,6 @@ public class Login : MonoBehaviour
                     Toast.Show($"登录失败：{error.Message}");
                 }
                 Log.E("登录失败: " + error.DetailMessage);
-                SentrySdk.CaptureException(error);
                 onFail.Invoke();
             }
         });
