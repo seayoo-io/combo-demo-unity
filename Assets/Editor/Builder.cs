@@ -165,9 +165,12 @@ public class Builder : EditorWindow
         var gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
         var publishableKey = Environment.GetEnvironmentVariable("COMBOSDK_PUBLISHABLE_KEY");
         var endpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT");
+
+#if UNITY_IOS
         var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD");
         var iosXCFrameworks = Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
         var iosComboSDKJson = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
+#endif
 
         var assetPath = "Assets/ComboSDK/Resources/ComboSDKSettings.asset";
 
@@ -186,9 +189,12 @@ public class Builder : EditorWindow
         scriptableObject.GameId = gameId;
         scriptableObject.PublishableKey = publishableKey;
         scriptableObject.Endpoint = endpoint;
+        
+#if UNITY_IOS
         scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
         scriptableObject.IOSXCFrameworks = iosXCFrameworks;
         scriptableObject.IOSComboSDKJson = iosComboSDKJson;
+#endif
 
         // Mark the ScriptableObject as dirty so Unity knows it needs to save changes
         EditorUtility.SetDirty(scriptableObject);
