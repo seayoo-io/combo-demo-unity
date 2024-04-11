@@ -12,7 +12,6 @@ internal class ProductQuantityView : View<ProductQuantityView>
     public Text productIdTxt;
     public Text productNameTxt;
     public Text productPriceTxt;
-    public Text productQuantityTxt;
     public Text CurrentPriceTxt;
     public Image productImg;
     private Action OnQuit;

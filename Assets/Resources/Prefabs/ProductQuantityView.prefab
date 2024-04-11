@@ -1037,7 +1037,6 @@ MonoBehaviour:
   productIdTxt: {fileID: 5022808307827922683}
   productNameTxt: {fileID: 5022808308236995740}
   productPriceTxt: {fileID: 5022808306842137933}
-  productQuantityTxt: {fileID: 0}
   CurrentPriceTxt: {fileID: 2567036130590860812}
   productImg: {fileID: 5022808307064313646}
 --- !u!1 &5022808306819306455
@@ -1568,7 +1567,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 5fb712839a8e7e14eb167babb28eba92, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
