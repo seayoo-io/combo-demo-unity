@@ -39,10 +39,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             pbxProject.ReadFromFile(projectPath);
 
             string unityMainTargetGuid = pbxProject.GetUnityMainTargetGuid();
-            string unityFrameworkTargetGuid = pbxProject.GetUnityFrameworkTargetGuid();
 
             // Build Setting
-            SetBuildProperty(pbxProject, unityMainTargetGuid, unityFrameworkTargetGuid);
+            SetBuildProperty(pbxProject, unityMainTargetGuid);
 
             // Add Sign In With Apple Capability
             AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
@@ -56,7 +55,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         }
     }
 
-    private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid, string unityFrameworkTargetGuid)
+    private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid)
     {
         // Sign
         pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
@@ -64,9 +63,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_IDENTITY", BuildArguments.SignIdentity);
         pbxProject.SetBuildProperty(mainTargetGuid, "PROVISIONING_PROFILE_SPECIFIER", BuildArguments.Provision);
         pbxProject.SetBuildProperty(mainTargetGuid, "DEVELOPMENT_TEAM", BuildArguments.DevelopmentTeam);
-        // Framework search path
-        pbxProject.SetBuildProperty(mainTargetGuid, "FRAMEWORK_SEARCH_PATHS", $"$(PROJECT_DIR)/{ComboSDKFrameworks}");
-        pbxProject.SetBuildProperty(unityFrameworkTargetGuid, "FRAMEWORK_SEARCH_PATHS", $"$(PROJECT_DIR)/{ComboSDKFrameworks}");
     }
 
     private void AddAppleSignInCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
