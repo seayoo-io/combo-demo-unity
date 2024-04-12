@@ -268,8 +268,14 @@ public class Builder : EditorWindow
             GlobalProps.IOSComboSDKJson = EditorGUILayout.TextField(GlobalProps.IOSComboSDKJson);
             if (GUILayout.Button("Choose", GUILayout.Width(60)))
             {
-                GlobalProps.IOSComboSDKJson = EditorUtility.OpenFilePanel("Select ComboSDK.json File", "", "json");
-                Repaint();
+                string selectedFile = EditorUtility.OpenFilePanel("Select ComboSDK.json File", "", "json");
+                if (!string.IsNullOrEmpty(selectedFile))
+                {
+                    string projectPath = Application.dataPath;
+                    string releasePath = GetRelativePath(projectPath, selectedFile);
+                    GlobalProps.IOSComboSDKJson = releasePath;
+                    Repaint();
+                }
             }
             EditorGUILayout.EndHorizontal();
 
@@ -278,8 +284,14 @@ public class Builder : EditorWindow
             GlobalProps.IOSXCFrameworks = EditorGUILayout.TextField(GlobalProps.IOSXCFrameworks );
             if (GUILayout.Button("Choose", GUILayout.Width(60)))
             {
-                GlobalProps.IOSXCFrameworks  = EditorUtility.OpenFolderPanel("Select XCFrameworks Files", "", "");
-                Repaint();
+                string selectedFolder = EditorUtility.OpenFolderPanel("Select XCFrameworks Files", "", "");
+                if (!string.IsNullOrEmpty(selectedFolder))
+                {
+                    string projectPath = Application.dataPath;
+                    string releasePath = GetRelativePath(projectPath, selectedFolder);
+                    GlobalProps.IOSXCFrameworks = releasePath;
+                    Repaint();
+                }
             }
             EditorGUILayout.EndHorizontal();
             EditorGUI.EndDisabledGroup();
@@ -341,5 +353,15 @@ public class Builder : EditorWindow
                 Process.Start("xdg-open", GlobalProps.exportPath);
             }
         }
+    }
+
+    private string GetRelativePath(string fromPath, string toPath)
+    {   
+        Uri fromUri = new Uri(fromPath);
+        Uri toUri = new Uri(toPath);
+        
+        Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+        
+        return Uri.UnescapeDataString(relativeUri.ToString());
     }
 }
