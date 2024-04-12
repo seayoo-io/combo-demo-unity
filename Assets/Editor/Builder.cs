@@ -167,7 +167,7 @@ public class Builder : EditorWindow
         var endpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT");
 
 #if UNITY_IOS
-        var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD");
+        var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
         var iosXCFrameworks = Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
         var iosComboSDKJson = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
 #endif
