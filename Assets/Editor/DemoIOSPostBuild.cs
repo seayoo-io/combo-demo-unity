@@ -82,7 +82,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         var plistPath = $"{report.summary.outputPath}/Info.plist";
         var plist = new PlistDocument();
         plist.ReadFromFile(plistPath);
-        plist.root.SetString("NSUserTrackingUsageDescription", "");
         plist.root.SetBoolean("UIFileSharingEnabled", true);
         plist.WriteToFile(plistPath);
     }
