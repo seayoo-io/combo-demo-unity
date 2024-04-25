@@ -14,6 +14,7 @@ public class Login : MonoBehaviour
     public Button loginBtn;
     public Button logoutBtn;
     public Button contactSupportBtn;
+    public Button switchAccountBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -161,6 +162,12 @@ public class Login : MonoBehaviour
         ComboSDK.ContactSupport();
     }
 
+    public void OnSwitchAccount()
+    {
+        OnLogout();
+        OnLogin();
+    }
+
     private void LoginGame(Action onSuccess, Action onFail)
     {
         UIController.ShowLoading();
@@ -254,6 +261,8 @@ public class Login : MonoBehaviour
         enterGameBtn.gameObject.SetActive(false);
         loginBtn.gameObject.SetActive(true);
         logoutBtn.gameObject.SetActive(false);
+        switchAccountBtn.gameObject.SetActive(false);
+
     }
 
     private void ShowEnterGameBtn()
@@ -261,6 +270,7 @@ public class Login : MonoBehaviour
         enterGameBtn.gameObject.SetActive(true);
         loginBtn.gameObject.SetActive(false);
         logoutBtn.gameObject.SetActive(true);
+        switchAccountBtn.gameObject.SetActive(true);
     }
 
     [EventSystem.BindEvent]
@@ -269,6 +279,7 @@ public class Login : MonoBehaviour
         loginBtn.interactable = true;
         enterGameBtn.interactable = true;
         logoutBtn.interactable = true;
+        switchAccountBtn.interactable = true;
     }
 
 }
