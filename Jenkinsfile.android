@@ -197,7 +197,7 @@ pipeline {
 
                             def distros = params.DISTRO.split(',')
                             distros.each { distro ->
-                                def apkName = artifactName(name: "combo-demo", extension: "apk")
+                                def apkName = artifactName(name: "combo-demo", suffix: distro, extension: "apk")
                                 sh "${env.WORKSPACE}/combo android build --distros ${distro}"
                                 sh "find ./APKs -name '*.apk' -exec mv {} ${env.WORKSPACE}/${apkName} \\;"
                             }
@@ -230,10 +230,14 @@ pipeline {
     post {
         success {
             script {
-                def apkUrl = "${env.BUILD_URL}artifact/${env.APK_NAME}"
-                def downloads = [
-                    ['name': '[apk]', 'url': apkUrl]
-                ]
+                def downloads = []
+                def distros = params.DISTRO.split(',')
+                distros.each { distro -> 
+                    def apkName = artifactName(name: "combo-demo", suffix: distro, extension: "apk")    
+                    downloads += [                       
+                        'name': "[distro]", 'url': "${env.BUILD_URL}artifact/${apkName}"
+                    ]
+                }           
                 notify withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
             }
         }
