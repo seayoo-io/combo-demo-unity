@@ -194,7 +194,7 @@ pipeline {
                                 writeComboYaml(COMBOSDK_BUILD_KEY)
                             }
 
-                            def distros = params.DISTRO.split('.')
+                            def distros = params.DISTRO.split(',')
                             distros.each { distro ->
                                 def apkName = artifactName(name: "combo-demo", extension: "apk")
                                 sh "${env.WORKSPACE}/combo android build --distros ${distro}"
