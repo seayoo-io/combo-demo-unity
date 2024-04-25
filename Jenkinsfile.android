@@ -179,7 +179,7 @@ pipeline {
                 }
             }
         }
-        stage('Build APK') {
+        stage('Build APKs') {
             tools {
                 jdk JDK_VERSION
             }
@@ -199,7 +199,7 @@ pipeline {
                             distros.each { distro ->
                                 def apkName = artifactName(name: "combo-demo", extension: "apk")
                                 sh "${env.WORKSPACE}/combo android build --distros ${distro}"
-                                sh "find ${env.ANDROID_ROOT}/APKs -name '*.apk' -exec mv {} ${env.WORKSPACE}/${apkName} \\;"
+                                sh "find ./APKs -name '*.apk' -exec mv {} ${env.WORKSPACE}/${apkName} \\;"
                             }
                         }
                     }
