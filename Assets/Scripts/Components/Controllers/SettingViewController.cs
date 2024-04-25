@@ -14,6 +14,11 @@ public static class SettingViewController
         settingView.SetClearCallback(() => OnClearCache());
         settingView.SetCancelCallback(() => settingView.Destroy());
         settingView.SetAppSettingsCallback(() => OnAppSettings());
+        settingView.SetPlayerAgreementCallback(() => OnOpenGameUrl(GameUrl.USER_AGREEMENT));
+        settingView.SetPrivacyPolicyCallback(() => OnOpenGameUrl(GameUrl.PRIVACY_POLICY));
+        settingView.SetPrivacyChildrenCallback(() => OnOpenGameUrl(GameUrl.PRIVACY_CHILDREN));
+        settingView.SetThirdPartyCallback(() => OnOpenGameUrl(GameUrl.THIRD_PARTY));
+        settingView.SetFangchenmiCallback(() => OnOpenGameUrl(GameUrl.FANGCHENMI));
         settingView.Show();
     }
 
@@ -61,5 +66,10 @@ public static class SettingViewController
     public static void OnAppSettings()
     {
         ComboSDK.OpenAppSettings();
+    }
+
+    public static void OnOpenGameUrl(GameUrl gameUrl)
+    {
+        ComboSDK.OpenGameUrl(gameUrl);
     }
 }
