@@ -246,8 +246,8 @@ pipeline {
         }
         always {
             script {
-                currentBuild.displayName = "${params.GAME_ID} ${params.TARGET_ENV}"
-                currentBuild.description = "build_num: ${env.BUILD_NUMBER} distro: ${params.DISTRO}"
+                currentBuild.displayName = "${BUILD_DISPLAY_NAME} ${params.GAME_ID} ${params.TARGET_ENV}"
+                currentBuild.description = "distro: ${params.DISTRO}"
                 zip archive: true, zipFile: 'logs.zip', dir: 'logs'
             }
         }
