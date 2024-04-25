@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 def JDK_VERSION = 'amazon-corretto-11.0.21.9.1'
+def DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent']
 
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
@@ -39,8 +40,11 @@ def installComboCLI() {
 }
 
 def getTargetDistros() {
-    def choices = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent']
-    return choices.join('\n')
+    return DISTRO_LIST.join(',')
+}
+
+def setVisibleItemCount() {
+    return DISTRO_LIST.size()   
 }
 
 def getEndpoint() {
@@ -70,7 +74,17 @@ pipeline {
     parameters {
         choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
         choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
-        choice(name: 'DISTRO', choices: getTargetDistros(), description: '选择发行平台')
+        extendedChoice(
+            name: 'DISTRO',
+            type: 'PT_MULTI_SELECT',
+            description: '选择发布的模块， 支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)',
+            value: getMogetTargetDistros(),
+            defaultValue: 'android',
+            multiSelectDelimiter: ',',
+            quoteValue: false,
+            saveJSONParameterToFile: false,
+            visibleItemCount: setVisibleItemCount()
+        )
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
         string(name: 'UNITY_SDK_PROJECT_NAME',
@@ -85,7 +99,6 @@ pipeline {
     environment {
         UNITY_ROOT = getUnityRoot('2019.4.40f1')
         ANDROID_ROOT = "build"     
-        APK_NAME = artifactName(name: "combo-demo", extension: "apk")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
     }
     stages {
@@ -180,7 +193,13 @@ pipeline {
                             withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                                 writeComboYaml(COMBOSDK_BUILD_KEY)
                             }
-                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO}"
+
+                            def distros = params.DISTRO.split('.')
+                            distros.each { distro ->
+                                def apkName = artifactName(name: "combo-demo", extension: "apk")
+                                sh "${env.WORKSPACE}/combo android build --distros ${distro}"
+                                sh "find ${env.ANDROID_ROOT}/APKs -name '*.apk' -exec mv {} ${env.WORKSPACE}/${apkName} \\;"
+                            }
                         }
                     }
                 }
@@ -188,8 +207,7 @@ pipeline {
         }
         stage('Archive') {
             steps {
-                script {
-                    sh "find ${env.ANDROID_ROOT}/APKs -name '*.apk' -exec mv {} ${env.WORKSPACE}/${env.APK_NAME} \\;"
+                script {                    
                     archiveArtifacts artifacts: '*.apk', onlyIfSuccessful: true
                 }
             }
