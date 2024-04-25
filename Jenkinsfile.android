@@ -235,7 +235,7 @@ pipeline {
                 distros.each { distro -> 
                     def apkName = artifactName(name: "combo-demo", suffix: distro, extension: "apk")    
                     downloads += [                       
-                        'name': "[distro]", 'url': "${env.BUILD_URL}artifact/${apkName}"
+                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${apkName}"
                     ]
                 }           
                 notify withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
