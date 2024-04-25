@@ -202,7 +202,8 @@ pipeline {
         }
         stage('Archive') {
             steps {
-                script {    
+                script {  
+                    def  distros = params.DISTRO.split(',')
                     distros.each { distro ->
                         def apkName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "apk")
 
