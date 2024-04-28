@@ -168,7 +168,6 @@ pipeline {
                 COMBOSDK_ENDPOINT = getEndpoint()
                 COMBOSDK_CONFIG_PATH = "${WORKSPACE}/ComboSDK.json"
                 ENABLE_IOS_POST_BUILD = "true"
-                ENABLE_IOS_PRIVACY = "true"
             }
             steps {
                 script {
