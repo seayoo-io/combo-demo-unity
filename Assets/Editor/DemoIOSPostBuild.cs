@@ -39,12 +39,16 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             pbxProject.ReadFromFile(projectPath);
 
             string unityMainTargetGuid = pbxProject.GetUnityMainTargetGuid();
+            string unityFrameworkTargetGuid = pbxProject.GetUnityFrameworkTargetGuid();
 
             // Build Setting
             SetBuildProperty(pbxProject, unityMainTargetGuid);
 
             // Add Sign In With Apple Capability
             AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+
+            var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
+            AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
 
             pbxProject.WriteToFile(projectPath);
 
@@ -84,6 +88,16 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         plist.ReadFromFile(plistPath);
         plist.root.SetBoolean("UIFileSharingEnabled", true);
         plist.WriteToFile(plistPath);
+    }
+
+    private void AddPrivacyInfo(BuildReport report, PBXProject pbxProject, string unityFrameworkTargetGuid, string privacyPath)
+    {
+        string destJsonFilePath = Path.Combine(report.summary.outputPath, ComboSDKFrameworks, "PrivacyInfo.xcprivacy");
+        Debug.Log($"PrivacyInfo.xcprivacy = {destJsonFilePath}");
+        Builder.CopyFile(privacyPath, destJsonFilePath);
+        string projPathOfFile = $"{ComboSDKFrameworks}/PrivacyInfo.xcprivacy";
+        var guid = pbxProject.AddFile(projPathOfFile, projPathOfFile, PBXSourceTree.Source);
+        pbxProject.AddFileToBuild(unityFrameworkTargetGuid, guid);
     }
 }
 #endif

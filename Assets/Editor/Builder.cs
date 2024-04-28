@@ -211,6 +211,21 @@ public class Builder : EditorWindow
         return Path.GetDirectoryName(projectRootPath);
     }
 
+    public static bool CopyFile(string sourcePath, string targetPath)
+    {
+        try
+        {
+            File.Copy(sourcePath, targetPath, true);
+            UnityEngine.Debug.Log("Copy \"" + sourcePath + "\" to \"" + targetPath + "\" succeed");
+            return true;
+        }
+        catch (Exception e)
+        {
+            UnityEngine.Debug.LogError("Copy failed：" + e.Message);
+        }
+        return false;
+    }
+
     private void OnGUI()
     {
         GUIStyle largeFontBoldStyle = new GUIStyle(EditorStyles.boldLabel) { fontSize = 13 };
