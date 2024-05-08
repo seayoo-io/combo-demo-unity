@@ -48,7 +48,7 @@ public class ProductManager : MonoBehaviour
         view.SetProductName(productName);
         view.SetProductPrice(productPrice);
         view.gameObject.transform.SetParent(parentTransform, false);
-        if(limitProducts.Contains(productId))
+        if(limitProducts != null && limitProducts.Contains(productId))
         {
             view.SetLimitProductText();
         }

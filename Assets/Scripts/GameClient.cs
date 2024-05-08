@@ -110,7 +110,6 @@ public static class GameClient
                     var data = resp.Body.ToJson<LoginResponse>();
                     session = data.sessionToken;
                     limitProduct = data.grantedLimitProduct;
-                    Log.I("session" + session + "limitProduct" + limitProduct);
                     action.Invoke(true);
                 }
                 catch (Exception e)
