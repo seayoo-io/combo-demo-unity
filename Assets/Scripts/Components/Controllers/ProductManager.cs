@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Combo;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -47,7 +48,7 @@ public class ProductManager : MonoBehaviour
         view.SetProductPrice(productPrice);
         view.gameObject.transform.SetParent(parentTransform, false);
         Log.E(limitProducts);
-        if(Array.Exists(limitProducts, limitProductId => limitProductId == productId))
+        if(limitProducts.Contains(productId))
         {
             Log.E("包含");
             view.SetLimitProductText();
