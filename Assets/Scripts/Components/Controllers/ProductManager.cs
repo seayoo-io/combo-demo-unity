@@ -46,11 +46,13 @@ public class ProductManager : MonoBehaviour
         view.SetProductName(productName);
         view.SetProductPrice(productPrice);
         view.gameObject.transform.SetParent(parentTransform, false);
+        Log.I(limitProducts);
         if(Array.Exists(limitProducts, limitProductId => limitProductId == productId))
         {
+            Log.I("包含");
             view.SetLimitProductText();
         }
-
+        Log.I("显示图片");
         if (!string.IsNullOrEmpty(productImageUrl)) {
             GameClient.GetProductImg(
                 productImageUrl,
