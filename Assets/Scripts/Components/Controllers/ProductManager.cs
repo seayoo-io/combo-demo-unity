@@ -11,6 +11,7 @@ public class ProductManager : MonoBehaviour
     public Transform parentTransform;
     public PlayerPanel playerPanel;
     public static ProductManager productManager;
+    private string[] limitProducts = GameClient.GetLimitProduct();
 
     void Start()
     {
@@ -45,6 +46,10 @@ public class ProductManager : MonoBehaviour
         view.SetProductName(productName);
         view.SetProductPrice(productPrice);
         view.gameObject.transform.SetParent(parentTransform, false);
+        if(Array.Exists(limitProducts, limitProductId => limitProductId == productId))
+        {
+            view.SetLimitProductText();
+        }
 
         if (!string.IsNullOrEmpty(productImageUrl)) {
             GameClient.GetProductImg(
@@ -97,6 +102,10 @@ public class ProductManager : MonoBehaviour
                             var result = r.Data;
                             Toast.Show("购买完成：OrderId - " + result.orderId);
                             Log.I("购买完成：OrderId - " + result.orderId);
+                            if(productId.Contains("limit_"))
+                            {
+                                PurchaseSuccessEvent.Invoke(new PurchaseSuccessEvent { productId = productId });
+                            }
                             RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent());
                         }
                         else
