@@ -14,10 +14,19 @@ internal class ProductView : View<ProductView>
     public Text productPriceTxt;
     public Text limitProductTxt;
     public Image productImg;
+    void Awake()
+    {
+        EventSystem.Register(this);
+    }
 
     void Start()
     {
         ButtonManager.SetButtonEnabledByType(purchaseBtn, ButtonType.PurchaseButton);
+    }
+
+    void OnDestroy()
+    {
+        EventSystem.UnRegister(this);
     }
 
     public void OnPurchase(){
