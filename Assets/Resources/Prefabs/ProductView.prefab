@@ -328,7 +328,7 @@ MonoBehaviour:
   productIdTxt: {fileID: 4211704271994217432}
   productNameTxt: {fileID: 4211704273977070665}
   productPriceTxt: {fileID: 4211704271875725514}
-  limitProductTxt: {fileID: 0}
+  limitProductTxt: {fileID: 5567010230361564064}
   productImg: {fileID: 4211704273218320325}
 --- !u!114 &6228152196430802996
 MonoBehaviour:
