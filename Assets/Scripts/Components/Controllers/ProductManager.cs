@@ -12,11 +12,12 @@ public class ProductManager : MonoBehaviour
     public Transform parentTransform;
     public PlayerPanel playerPanel;
     public static ProductManager productManager;
-    private string[] limitProducts = GameClient.GetLimitProduct();
+    private string[] limitProducts;
 
     void Start()
     {
         EventSystem.Register(this);
+        limitProducts = GameClient.GetLimitProduct();
         GameClient.GetListProduct(data =>
         {
             foreach (var productInfo in data)
@@ -47,13 +48,10 @@ public class ProductManager : MonoBehaviour
         view.SetProductName(productName);
         view.SetProductPrice(productPrice);
         view.gameObject.transform.SetParent(parentTransform, false);
-        Log.E(limitProducts);
         if(limitProducts.Contains(productId))
         {
-            Log.E("包含");
             view.SetLimitProductText();
         }
-        Log.E("显示图片");
         if (!string.IsNullOrEmpty(productImageUrl)) {
             GameClient.GetProductImg(
                 productImageUrl,
