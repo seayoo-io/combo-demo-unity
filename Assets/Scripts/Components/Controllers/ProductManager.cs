@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Combo;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,10 +12,12 @@ public class ProductManager : MonoBehaviour
     public Transform parentTransform;
     public PlayerPanel playerPanel;
     public static ProductManager productManager;
+    private string[] limitProducts;
 
     void Start()
     {
         EventSystem.Register(this);
+        limitProducts = GameClient.GetLimitProduct();
         GameClient.GetListProduct(data =>
         {
             foreach (var productInfo in data)
@@ -45,7 +48,10 @@ public class ProductManager : MonoBehaviour
         view.SetProductName(productName);
         view.SetProductPrice(productPrice);
         view.gameObject.transform.SetParent(parentTransform, false);
-
+        if(limitProducts != null && limitProducts.Contains(productId))
+        {
+            view.SetLimitProductText();
+        }
         if (!string.IsNullOrEmpty(productImageUrl)) {
             GameClient.GetProductImg(
                 productImageUrl,
@@ -97,6 +103,10 @@ public class ProductManager : MonoBehaviour
                             var result = r.Data;
                             Toast.Show("购买完成：OrderId - " + result.orderId);
                             Log.I("购买完成：OrderId - " + result.orderId);
+                            if(productId.Contains("limit_"))
+                            {
+                                PurchaseSuccessEvent.Invoke(new PurchaseSuccessEvent { productId = productId });
+                            }
                             RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent());
                         }
                         else

@@ -12,11 +12,21 @@ internal class ProductView : View<ProductView>
     public Text productIdTxt;
     public Text productNameTxt;
     public Text productPriceTxt;
+    public Text limitProductTxt;
     public Image productImg;
+    void Awake()
+    {
+        EventSystem.Register(this);
+    }
 
     void Start()
     {
         ButtonManager.SetButtonEnabledByType(purchaseBtn, ButtonType.PurchaseButton);
+    }
+
+    void OnDestroy()
+    {
+        EventSystem.UnRegister(this);
     }
 
     public void OnPurchase(){
@@ -26,6 +36,15 @@ internal class ProductView : View<ProductView>
             productPrice = productPriceTxt.text,
             productImg = productImg
         });
+    }
+
+    [EventSystem.BindEvent]
+    public void ShowLimitProductText(PurchaseSuccessEvent action)
+    {
+        if(action.productId == productIdTxt.text)
+        {
+            limitProductTxt.gameObject.SetActive(true);
+        }
     }
     
     public void SetProductId(string productId) {
@@ -38,6 +57,11 @@ internal class ProductView : View<ProductView>
 
     public void SetProductPrice(string productPrice) {
         productPriceTxt.text = productPrice;
+    }
+
+    public void SetLimitProductText()
+    {
+        limitProductTxt.gameObject.SetActive(true);
     }
 
     public void SetProductImage(Texture2D productImage) {

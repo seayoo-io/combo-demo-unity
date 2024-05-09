@@ -22,3 +22,7 @@ public class ConfirmPurchaseEvent : Event<ConfirmPurchaseEvent> {
 public class ModifyProductQuantityEvent : Event<ModifyProductQuantityEvent> {
     public int quantity;
 }
+
+public class PurchaseSuccessEvent : Event<PurchaseSuccessEvent> {
+    public string productId;
+}

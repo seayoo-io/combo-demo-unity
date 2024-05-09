@@ -28,6 +28,8 @@ class LoginResponse : Serializable
 {
     [JsonProperty("session_token")]
     public string sessionToken;
+    [JsonProperty("granted_limit_products")]
+    public string[] grantedLimitProduct;
 }
 
 [System.Serializable]
@@ -81,6 +83,7 @@ public static class GameClient
     private static string session = "";
     private static string gameId = "";
     private static string endpoint = "";
+    private static string[] limitProduct = {};
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Setup()
@@ -106,6 +109,7 @@ public static class GameClient
                 {
                     var data = resp.Body.ToJson<LoginResponse>();
                     session = data.sessionToken;
+                    limitProduct = data.grantedLimitProduct;
                     action.Invoke(true);
                 }
                 catch (Exception e)
@@ -243,6 +247,11 @@ public static class GameClient
         }, resp => {
             action.Invoke(resp.Body.ToImage());
         });
+    }
+
+    public static string[] GetLimitProduct()
+    {
+        return limitProduct;
     }
 
     private static Dictionary<string, string> Headers()
