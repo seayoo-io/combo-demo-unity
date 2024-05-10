@@ -33,7 +33,7 @@ public static class ButtonManager
             {ButtonType.LocalShareButton, false},
             {ButtonType.PreloadAdButton, false},
             {ButtonType.ShowAdButton, false},
-            {ButtonType.PurchaseButton, false}};
+            {ButtonType.PurchaseButton, true}};
     #elif UNITY_ANDROID
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
