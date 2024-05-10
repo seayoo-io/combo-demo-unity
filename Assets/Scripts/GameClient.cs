@@ -120,7 +120,7 @@ public static class GameClient
             {
                 try {
                     var body = resp.Body.ToJson<ErrorResponse>();
-                    LogErrorWithToast(body.message);
+                    LogErrorWithToast(body);
                 } catch (Exception)
                 {
                     LogErrorWithToast(resp.Body.ToText());
@@ -173,15 +173,13 @@ public static class GameClient
                 }
             } else
             {
-                string message;
                 try
                 {
-                    message = resp.Body.ToJson<ErrorResponse>().message;
+                    LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
                 } catch (Exception)
                 {
-                    message = resp.Body.ToText();
+                    LogErrorWithToast(resp.Body.ToText());
                 }
-                LogErrorWithToast(message);
                 onError.Invoke();
             }
         });
@@ -259,6 +257,19 @@ public static class GameClient
         return new Dictionary<string, string> { {
             "x-session-token", session
             } };
+    }
+
+    private static void LogErrorWithToast(ErrorResponse resp)
+    {
+        if(resp.error == "invalid headers")
+        {
+            Toast.Show("登陆状态失效，请重新登陆");
+        }
+        else
+        {
+            Toast.Show(resp.message);
+        }
+        Log.E($"DemoServer: {resp.message}");
     }
 
     private static void LogErrorWithToast(object message)
