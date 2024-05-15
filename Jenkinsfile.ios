@@ -225,11 +225,11 @@ pipeline {
         }
         stage('Upload dSYM') {
             environment {
-                DSYM_PATH = "${env.WORKSPACE}/${env.BUILD_DIR}/demo.xcarchive/dSYMs"
+                DSYM_PATH = "${env.BUILD_DIR}/demo.xcarchive/dSYMs"
             }
             steps {
                 withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
-                    sh "./combo --token $SENTRY_TOKEN --dsym ${DSYM_PATH} --project combo-demo-unity"
+                    sh "./combo ios upload-symbols --auth-token $SENTRY_TOKEN --symbols ${DSYM_PATH} --project combo-demo-unity"
                 }
             }
         }
