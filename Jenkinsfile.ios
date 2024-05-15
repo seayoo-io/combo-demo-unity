@@ -223,6 +223,16 @@ pipeline {
                 }
             }
         }
+        stage('Upload dSYM') {
+            environment {
+                DSYM_PATH = "${env.WORKSPACE}/${env.BUILD_DIR}/demo.xcarchive/dSYMs"
+            }
+            steps {
+                withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
+                    sh "./combo --token $SENTRY_TOKEN --dsym ${DSYM_PATH} --project combo-demo-unity"
+                }
+            }
+        }
     }
     post {
         success {
