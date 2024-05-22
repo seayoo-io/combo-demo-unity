@@ -44,7 +44,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             // Build Setting
             SetBuildProperty(pbxProject, unityMainTargetGuid);
 
-            // privacyInfo
+            // Add Sign In With Apple Capability
+            AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+
             var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
             AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
 
@@ -65,6 +67,23 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_IDENTITY", BuildArguments.SignIdentity);
         pbxProject.SetBuildProperty(mainTargetGuid, "PROVISIONING_PROFILE_SPECIFIER", BuildArguments.Provision);
         pbxProject.SetBuildProperty(mainTargetGuid, "DEVELOPMENT_TEAM", BuildArguments.DevelopmentTeam);
+    }
+
+    private void AddAppleSignInCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
+    {
+        var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
+        var entitlements = new PlistDocument();
+
+        // Add Sign In With Apple Capability
+        var array = entitlements.root.CreateArray("com.apple.developer.applesignin");
+        array.AddString("Default");
+        // Add Push Notification Capability
+        entitlements.root.SetString("aps-environment", "development");
+        File.WriteAllText(entitlementsPath, entitlements.WriteToString());
+        var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+        pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
+        pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
+        pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.PushNotifications, relativeEntitlementsPath);
     }
 
     private void UpdatePListFile(BuildReport report)
