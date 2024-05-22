@@ -73,7 +73,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
     {
         var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
         var entitlements = new PlistDocument();
-
         // Add Sign In With Apple Capability
         var array = entitlements.root.CreateArray("com.apple.developer.applesignin");
         array.AddString("Default");
