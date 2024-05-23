@@ -78,6 +78,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         array.AddString("Default");
         // Add Push Notification Capability
         entitlements.root.SetString("aps-environment", "development");
+        PatchPreprocessor(report.summary.outputPath);
         File.WriteAllText(entitlementsPath, entitlements.WriteToString());
         var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
         pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
@@ -103,5 +104,16 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         var guid = pbxProject.AddFile(projPathOfFile, projPathOfFile, PBXSourceTree.Source);
         pbxProject.AddFileToBuild(unityFrameworkTargetGuid, guid);
     }
+
+    // UNITY_USES_REMOTE_NOTIFICATIONS 0 -> 1
+    private void PatchPreprocessor(string path)
+    {
+        var preprocessorPath = path + "/Classes/Preprocessor.h";
+        Debug.Log($"preprocessorPath = {preprocessorPath}");
+        var preprocessor = File.ReadAllText(preprocessorPath);
+        preprocessor = preprocessor.Replace("UNITY_USES_REMOTE_NOTIFICATIONS 0", "UNITY_USES_REMOTE_NOTIFICATIONS 1");
+        File.WriteAllText(preprocessorPath, preprocessor);
+    }
+
 }
 #endif
