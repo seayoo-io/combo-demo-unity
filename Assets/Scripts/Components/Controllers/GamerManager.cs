@@ -15,7 +15,7 @@ public class GamerManager : MonoBehaviour
     }
 
     [EventSystem.BindEvent]
-    void HandlePreloadAdEvent(OpenShortLinkEvent evt)
+    void HandleOpenShortLinkEvent(OpenShortLinkEvent evt)
     {
         OnOpenShortLink(evt.shortLink);
     }

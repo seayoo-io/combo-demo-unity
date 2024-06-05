@@ -7,10 +7,12 @@ using UnityEngine.UI;
 [ViewPrefab("Prefabs/SettingView")]
 internal class SettingView : View<SettingView>
 {
+    public InputField shortLink;
     public Button logoutBtn;
     public Button clearBtn;
     public Button cancelBtn;
     public Button appSettingsBtn;
+    public Button openShortLink;
     public Button playerAgreementBtn;
     public Button privacyPolicyBtn;
     public Button privacyChildrenBtn;
@@ -51,6 +53,12 @@ internal class SettingView : View<SettingView>
         privacyChildrenBtn.onClick.RemoveListener(OnPrivacyChildrenBtn);
         thirdPartyBtn.onClick.RemoveListener(OnThirdPartyBtn);
         fangchenmiBtn.onClick.RemoveListener(OnFangchenmiBtn);
+    }
+
+    public void OnOpenShortLink(){
+        OpenShortLinkEvent.Invoke(new OpenShortLinkEvent {
+            shortLink = shortLink.text,
+        });
     }
 
     void OnLogoutConfirmBtn()

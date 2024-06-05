@@ -140,7 +140,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000009536743}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &672416699517701259
@@ -392,7 +392,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2769648758301900750}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.8133333
+  m_Size: 0.81333345
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -618,6 +618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputField: {fileID: 6227930598879150373}
   dropdown: {fileID: 8644510282779981868}
+  playerPrefs: Ad
   historyRecords:
   - android_topon_test_01
   - ios_topon_test_01
