@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Combo;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public static class SettingViewController
@@ -14,7 +10,6 @@ public static class SettingViewController
         settingView.SetClearCallback(() => OnClearCache());
         settingView.SetCancelCallback(() => settingView.Destroy());
         settingView.SetAppSettingsCallback(() => OnAppSettings());
-        settingView.SetShortLinkCallback(() => OnOpenShortLink());
         settingView.SetPlayerAgreementCallback(() => OnOpenGameUrl(GameUrl.USER_AGREEMENT));
         settingView.SetPrivacyPolicyCallback(() => OnOpenGameUrl(GameUrl.PRIVACY_POLICY));
         settingView.SetPrivacyChildrenCallback(() => OnOpenGameUrl(GameUrl.PRIVACY_CHILDREN));
@@ -72,17 +67,5 @@ public static class SettingViewController
     public static void OnOpenGameUrl(GameUrl gameUrl)
     {
         ComboSDK.OpenGameUrl(gameUrl);
-    }
-
-    public static void OnOpenShortLink()
-    {
-        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
-        var gameData = new Dictionary<string, string>(){
-            {"server_id", role.serverId},
-            {"role_id", role.roleId},
-            {"role_name", role.roleName},
-            {"role_level", role.roleLevel.ToString()},
-        };
-        Log.I(gameData);
     }
 }
