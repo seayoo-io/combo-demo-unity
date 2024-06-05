@@ -183,8 +183,21 @@ public class Login : MonoBehaviour
                         Toast.Show($"游戏客户端登录成功");
                         Log.I("游戏客户端登录成功");
                         onSuccess.Invoke();
-
-                        PlayerController.SpawnPlayer(result.loginInfo.comboId, "测试角色01", "1");
+                        
+                        var currentPlayer = PlayerController.GetPlayer();
+                        if(currentPlayer != null)
+                        {
+                            if(currentPlayer.role.roleId == result.loginInfo.comboId)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                Destroy(currentPlayer.gameObject);
+                            }
+                        }
+                        var newPlayer = PlayerController.SpawnPlayer(result.loginInfo.comboId, "测试角色01", "1");
+                        DontDestroyOnLoad(newPlayer);
                     }
                     else
                     {

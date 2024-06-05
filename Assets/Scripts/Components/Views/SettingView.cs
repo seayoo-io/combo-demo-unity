@@ -11,6 +11,7 @@ internal class SettingView : View<SettingView>
     public Button clearBtn;
     public Button cancelBtn;
     public Button appSettingsBtn;
+    public Button shortLinkBtn;
     public Button playerAgreementBtn;
     public Button privacyPolicyBtn;
     public Button privacyChildrenBtn;
@@ -20,6 +21,7 @@ internal class SettingView : View<SettingView>
     private Action OnClear;
     private Action OnCancel; 
     private Action OnAppSettings;
+    private Action OnShortLink;
     private Action OnPlayerAgreement;
     private Action OnPrivacyPolicy;
     private Action OnPrivacyChildren;
@@ -31,6 +33,7 @@ internal class SettingView : View<SettingView>
         clearBtn.onClick.AddListener(OnClearConfirmBtn);
         cancelBtn.onClick.AddListener(OnClickCancelBtn);
         appSettingsBtn.onClick.AddListener(OnAppSettingsBtn);
+        shortLinkBtn.onClick.AddListener(OnShortLinkBtn);
         playerAgreementBtn.onClick.AddListener(OnPlayerAgreementBtn);
         privacyPolicyBtn.onClick.AddListener(OnPrivacyPolicyBtn);
         privacyChildrenBtn.onClick.AddListener(OnPrivacyChildrenBtn);
@@ -46,6 +49,7 @@ internal class SettingView : View<SettingView>
         clearBtn.onClick.RemoveListener(OnClearConfirmBtn);
         cancelBtn.onClick.RemoveListener(OnClickCancelBtn);
         appSettingsBtn.onClick.RemoveListener(OnAppSettingsBtn);
+        shortLinkBtn.onClick.RemoveListener(OnShortLinkBtn);
         playerAgreementBtn.onClick.RemoveListener(OnPlayerAgreementBtn);
         privacyPolicyBtn.onClick.RemoveListener(OnPrivacyPolicyBtn);
         privacyChildrenBtn.onClick.RemoveListener(OnPrivacyChildrenBtn);
@@ -71,6 +75,11 @@ internal class SettingView : View<SettingView>
     void OnAppSettingsBtn()
     {
         OnAppSettings.Invoke();
+    }
+
+    void OnShortLinkBtn()
+    {
+        OnShortLink.Invoke();
     }
 
     void OnPlayerAgreementBtn()
@@ -116,6 +125,11 @@ internal class SettingView : View<SettingView>
     public void SetAppSettingsCallback(Action OnAppSettings)
     {
         this.OnAppSettings = OnAppSettings;
+    }
+
+    public void SetShortLinkCallback(Action OnShortLink)
+    {
+        this.OnShortLink = OnShortLink;
     }
 
     public void SetPlayerAgreementCallback(Action OnPlayerAgreement)
