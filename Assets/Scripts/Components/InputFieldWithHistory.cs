@@ -9,6 +9,8 @@ public class InputFieldWithHistory : MonoBehaviour
     public InputField inputField;
     public Dropdown dropdown;
 
+    public string playerPrefs;
+
     public List<string> historyRecords = new List<string>();
     private int dropdownSelectedIndex = -1;
 
@@ -58,9 +60,9 @@ public class InputFieldWithHistory : MonoBehaviour
 
     private void LoadHistoryRecords()
     {
-        if (PlayerPrefs.HasKey("HistoryRecords"))
+        if (PlayerPrefs.HasKey(playerPrefs))
         {
-            string historyString = PlayerPrefs.GetString("HistoryRecords");
+            string historyString = PlayerPrefs.GetString(playerPrefs);
             historyRecords = new List<string>(historyString.Split(';'));
         }
     }
@@ -68,7 +70,7 @@ public class InputFieldWithHistory : MonoBehaviour
     private void SaveHistoryRecords()
     {
         string historyString = string.Join(";", historyRecords.ToArray());
-        PlayerPrefs.SetString("HistoryRecords", historyString);
+        PlayerPrefs.SetString(playerPrefs, historyString);
         PlayerPrefs.Save();
     }
 

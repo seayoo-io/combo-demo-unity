@@ -25,4 +25,9 @@ public class PlayerController
     public static void PlayerLevelUp(Player player) {
         player.LevelUp();
     }
+
+    public static Role GetRoleInfo(Player player)
+    {
+        return player.role;
+    }
 }
