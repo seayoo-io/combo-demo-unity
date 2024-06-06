@@ -22,6 +22,11 @@ public class GamerManager : MonoBehaviour
 
     public void OnOpenShortLink(string shortLink)
     {
+        if(string.IsNullOrEmpty(shortLink))
+        {
+            Toast.Show("短链接为空，请输入短链接");
+            return;
+        }
         var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
         var gameData = new Dictionary<string, string>(){
             {"server_id", role.serverId},
