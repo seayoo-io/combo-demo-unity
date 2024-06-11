@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.psygames.unitywebsocket": {
+      "version": "https://github.com/psygames/UnityWebSocket.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "07fbb6bb5e8ebcc415ceb698a7a1120707967a8d"
+    },
     "com.seayoo.sdk": {
       "version": "file:com.seayoo.sdk",
       "depth": 0,
