@@ -68,7 +68,6 @@ public class WebSocketComponent : MonoBehaviour
         if (timeSinceLastPong > 3f)
         {
             Log.I("WebSocket connection lost, trying to reconnect...");
-            webSocket.CloseAsync();
             webSocket = new WebSocket(address);
             webSocket.OnOpen += OnOpen;
             webSocket.OnMessage += OnMessage;
