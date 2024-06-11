@@ -6,21 +6,19 @@ public class WebSocketComponent : MonoBehaviour
 {
     private IWebSocket webSocket;
     private float lastPongReceiveTime = 0f;
+    private string address ="";
     void Start()
     {
-        string address = $"wss://combo-demo.dev.seayoo.com:443/{ComboSDK.GetGameId()}/ws/{ComboSDK.GetLoginInfo().comboId}";
+        var demoEndpoint = GameClient.GetClientEndPoint().Replace("https://", "");
+        address = $"wss://{demoEndpoint}:443/{ComboSDK.GetGameId()}/ws/{ComboSDK.GetLoginInfo().comboId}";
         webSocket = new WebSocket(address);
         webSocket.OnOpen += OnOpen;
         webSocket.OnMessage += OnMessage;
         webSocket.OnClose += OnClose;
         webSocket.OnError += OnError;
         webSocket.ConnectAsync();
-        InvokeRepeating("SendPingFrame", 0f, 2f);
-    }
-
-    void Update()
-    {
-        CheckConnectionStatus();
+        InvokeRepeating("SendPingFrame", 1f, 2f);
+        InvokeRepeating("CheckConnectionStatus", 2f, 2f);
     }
 
     void OnDestroy()
@@ -59,22 +57,24 @@ public class WebSocketComponent : MonoBehaviour
 
     }
 
-    private void CheckConnectionStatus()
-    {
-        if (webSocket.ReadyState == WebSocketState.Open)
-        {
-            float timeSinceLastPong = Time.time - lastPongReceiveTime;
-            if (timeSinceLastPong > 10f)
-            {
-                Log.I("WebSocket connection lost, trying to reconnect...");
-                webSocket.CloseAsync();
-                webSocket.ConnectAsync();
-            }
-        }
-    }
-
     private void SendPingFrame()
     {
         webSocket.SendAsync("PING");
+    }
+
+    private void CheckConnectionStatus()
+    {
+        float timeSinceLastPong = Time.time - lastPongReceiveTime;
+        if (timeSinceLastPong > 3f)
+        {
+            Log.I("WebSocket connection lost, trying to reconnect...");
+            webSocket.CloseAsync();
+            webSocket = new WebSocket(address);
+            webSocket.OnOpen += OnOpen;
+            webSocket.OnMessage += OnMessage;
+            webSocket.OnClose += OnClose;
+            webSocket.OnError += OnError;
+            webSocket.ConnectAsync();
+        }
     }
 }
