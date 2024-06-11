@@ -259,6 +259,11 @@ public static class GameClient
             } };
     }
 
+    public static string GetClientEndPoint()
+    {
+        return endpoint;
+    }
+
     private static void LogErrorWithToast(ErrorResponse resp)
     {
         if(resp.error == "invalid headers")
