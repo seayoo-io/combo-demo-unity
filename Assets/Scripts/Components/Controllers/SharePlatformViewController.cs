@@ -115,10 +115,10 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new VideoShareOptions { 
                         Target = shareTarget,
                         Title = videoShareOptions.Title,
+                        Contents = videoShareOptions.Contents,
                         VideoUrl = videoShareOptions.VideoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
-                        Contents = videoShareOptions.Contents,
                     };
                 }
                 else
@@ -126,10 +126,10 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new VideoShareOptions { 
                         Target = shareTarget,
                         Title = videoShareOptions.Title,
+                        Contents = videoShareOptions.Contents,
                         VideoUrl = videoShareOptions.VideoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
-                        Contents = videoShareOptions.Contents,
                         Scene = (ShareScene)shareScene,
                     };
                 }
@@ -137,19 +137,21 @@ public class SharePlatformViewController : MonoBehaviour
             default:
                 break;
         }
+        
         if (opts != null)
         {
             ComboSDK.Share(opts, result =>
             {
                 if(result.IsSuccess)
                 {
-
+                    Toast.Show("分享成功");
+                    Log.I("分享成功");
                 }
                 else
-                {
+                {   
                     var err = result.Error;
-                    Toast.Show(err.Message);
-                    Log.E(err.DetailMessage);
+                    Toast.Show("分享失败：" + err.Message);
+                    Log.E("分享失败: " + err.DetailMessage);
                 }
             });
         }

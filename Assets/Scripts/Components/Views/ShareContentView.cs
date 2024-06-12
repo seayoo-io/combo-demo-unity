@@ -69,7 +69,6 @@ internal class ShareContentView : View<ShareContentView>
         if (!File.Exists(localVideoUrl))
         {
             localVideoUrl = Path.Combine(Application.temporaryCachePath, $"shareVideo.mp4");
-            Log.I(localVideoUrl);
             StartCoroutine(DownloadVideo(localVideoUrl));
         }
     }
