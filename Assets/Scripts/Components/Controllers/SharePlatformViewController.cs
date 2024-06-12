@@ -1,0 +1,157 @@
+using Combo;
+using UnityEngine;
+using UnityEngine.UI;
+
+public enum ShareType
+{
+    Image,
+    Video
+}
+public class SharePlatformViewController : MonoBehaviour
+{
+    public Button systemBtn;
+    public Button taptapBtn;
+    public Button agoraBtn;
+    public Button weixinSessionBtn;
+    public Button weixinTimelineBtn;
+    public Button weixinFavoriteBtn;
+    public Button weiboBtn;
+    public Button douyinEditBtn;
+    public Button douyinPublishBtn;
+    public Button douyinContactsBtn;
+    private ImageShareOptions imageShareOptions;
+    private VideoShareOptions videoShareOptions;
+    private ShareType shareType = ShareType.Image;
+    void Awake()
+    {
+        EventSystem.Register(this);
+    }
+
+    void Start()
+    {
+        systemBtn.onClick.AddListener(() => Share(ShareTarget.SYSTEM));
+        taptapBtn.onClick.AddListener(() => Share(ShareTarget.TAPTAP));
+        agoraBtn.onClick.AddListener(() => Share(ShareTarget.AGORA));
+        weixinSessionBtn.onClick.AddListener(() => Share(ShareTarget.WEIXIN, ShareScene.WEIXIN_SESSION));
+        weixinTimelineBtn.onClick.AddListener(() => Share(ShareTarget.WEIXIN, ShareScene.WEIXIN_TIMELINE));
+        weixinFavoriteBtn.onClick.AddListener(() => Share(ShareTarget.WEIXIN, ShareScene.WEIXIN_FAVORITE));
+        weiboBtn.onClick.AddListener(() => Share(ShareTarget.WEIBO));
+        douyinEditBtn.onClick.AddListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_EDIT));
+        douyinPublishBtn.onClick.AddListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_PUBLISH));
+        douyinContactsBtn.onClick.AddListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_CONTACTS));
+    }
+
+    void OnDestroy()
+    {
+        systemBtn.onClick.RemoveListener(() => Share(ShareTarget.SYSTEM));
+        taptapBtn.onClick.RemoveListener(() => Share(ShareTarget.TAPTAP));
+        agoraBtn.onClick.RemoveListener(() => Share(ShareTarget.AGORA));
+        weixinSessionBtn.onClick.RemoveListener(() => Share(ShareTarget.WEIXIN, ShareScene.WEIXIN_SESSION));
+        weixinTimelineBtn.onClick.RemoveListener(() => Share(ShareTarget.WEIXIN, ShareScene.WEIXIN_TIMELINE));
+        weixinFavoriteBtn.onClick.RemoveListener(() => Share(ShareTarget.WEIXIN, ShareScene.WEIXIN_FAVORITE));
+        weiboBtn.onClick.RemoveListener(() => Share(ShareTarget.WEIBO));
+        douyinEditBtn.onClick.RemoveListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_EDIT));
+        douyinPublishBtn.onClick.RemoveListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_PUBLISH));
+        douyinContactsBtn.onClick.RemoveListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_CONTACTS));
+        EventSystem.UnRegister(this);
+    }
+
+    [EventSystem.BindEvent]
+    public void ImgShareContent(ImgShareEvent evt)
+    {
+        shareType = ShareType.Image;
+        imageShareOptions = new ImageShareOptions {
+            Title = evt.title,
+            Contents = evt.contents,
+            ImageUrl = evt.imageUrl,
+            Hashtag = evt.hashtag,
+        };
+    }
+
+    [EventSystem.BindEvent]
+    public void VideoShareContent(VideoShareEvent evt)
+    {
+        shareType = ShareType.Video;
+        videoShareOptions = new VideoShareOptions {
+            Title = evt.title,
+            Contents = evt.contents,
+            VideoUrl = evt.videoUrl,
+            VideoCoverUrl = evt.videoCoverUrl,
+            Hashtag = evt.hashtag,
+        };
+    }
+
+    private void Share(ShareTarget shareTarget, ShareScene? shareScene = null)
+    {
+        ShareOptions opts = null;
+        switch (shareType)
+        {
+            case ShareType.Image:
+                if(shareScene == null)
+                {
+                    opts = new ImageShareOptions { 
+                        Target = shareTarget,
+                        Title = imageShareOptions.Title,
+                        Contents = imageShareOptions.Contents,
+                        ImageUrl = imageShareOptions.ImageUrl,
+                        Hashtag = imageShareOptions.Hashtag,
+                    };
+                }
+                else
+                {
+                    opts = new ImageShareOptions { 
+                        Target = shareTarget,
+                        Title = imageShareOptions.Title,
+                        Contents = imageShareOptions.Contents,
+                        ImageUrl = imageShareOptions.ImageUrl,
+                        Hashtag = imageShareOptions.Hashtag,
+                        Scene = (ShareScene)shareScene,
+                    };
+                }
+                break;
+            case ShareType.Video:
+                if(shareScene == null)
+                {
+                    opts = new VideoShareOptions { 
+                        Target = shareTarget,
+                        Title = videoShareOptions.Title,
+                        VideoUrl = videoShareOptions.VideoUrl,
+                        VideoCoverUrl = videoShareOptions.VideoCoverUrl,
+                        Hashtag = videoShareOptions.Hashtag,
+                        Contents = videoShareOptions.Contents,
+                    };
+                }
+                else
+                {
+                    opts = new VideoShareOptions { 
+                        Target = shareTarget,
+                        Title = videoShareOptions.Title,
+                        VideoUrl = videoShareOptions.VideoUrl,
+                        VideoCoverUrl = videoShareOptions.VideoCoverUrl,
+                        Hashtag = videoShareOptions.Hashtag,
+                        Contents = videoShareOptions.Contents,
+                        Scene = (ShareScene)shareScene,
+                    };
+                }
+                break;
+            default:
+                break;
+        }
+        if (opts != null)
+        {
+            ComboSDK.Share(opts, result =>
+            {
+                if(result.IsSuccess)
+                {
+
+                }
+                else
+                {
+                    var err = result.Error;
+                    Toast.Show(err.Message);
+                    Log.E(err.DetailMessage);
+                }
+            });
+        }
+    }
+}
