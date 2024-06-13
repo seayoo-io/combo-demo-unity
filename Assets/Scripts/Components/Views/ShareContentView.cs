@@ -54,11 +54,13 @@ internal class ShareContentView : View<ShareContentView>
                 Toast.Show("视频文件未下载完成，请稍后");
                 return;
             }
+            string path = Application.streamingAssetsPath;
+            string coverUrl = System.IO.Path.Combine(path, "coverImg.jpg");
             OnVideoSelectPlatform?.Invoke(new VideoShareOptionViewModel {
                 title = videoTitle.text,
                 content = videoContent.text,
                 videoUrl = localVideoUrl,
-                videoCoverUrl = GenerateImagePath(),
+                videoCoverUrl = coverUrl,
                 hashtag = videoHashtag.text
             });
         });
