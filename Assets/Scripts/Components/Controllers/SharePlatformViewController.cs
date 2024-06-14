@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Combo;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ public class SharePlatformViewController : MonoBehaviour
     public Button douyinEditBtn;
     public Button douyinPublishBtn;
     public Button douyinContactsBtn;
+    public Button[] buttons = new Button[] {};
     private ImageShareOptions imageShareOptions;
     private VideoShareOptions videoShareOptions;
     private ShareType shareType = ShareType.Image;
@@ -30,6 +32,7 @@ public class SharePlatformViewController : MonoBehaviour
 
     void Start()
     {
+        SetSharePlatformButtonActive();
         systemBtn.onClick.AddListener(() => Share(ShareTarget.SYSTEM));
         taptapBtn.onClick.AddListener(() => Share(ShareTarget.TAPTAP));
         agoraBtn.onClick.AddListener(() => Share(ShareTarget.AGORA));
@@ -159,6 +162,28 @@ public class SharePlatformViewController : MonoBehaviour
                     Log.E("分享失败: " + err.DetailMessage);
                 }
             });
+        }
+    }
+
+    private void SetSharePlatformButtonActive()
+    {
+        var dictionary = new Dictionary<ShareTarget, Button>(){
+            {ShareTarget.SYSTEM, buttons[0]},
+            {ShareTarget.TAPTAP, buttons[1]},
+            {ShareTarget.AGORA, buttons[2]},
+            {ShareTarget.WEIXIN, buttons[3]},
+            {ShareTarget.WEIBO, buttons[4]},
+            {ShareTarget.DOUYIN, buttons[5]},
+        };
+        var shareTargets = ComboSDK.GetAvailableShareTargets();
+        foreach(ShareTarget shareTarget in shareTargets)
+        {
+            Button button;
+            dictionary.TryGetValue(shareTarget, out button);
+            if (button != null)
+            {
+                button.gameObject.SetActive(true);
+            }
         }
     }
 }
