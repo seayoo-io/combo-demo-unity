@@ -1,3 +1,4 @@
+using System;
 using Combo;
 using UnityEngine;
 using UnityEngine.UI;
@@ -123,6 +124,10 @@ public class SharePlatformViewController : MonoBehaviour
                 }
                 else
                 {
+                    if(shareTarget == ShareTarget.WEIXIN)
+                    {
+                        videoShareOptions.VideoUrl = "https://media.w3.org/2010/05/sintel/trailer.mp4";
+                    }
                     opts = new VideoShareOptions { 
                         Target = shareTarget,
                         Title = videoShareOptions.Title,
