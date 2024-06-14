@@ -54,7 +54,7 @@ internal class ShareContentView : View<ShareContentView>
                 Toast.Show("视频文件未下载完成，请稍后");
                 return;
             }
-            Texture2D texture = Resources.Load<Texture2D>("Textures/coverImg.jpg");
+            Texture2D texture = Resources.Load<Texture2D>("Textures/coverImg");
             string coverUrl = Path.Combine(Application.persistentDataPath, $"coverImg.jpg");
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(coverUrl, bytes);
