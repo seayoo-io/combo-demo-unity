@@ -5,6 +5,7 @@ using ThinkingData.Analytics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class Login : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class Login : MonoBehaviour
     public Button logoutBtn;
     public Button contactSupportBtn;
     public Button switchAccountBtn;
+    public GameObject startMove;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -36,7 +38,16 @@ public class Login : MonoBehaviour
                 }
             }
         });
+
+        if(startMove != null)
+        {
+            VideoPlayer videoPlayer = startMove.GetComponent<VideoPlayer>();
+            startMove.SetActive(true);
+            startMove.transform.SetAsLastSibling();
+            videoPlayer.Play();
+        }
     }
+    
     void Start()
     {
         var buildParams = BuildParams.Load();
