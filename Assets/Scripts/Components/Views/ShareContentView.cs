@@ -54,8 +54,10 @@ internal class ShareContentView : View<ShareContentView>
                 Toast.Show("视频文件未下载完成，请稍后");
                 return;
             }
-            string path = Application.streamingAssetsPath;
-            string coverUrl = System.IO.Path.Combine(path, "coverImg.jpg");
+            Texture2D texture = Resources.Load<Texture2D>("Textures/coverImg.jpg");
+            string coverUrl = Path.Combine(Application.persistentDataPath, $"coverImg.jpg");
+            byte[] bytes = texture.EncodeToPNG();
+            File.WriteAllBytes(coverUrl, bytes);
             OnVideoSelectPlatform?.Invoke(new VideoShareOptionViewModel {
                 title = videoTitle.text,
                 content = videoContent.text,
