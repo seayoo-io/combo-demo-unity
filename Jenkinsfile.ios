@@ -45,6 +45,32 @@ def downloadComboSDKJson() {
     '''
 }
 
+def updateCodeSigningSettings() {
+    sh """
+        export LC_ALL=en_US.UTF-8
+        export LANG=en_US.UTF-8
+        fastlane run update_code_signing_settings path:"${BUILD_DIR}/Unity-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"Unity-iPhone"
+    """
+}
+
+def environmentParams = [
+    'demo': [
+        'bundleId': 'com.ksDemo.omni', 
+        'codeSignId': 'Apple Development: TingTing Liu (QWVQYB57WJ)', 
+        'provision': 'dev_provision',
+        'developmentTeam': 'SP537S8Q2J',
+        'capabilities': 'SignInWithApple',
+        'exportOptionsPlist': 'combo-demo.export-options'
+    ],
+    'catsnsoup': [
+        'bundleId': 'com.mt.zhuoli', 
+        'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
+        'provision': 'MaoTang Dev',
+        'developmentTeam': 'G7ZC763G33',
+        'exportOptionsPlist': 'combo-catsnsoup.export-options'
+    ]
+] 
+
 def installComboCLI() {
     def credentialsId = "combo-${params.GAME_ID}.build-key"
     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
@@ -104,10 +130,11 @@ pipeline {
         FRAMEWORK_PATH = "${env.WORKSPACE}/Frameworks"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        PRODUCT_BUNDLE_IDENTIFIER = 'com.ksDemo.omni'
-        CODE_SIGN_IDENTITY = 'Apple Development: TingTing Liu (QWVQYB57WJ)'
-        PROVISIONING_PROFILE_SPECIFIER = 'dev_provision'
-        DEVELOPMENT_TEAM = 'SP537S8Q2J'
+        PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId'].toString()
+        CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId'].toString()
+        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provision'].toString()
+        DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
+        CAPABILITIES = environmentParams[params.GAME_ID]['capabilities'].toString()
     }
     stages {
         stage('Clean and Setup') {
@@ -196,21 +223,21 @@ pipeline {
             steps {
                 script {
                     dir(env.BUILD_DIR) {
+                        updateCodeSigningSettings()
                         keychainUnlock()
                         sh """xcodebuild clean archive \
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
-                            PROVISIONING_PROFILE_SPECIFIER=dev_provision \
-                            -archivePath demo.xcarchive
+                            PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
+                            -archivePath ${params.GAME_ID}.xcarchive
                         """
-                        // hardcode: 先使用 demo 证书配置
-                        def credentialsId = "combo-demo.export-options"
+                        def credentialsId = "combo-${params.GAME_ID}.export-options"
                         withCredentials([file(variable: 'EXPORT_OPTIONS_PLIST', credentialsId: credentialsId)]) {
                             sh """xcodebuild -exportArchive \
-                            -archivePath demo.xcarchive \
+                            -archivePath ${params.GAME_ID}.xcarchive \
                             -exportPath ipa \
-                            -exportOptionsPlist ${EXPORT_OPTIONS_PLIST}
+                            -exportOptionsPlist \${EXPORT_OPTIONS_PLIST}
                             """
                         }
                     }
