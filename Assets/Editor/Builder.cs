@@ -170,6 +170,8 @@ public class Builder : EditorWindow
         var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
         var iosXCFrameworks = Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
         var iosComboSDKJson = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
+#elif UNITY_ANDROID
+        var keepRenderingOnPause = Environment.GetEnvironmentVariable("ENABLE_KEEP_RENDERING_ON_PAUSE") ?? "false";
 #endif
 
         var assetPath = "Assets/ComboSDK/Resources/ComboSDKSettings.asset";
@@ -194,6 +196,8 @@ public class Builder : EditorWindow
         scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
         scriptableObject.IOSXCFrameworks = iosXCFrameworks;
         scriptableObject.IOSComboSDKJson = iosComboSDKJson;
+#elif UNITY_ANDROID
+        scriptableObject.EnableKeepRenderingOnPause = bool.Parse(keepRenderingOnPause);
 #endif
 
         // Mark the ScriptableObject as dirty so Unity knows it needs to save changes

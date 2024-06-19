@@ -93,6 +93,9 @@ pipeline {
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
+        booleanParam(name: 'ENABLE_KEEP_RENDERING_ON_PAUSE',
+            defaultValue: false,
+            description: 'When checked, will open EnableKeepRenderingOnPause.')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
@@ -152,6 +155,7 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
+                ENABLE_KEEP_RENDERING_ON_PAUSE = "${params.ENABLE_KEEP_RENDERING_ON_PAUSE}"
             }
             steps {
                 script {
