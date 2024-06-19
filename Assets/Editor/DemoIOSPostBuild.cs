@@ -69,7 +69,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid, string unityFrameworkTargetGuid)
     {
-        Debug.Log("[Demo] Start to SetBuildProperty");
+        Debug.Log("[Demo] Start to SetBuildProperty" + "developmentTeam: " + BuildArguments.DevelopmentTeam + " signIdentity: " + BuildArguments.SignIdentity + " provision: " + BuildArguments.Provision);
         // Sign
         pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_STYLE", "Manual");
