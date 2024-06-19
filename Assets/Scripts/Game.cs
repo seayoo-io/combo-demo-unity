@@ -29,7 +29,7 @@ public class Game : MonoBehaviour
 
     public void OnShare()
     {
-        ShareSelectorViewController.Show();
+        ShareContentViewController.ShowShareContentView();
     }
 
     public void OnErrorTrack()
