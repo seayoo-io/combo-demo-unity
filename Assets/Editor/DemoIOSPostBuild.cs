@@ -55,7 +55,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
                 {
                     Debug.Log("[Demo] foreach " + v);
                 }
-                if (capabilitiesArray.Contains("\"SignInWithApple\""))
+                if (capabilitiesArray.Contains("SignInWithApple"))
                 {
                     Debug.Log("[Demo] add signInWithApple");
                     AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
