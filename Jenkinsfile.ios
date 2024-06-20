@@ -122,8 +122,7 @@ pipeline {
             defaultValue: 'Nothing',
             multiSelectDelimiter: ',',
             quoteValue: true,
-            saveJSONParameterToFile: false,
-            visibleItemCount: setVisibleItemCount()
+            saveJSONParameterToFile: false
         )
         string(name: 'IOS_PROJECT_NAME',
             defaultValue: 'SDK/Client/Combo/ios/main',
