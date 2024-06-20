@@ -121,7 +121,7 @@ pipeline {
             value: 'Nothing,SignInWithApple',
             defaultValue: 'Nothing',
             multiSelectDelimiter: ',',
-            quoteValue: true,
+            quoteValue: false,
             saveJSONParameterToFile: false
         )
         string(name: 'IOS_PROJECT_NAME',
