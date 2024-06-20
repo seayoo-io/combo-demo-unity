@@ -57,7 +57,12 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
                     AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
                 }
             }
-            
+
+            PatchPreprocessor(report.summary.outputPath);
+
+            var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
+            AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
+
             pbxProject.WriteToFile(projectPath);
 
             // Info.plist
