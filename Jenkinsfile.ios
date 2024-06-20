@@ -24,7 +24,7 @@ def writeComboYaml(buildKey) {
     def gameId = params.GAME_ID
     writeFile file: 'combo.yaml', text: """
 combo:
-  game-id: ${gameId}
+  game-id: catsnsoup
   build-key: ${buildKey}
   endpoint: ${endpoint}
 """
