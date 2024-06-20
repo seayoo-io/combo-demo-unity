@@ -115,9 +115,9 @@ pipeline {
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
         extendedChoice(
-            name: 'SUPPORTED_CAPABILITIES',
+            name: 'CAPABILITIES',
             type: 'PT_MULTI_SELECT',
-            description: '支持的 Capabilities， 支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)',
+            description: '支持的 Capabilities， 支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)，默认情况下为无',
             value: 'Nothing,SignInWithApple',
             defaultValue: 'Nothing',
             multiSelectDelimiter: ',',
@@ -147,7 +147,7 @@ pipeline {
         CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId'].toString()
         PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provision'].toString()
         DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
-        CAPABILITIES = params.SUPPORTED_CAPABILITIES.toString()
+        CAPABILITIES = params.CAPABILITIES.toString()
     }
     stages {
         stage('Clean and Setup') {
