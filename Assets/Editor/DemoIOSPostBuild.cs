@@ -51,6 +51,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             if (!string.IsNullOrEmpty(BuildArguments.Capabilities))
             {
                 string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
+                Debug.Log($"[Demo] capabilitiesArray: {capabilitiesArray}");
                 if (capabilitiesArray.Contains("SignInWithApple"))
                 {
                     Debug.Log("[Demo] add signInWithApple");
@@ -74,7 +75,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid, string unityFrameworkTargetGuid)
     {
-        Debug.Log("[Demo] Start to SetBuildProperty" + "developmentTeam: " + BuildArguments.DevelopmentTeam + " signIdentity: " + BuildArguments.SignIdentity + " provision: " + BuildArguments.Provision);
+        Debug.Log("[Demo] Start to SetBuildProperty " + "developmentTeam: " + BuildArguments.DevelopmentTeam + " signIdentity: " + BuildArguments.SignIdentity + " provision: " + BuildArguments.Provision);
         // Sign
         pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_STYLE", "Manual");
