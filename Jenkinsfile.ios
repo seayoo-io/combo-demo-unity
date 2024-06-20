@@ -69,6 +69,14 @@ def environmentParams = [
         'developmentTeam': 'G7ZC763G33',
         'capabilities': '',
         'exportOptionsPlist': 'combo-catsnsoup.export-options'
+    ],
+    'dev-catsnsoup': [
+        'bundleId': 'com.mt.zhuoli', 
+        'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
+        'provision': 'MaoTang Dev',
+        'developmentTeam': 'G7ZC763G33',
+        'capabilities': '',
+        'exportOptionsPlist': 'combo-catsnsoup.export-options'
     ]
 ] 
 
