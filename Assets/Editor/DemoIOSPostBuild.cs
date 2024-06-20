@@ -44,7 +44,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             string unityFrameworkTargetGuid = pbxProject.GetUnityFrameworkTargetGuid();
 
             // Build Setting
-            SetBuildProperty(pbxProject, unityMainTargetGuid, unityFrameworkTargetGuid);
+            SetBuildProperty(pbxProject, unityMainTargetGuid);
 
             // Add Selected Capability
             Debug.Log($"[Demo] BuildArguments.Capabilities: {BuildArguments.Capabilities}");
@@ -54,6 +54,10 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
                 if (capabilitiesArray.Contains("SignInWithApple"))
                 {
                     AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+                }
+                if (capabilitiesArray.Contains("PushNotifications"))
+                {
+                    AddPushNotificationsCapability(report, pbxProject, unityMainTargetGuid);
                 }
             }
 
@@ -73,7 +77,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         }
     }
 
-    private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid, string unityFrameworkTargetGuid)
+    private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid)
     {
         Debug.Log("[Demo] Start to SetBuildProperty " + "developmentTeam: " + BuildArguments.DevelopmentTeam + " signIdentity: " + BuildArguments.SignIdentity + " provision: " + BuildArguments.Provision);
         // Sign
@@ -112,6 +116,33 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         if (!array.values.Any(value => value.AsString() == "Default"))
         {
             array.AddString("Default");
+        }
+
+        File.WriteAllText(entitlementsPath, entitlements.WriteToString());
+        var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+        pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
+        pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
+    }
+
+    private void AddPushNotificationsCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
+    {
+        Debug.Log("[Demo] Start to PushNotifications");
+        var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
+        var entitlements = new PlistDocument();
+        
+        if (File.Exists(entitlementsPath))
+        {
+            entitlements.ReadFromFile(entitlementsPath);
+
+            var rootDict = entitlements.root.AsDict();
+            if (!rootDict.values.ContainsKey("aps-environment"))
+            {
+                entitlements.root.SetString("aps-environment", "development");
+            }
+        }
+        else
+        {
+            entitlements.root.SetString("aps-environment", "development");
         }
 
         File.WriteAllText(entitlementsPath, entitlements.WriteToString());
