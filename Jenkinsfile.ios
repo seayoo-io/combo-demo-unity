@@ -204,7 +204,11 @@ pipeline {
             }
             steps {
                 script {
-                    def credentialsId = "combo-${params.GAME_ID}.publishable-key"
+                    def key = params.GAME_ID
+                    if (params.GAME_ID == 'catsnsoup' && params.TARGET_ENV == 'dev') {
+                        key = 'dev-catsnsoup'
+                    }
+                    def credentialsId = "combo-${key}.publishable-key"
                     withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: credentialsId)]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
