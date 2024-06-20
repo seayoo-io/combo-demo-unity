@@ -16,6 +16,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         public static string SignIdentity => System.Environment.GetEnvironmentVariable("CODE_SIGN_IDENTITY") ?? "Apple Development: TingTing Liu (QWVQYB57WJ)";
         public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER") ?? "dev_provision";
         public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM") ?? "SP537S8Q2J";
+        public static string Capabilities => System.Environment.GetEnvironmentVariable("CAPABILITIES") ?? "SignInWithApple";
     }
 
     public int callbackOrder { get { return 1; } }
@@ -32,6 +33,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     public void OnPostprocessBuild(BuildReport report)
     {
+        var szFrameworkPath = System.Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
         if (report.summary.platform == BuildTarget.iOS)
         {
             string projectPath = report.summary.outputPath + "/Unity-iPhone.xcodeproj/project.pbxproj";
@@ -44,9 +46,25 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             // Build Setting
             SetBuildProperty(pbxProject, unityMainTargetGuid);
 
-            // Add Sign In With Apple Capability
-            AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+            // Add Selected Capability
+            Debug.Log($"[Demo] BuildArguments.Capabilities: {BuildArguments.Capabilities}");
+            if (!string.IsNullOrEmpty(BuildArguments.Capabilities))
+            {
+                string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
+                if (capabilitiesArray.Contains("SignInWithApple"))
+                {
+                    AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
+                }
+                if (capabilitiesArray.Contains("PushNotifications"))
+                {
+                    AddPushNotificationsCapability(report, pbxProject, unityMainTargetGuid);
+                }
+            }
 
+            // UNITY_USES_REMOTE_NOTIFICATIONS 0 -> 1
+            PatchPreprocessor(report.summary.outputPath);
+
+            // PrivacyInfo.xcprivacy
             var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
             AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
 
@@ -61,6 +79,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     private void SetBuildProperty(PBXProject pbxProject, string mainTargetGuid)
     {
+        Debug.Log("[Demo] Start to SetBuildProperty " + "developmentTeam: " + BuildArguments.DevelopmentTeam + " signIdentity: " + BuildArguments.SignIdentity + " provision: " + BuildArguments.Provision);
         // Sign
         pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_STYLE", "Manual");
@@ -71,19 +90,65 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     private void AddAppleSignInCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
     {
+        Debug.Log("[Demo] Start to AddAppleSignInCapability");
         var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
         var entitlements = new PlistDocument();
-        // Add Sign In With Apple Capability
-        var array = entitlements.root.CreateArray("com.apple.developer.applesignin");
-        array.AddString("Default");
-        // Add Push Notification Capability
-        entitlements.root.SetString("aps-environment", "development");
-        PatchPreprocessor(report.summary.outputPath);
+
+        if (File.Exists(entitlementsPath))
+        {
+            entitlements.ReadFromFile(entitlementsPath);
+        }
+        else
+        {
+            entitlements.root.CreateArray("com.apple.developer.applesignin");
+        }
+
+        var rootDict = entitlements.root.AsDict();
+        PlistElementArray array;
+        if (rootDict.values.ContainsKey("com.apple.developer.applesignin"))
+        {
+            array = rootDict.values["com.apple.developer.applesignin"].AsArray();
+        }
+        else
+        {
+            array = rootDict.CreateArray("com.apple.developer.applesignin");
+        }
+        if (!array.values.Any(value => value.AsString() == "Default"))
+        {
+            array.AddString("Default");
+        }
+
         File.WriteAllText(entitlementsPath, entitlements.WriteToString());
         var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
         pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
         pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
-        pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.PushNotifications, relativeEntitlementsPath);
+    }
+
+    private void AddPushNotificationsCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
+    {
+        Debug.Log("[Demo] Start to PushNotifications");
+        var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
+        var entitlements = new PlistDocument();
+        
+        if (File.Exists(entitlementsPath))
+        {
+            entitlements.ReadFromFile(entitlementsPath);
+
+            var rootDict = entitlements.root.AsDict();
+            if (!rootDict.values.ContainsKey("aps-environment"))
+            {
+                entitlements.root.SetString("aps-environment", "development");
+            }
+        }
+        else
+        {
+            entitlements.root.SetString("aps-environment", "development");
+        }
+
+        File.WriteAllText(entitlementsPath, entitlements.WriteToString());
+        var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+        pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
+        pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
     }
 
     private void UpdatePListFile(BuildReport report)
@@ -114,6 +179,5 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         preprocessor = preprocessor.Replace("UNITY_USES_REMOTE_NOTIFICATIONS 0", "UNITY_USES_REMOTE_NOTIFICATIONS 1");
         File.WriteAllText(preprocessorPath, preprocessor);
     }
-
 }
 #endif
