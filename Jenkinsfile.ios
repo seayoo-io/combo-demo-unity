@@ -24,7 +24,7 @@ def writeComboYaml(buildKey) {
     def gameId = params.GAME_ID
     writeFile file: 'combo.yaml', text: """
 combo:
-  game-id: catsnsoup
+  game-id: ${gameId}
   build-key: ${buildKey}
   endpoint: ${endpoint}
 """
@@ -67,21 +67,17 @@ def environmentParams = [
         'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
         'provision': 'MaoTang Dev',
         'developmentTeam': 'G7ZC763G33',
-        'capabilities': '',
-        'exportOptionsPlist': 'combo-catsnsoup.export-options'
-    ],
-    'dev-catsnsoup': [
-        'bundleId': 'com.mt.zhuoli', 
-        'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
-        'provision': 'MaoTang Dev',
-        'developmentTeam': 'G7ZC763G33',
         'capabilities': 'nothing',
         'exportOptionsPlist': 'combo-catsnsoup.export-options'
     ]
 ] 
 
 def installComboCLI() {
-    def credentialsId = "combo-${params.GAME_ID}.build-key"
+    def key = params.GAME_ID
+    if (params.GAME_ID == 'catsnsoup' && params.TARGET_ENV == 'dev') {
+        key = 'dev-catsnsoup'
+    }
+    def credentialsId = "combo-${key}.build-key"
     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
@@ -116,7 +112,7 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'dev-catsnsoup'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
         choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
