@@ -36,6 +36,23 @@ def downloadFrameworks() {
 
     def files = findFiles glob: frameworkZip
     unzip zipFile: files[0].name, dir: env.FRAMEWORK_PATH, quiet: true
+
+    // 删除不需要的文件
+    def filesToDelete = [
+        "ComboSDKSignInWithApple.xcframework"
+    ]
+
+    for (file in filesToDelete) {
+        def filePath = "${env.FRAMEWORK_PATH}/${file}"
+        if (fileExists(filePath)) {
+            if (fileType(filePath) == 'directory') {
+                deleteDir(filePath)
+            } else {
+                deleteFile(filePath)
+            }
+            echo "Deleted file/folder: ${filePath}"
+        }
+    }
 }
 
 def downloadComboSDKJson() {
