@@ -51,7 +51,10 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             if (!string.IsNullOrEmpty(BuildArguments.Capabilities))
             {
                 string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
-                Debug.Log($"[Demo] capabilitiesArray: {capabilitiesArray}");
+                foreach (string v in capabilitiesArray)
+                {
+                    Debug.Log("[Demo] foreach " + v);
+                }
                 if (capabilitiesArray.Contains("SignInWithApple"))
                 {
                     Debug.Log("[Demo] add signInWithApple");
