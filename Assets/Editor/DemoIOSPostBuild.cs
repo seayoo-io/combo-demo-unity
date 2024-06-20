@@ -46,24 +46,21 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             // Build Setting
             SetBuildProperty(pbxProject, unityMainTargetGuid, unityFrameworkTargetGuid);
 
-            // Add Sign In With Apple Capability
+            // Add Selected Capability
             Debug.Log($"[Demo] BuildArguments.Capabilities: {BuildArguments.Capabilities}");
             if (!string.IsNullOrEmpty(BuildArguments.Capabilities))
             {
                 string[] capabilitiesArray = BuildArguments.Capabilities.Split(',');
-                foreach (string v in capabilitiesArray)
-                {
-                    Debug.Log("[Demo] foreach " + v);
-                }
                 if (capabilitiesArray.Contains("SignInWithApple"))
                 {
-                    Debug.Log("[Demo] add signInWithApple");
                     AddAppleSignInCapability(report, pbxProject, unityMainTargetGuid);
                 }
             }
 
+            // UNITY_USES_REMOTE_NOTIFICATIONS 0 -> 1
             PatchPreprocessor(report.summary.outputPath);
 
+            // PrivacyInfo.xcprivacy
             var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
             AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
 
