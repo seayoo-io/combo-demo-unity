@@ -1,6 +1,3 @@
-using UnityEngine;
-using UnityEngine.UI;
-
 public static class ShareContentViewController
 {
     public static void ShowShareContentView()
@@ -10,6 +7,8 @@ public static class ShareContentViewController
         shareContentView.SetCloseCallback(() => shareContentView.Destroy());
         shareContentView.SetImgShareOptionCallback(data => OpenImgPlatformShareView(data));
         shareContentView.SetVideoShareOptionCallback(data => OpenVideoPlatformShareView(data));
+        shareContentView.SetTextShareOptionCallback(data => OpenTextPlatformShareView(data));
+        shareContentView.SetLinkShareOptionCallback(data => OpenLinkPlatformShareView(data));
         shareContentView.Show();
     }
 
@@ -45,6 +44,34 @@ public static class ShareContentViewController
             videoUrl = model.videoUrl,
             videoCoverUrl = model.videoCoverUrl,
             hashtag = model.hashtag,
+        });
+        HideShareContentView();
+    }
+
+    private static void OpenTextPlatformShareView(TextShareOptionViewModel model)
+    {
+        SharePlatformView.DestroyAll();
+        var sharePlatformView = SharePlatformView.Instantiate();
+        sharePlatformView.SetCloseCallback(() => sharePlatformView.Destroy());
+        sharePlatformView.Show();
+        TextShareEvent.Invoke(new TextShareEvent {
+            title = model.title,
+            contents = model.contents
+        });
+        HideShareContentView();
+    }
+
+    private static void OpenLinkPlatformShareView(LinkShareOptionViewModel model)
+    {
+        SharePlatformView.DestroyAll();
+        var sharePlatformView = SharePlatformView.Instantiate();
+        sharePlatformView.SetCloseCallback(() => sharePlatformView.Destroy());
+        sharePlatformView.Show();
+        LinkShareEvent.Invoke(new LinkShareEvent {
+            title = model.title,
+            contents = model.contents,
+            linkUrl = model.linkUrl,
+            linkCoverUrl = model.linkCoverUrl,
         });
         HideShareContentView();
     }

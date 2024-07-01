@@ -20,21 +20,41 @@ internal class VideoShareOptionViewModel {
     public string hashtag;
 }
 
+internal class TextShareOptionViewModel {
+    public string title;
+    public string contents;
+}
+
+internal class LinkShareOptionViewModel {
+    public string title;
+    public string contents;
+    public string linkUrl;
+    public string linkCoverUrl;
+}
+
 [ViewPrefab("Prefabs/ShareContentOptionView")]
 internal class ShareContentView : View<ShareContentView>
 {
     public Button closeBtn;
     public Button imgSelectPlatformBtn;
     public Button videoSelectPlatformBtn;
+    public Button textSelectPlatformBtn;
+    public Button linkSelectPlatformBtn;
     public InputField imgTitle;
     public InputField imgContent;
     public InputField imgHashtag;
     public InputField videoTitle;
     public InputField videoContent;
     public InputField videoHashtag;
+    public InputField textTitle;
+    public InputField textContent;
+    public InputField linkTitle;
+    public InputField linkContent;
     private Action OnClose;
     private Action<ImgShareOptionViewModel> OnImgSelectPlatform;
     private Action<VideoShareOptionViewModel> OnVideoSelectPlatform;
+    private Action<TextShareOptionViewModel> OnTextSelectPlatform;
+    public Action<LinkShareOptionViewModel> OnLinkSelectPlatform;
     private string localVideoUrl;
 
     void Awake()
@@ -66,6 +86,24 @@ internal class ShareContentView : View<ShareContentView>
                 hashtag = videoHashtag.text
             });
         });
+        textSelectPlatformBtn.onClick.AddListener(()=>{
+            OnTextSelectPlatform?.Invoke(new TextShareOptionViewModel {
+                title = textTitle.text,
+                contents = textContent.text,
+            });
+        });
+        linkSelectPlatformBtn.onClick.AddListener(()=> {
+            Texture2D texture = Resources.Load<Texture2D>("Textures/coverImg");
+            string coverUrl = Path.Combine(Application.persistentDataPath, $"coverImg.jpg");
+            byte[] bytes = texture.EncodeToPNG();
+            File.WriteAllBytes(coverUrl, bytes);
+            OnLinkSelectPlatform?.Invoke(new LinkShareOptionViewModel {
+                title = linkTitle.text,
+                contents = linkContent.text,
+                linkUrl = "https://catsnsoup.seayoo.com/",
+                linkCoverUrl = coverUrl
+            });
+        });
     }
 
     void Start()
@@ -87,6 +125,10 @@ internal class ShareContentView : View<ShareContentView>
     public void SetImgShareOptionCallback(Action<ImgShareOptionViewModel> OnImgSelectPlatform) => this.OnImgSelectPlatform = OnImgSelectPlatform;
 
     public void SetVideoShareOptionCallback(Action<VideoShareOptionViewModel> OnVideoSelectPlatform) => this.OnVideoSelectPlatform = OnVideoSelectPlatform;
+
+    public void SetTextShareOptionCallback(Action<TextShareOptionViewModel> OnTextSelectPlatform) => this.OnTextSelectPlatform = OnTextSelectPlatform;
+
+    public void SetLinkShareOptionCallback(Action<LinkShareOptionViewModel> OnLinkSelectPlatform) => this.OnLinkSelectPlatform = OnLinkSelectPlatform;
     
     void OnCloseBtn()
     {
