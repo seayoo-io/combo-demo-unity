@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public enum ShareType
 {
     Image,
-    Video
+    Video,
+    Text,
+    Link
 }
 public class SharePlatformViewController : MonoBehaviour
 {
@@ -24,6 +26,8 @@ public class SharePlatformViewController : MonoBehaviour
     public Button[] buttons = new Button[] {};
     private ImageShareOptions imageShareOptions;
     private VideoShareOptions videoShareOptions;
+    private TextShareOptions textShareOptions;
+    private LinkShareOptions linkShareOptions;
     private ShareType shareType = ShareType.Image;
     void Awake()
     {
@@ -85,6 +89,28 @@ public class SharePlatformViewController : MonoBehaviour
         };
     }
 
+    [EventSystem.BindEvent]
+    public void TextShareContent(TextShareEvent evt)
+    {
+        shareType = ShareType.Text;
+        textShareOptions = new TextShareOptions {
+            Title = evt.title,
+            Contents = evt.contents,
+        };
+    }
+
+    [EventSystem.BindEvent]
+    public void LinkShareContent(LinkShareEvent evt)
+    {
+        shareType = ShareType.Link;
+        linkShareOptions = new LinkShareOptions {
+            Title = evt.title,
+            Contents = evt.contents,
+            LinkUrl = evt.linkUrl,
+            LinkCoverUrl = evt.linkCoverUrl,
+        };
+    }
+
     private void Share(ShareTarget shareTarget, ShareScene? shareScene = null)
     {
         ShareOptions opts = null;
@@ -138,6 +164,48 @@ public class SharePlatformViewController : MonoBehaviour
                         VideoUrl = videoShareOptions.VideoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
+                        Scene = (ShareScene)shareScene,
+                    };
+                }
+                break;
+            case ShareType.Text:
+                if(shareScene == null)
+                {
+                    opts = new TextShareOptions { 
+                        Target = shareTarget,
+                        Title = textShareOptions.Title,
+                        Contents = textShareOptions.Contents,
+                    };
+                }
+                else
+                {
+                    opts = new TextShareOptions { 
+                        Target = shareTarget,
+                        Title = textShareOptions.Title,
+                        Contents = textShareOptions.Contents,
+                        Scene = (ShareScene)shareScene,
+                    };
+                }
+                break;
+            case ShareType.Link:
+                if(shareScene == null)
+                {
+                    opts = new LinkShareOptions { 
+                        Target = shareTarget,
+                        Title = linkShareOptions.Title,
+                        Contents = linkShareOptions.Contents,
+                        LinkUrl = linkShareOptions.LinkUrl,
+                        LinkCoverUrl = linkShareOptions.LinkCoverUrl,
+                    };
+                }
+                else
+                {
+                    opts = new LinkShareOptions { 
+                        Target = shareTarget,
+                        Title = linkShareOptions.Title,
+                        Contents = linkShareOptions.Contents,
+                        LinkUrl = linkShareOptions.LinkUrl,
+                        LinkCoverUrl = linkShareOptions.LinkCoverUrl,
                         Scene = (ShareScene)shareScene,
                     };
                 }
