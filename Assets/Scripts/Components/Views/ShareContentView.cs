@@ -54,7 +54,7 @@ internal class ShareContentView : View<ShareContentView>
     private Action<ImgShareOptionViewModel> OnImgSelectPlatform;
     private Action<VideoShareOptionViewModel> OnVideoSelectPlatform;
     private Action<TextShareOptionViewModel> OnTextSelectPlatform;
-    public Action<LinkShareOptionViewModel> OnLinkSelectPlatform;
+    private Action<LinkShareOptionViewModel> OnLinkSelectPlatform;
     private string localVideoUrl;
 
     void Awake()
@@ -120,6 +120,8 @@ internal class ShareContentView : View<ShareContentView>
         closeBtn.onClick.RemoveListener(OnCloseBtn);
         imgSelectPlatformBtn.onClick.RemoveAllListeners();
         videoSelectPlatformBtn.onClick.RemoveAllListeners();
+        textSelectPlatformBtn.onClick.RemoveAllListeners();
+        linkSelectPlatformBtn.onClick.RemoveAllListeners();
     }
 
     public void SetImgShareOptionCallback(Action<ImgShareOptionViewModel> OnImgSelectPlatform) => this.OnImgSelectPlatform = OnImgSelectPlatform;
