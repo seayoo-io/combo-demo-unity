@@ -141,15 +141,16 @@ public class SharePlatformViewController : MonoBehaviour
                 }
                 else
                 {
+                    string videoUrl = videoShareOptions.VideoUrl;
                     if(shareTarget == ShareTarget.WEIXIN)
                     {
-                        videoShareOptions.VideoUrl = "https://media.w3.org/2010/05/sintel/trailer.mp4";
+                        videoUrl = "https://media.w3.org/2010/05/sintel/trailer.mp4";
                     }
                     opts = new VideoShareOptions { 
                         Target = shareTarget,
                         Title = videoShareOptions.Title,
                         Contents = videoShareOptions.Contents,
-                        VideoUrl = videoShareOptions.VideoUrl,
+                        VideoUrl = videoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
                         Scene = (ShareScene)shareScene,
