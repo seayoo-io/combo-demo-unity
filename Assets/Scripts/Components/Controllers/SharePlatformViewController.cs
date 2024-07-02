@@ -8,7 +8,6 @@ public enum ShareType
 {
     Image,
     Video,
-    Text,
     Link
 }
 public class SharePlatformViewController : MonoBehaviour
@@ -26,7 +25,6 @@ public class SharePlatformViewController : MonoBehaviour
     public Button[] buttons = new Button[] {};
     private ImageShareOptions imageShareOptions;
     private VideoShareOptions videoShareOptions;
-    private TextShareOptions textShareOptions;
     private LinkShareOptions linkShareOptions;
     private ShareType shareType = ShareType.Image;
     void Awake()
@@ -86,16 +84,6 @@ public class SharePlatformViewController : MonoBehaviour
             VideoUrl = evt.videoUrl,
             VideoCoverUrl = evt.videoCoverUrl,
             Hashtag = evt.hashtag,
-        };
-    }
-
-    [EventSystem.BindEvent]
-    public void TextShareContent(TextShareEvent evt)
-    {
-        shareType = ShareType.Text;
-        textShareOptions = new TextShareOptions {
-            Title = evt.title,
-            Contents = evt.contents,
         };
     }
 
@@ -164,25 +152,6 @@ public class SharePlatformViewController : MonoBehaviour
                         VideoUrl = videoShareOptions.VideoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
-                        Scene = (ShareScene)shareScene,
-                    };
-                }
-                break;
-            case ShareType.Text:
-                if(shareScene == null)
-                {
-                    opts = new TextShareOptions { 
-                        Target = shareTarget,
-                        Title = textShareOptions.Title,
-                        Contents = textShareOptions.Contents,
-                    };
-                }
-                else
-                {
-                    opts = new TextShareOptions { 
-                        Target = shareTarget,
-                        Title = textShareOptions.Title,
-                        Contents = textShareOptions.Contents,
                         Scene = (ShareScene)shareScene,
                     };
                 }
