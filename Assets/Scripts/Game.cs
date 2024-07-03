@@ -15,6 +15,7 @@ public class Game : MonoBehaviour
 
     void Start()
     {
+        EventSystem.Register(this);
         var info = ComboSDK.GetLoginInfo();
         if (info == null || string.IsNullOrEmpty(info.comboId))
         {
@@ -22,6 +23,11 @@ public class Game : MonoBehaviour
             return;
         }
         CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
+    }
+
+    void OnDestroy()
+    {
+        EventSystem.UnRegister(this);
     }
 
     public void OnSetting()
@@ -56,28 +62,14 @@ public class Game : MonoBehaviour
 
     public void OpenAnnouncement()
     {
-        var currentPlayer = PlayerController.GetPlayer();
-        if(currentPlayer != null)
-        {
-            var opts = new OpenAnnouncementsOptions()
-            {
-                Profile = currentPlayer.role.roleId,
-                Level = currentPlayer.role.roleLevel,
-                Width = 70,
-                Height = 70,
-            };
-            ComboSDK.OpenAnnouncements(opts, result =>{
-                if(result.IsSuccess)
-                {
-                    var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
-                    image.gameObject.SetActive(false);
-                }
-                else
-                {
-                    Toast.Show($"公告打开失败：{result.Error.Message}");
-                }
-            });
-        }
+        UIController.ShowAnnouncementParameterView(true);
+    }
+
+    [EventSystem.BindEvent]
+    void OpenAnnouncement(OpenAnnouncementsEvent evt)
+    {
+        var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+        image.gameObject.SetActive(false);
     }
 
     private void CheckAnnouncements(string profile = null, int? level = null)
