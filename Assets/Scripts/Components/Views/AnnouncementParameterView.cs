@@ -68,7 +68,7 @@ internal class AnnouncementParameterView : View<AnnouncementParameterView>
 
     private int GetInputValue(InputField inputField)
     {
-        if(inputField == null)
+        if(inputField.text == null)
         {
             return 0;
         }

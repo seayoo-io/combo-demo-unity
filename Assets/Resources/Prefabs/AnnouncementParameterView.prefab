@@ -588,8 +588,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openAnnouncementBrn: {fileID: 2120939546334365153}
   closeBtn: {fileID: 434602083786234094}
-  widthInput: {fileID: 0}
-  heightInput: {fileID: 0}
+  widthInput: {fileID: 7973563382227760147}
+  heightInput: {fileID: 5920919308247419719}
 --- !u!1 &3672489671490439362
 GameObject:
   m_ObjectHideFlags: 0
