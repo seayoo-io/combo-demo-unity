@@ -15,9 +15,11 @@ public class Login : MonoBehaviour
     public Button logoutBtn;
     public Button contactSupportBtn;
     public Button switchAccountBtn;
+    public Button openAnnouncementsBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
+    private bool isLogin = false;
 
     void Awake()
     {
@@ -52,6 +54,8 @@ public class Login : MonoBehaviour
         if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
             contactSupportBtn.gameObject.SetActive(false);
         }
+
+        CheckAnnouncements();
     }
 
     void OnDestroy()
@@ -168,6 +172,41 @@ public class Login : MonoBehaviour
         OnLogin();
     }
 
+    public void OpenAnnouncement()
+    {
+        var opts = new OpenAnnouncementsOptions();
+        if(isLogin)
+        {
+            var currentPlayer = PlayerController.GetPlayer();
+            opts = new OpenAnnouncementsOptions()
+            {
+                Profile = currentPlayer.role.roleId,
+                Level = currentPlayer.role.roleLevel,
+                Width = 0,
+                Height = 70,
+            };  
+        }
+        else
+        {
+            opts = new OpenAnnouncementsOptions()
+            {
+                Width = 70,
+                Height = 70,
+            };
+        }
+        ComboSDK.OpenAnnouncements(opts, result =>{
+                if(result.IsSuccess)
+                {
+                    var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                    image.gameObject.SetActive(false);
+                }
+                else
+                {
+                    Toast.Show($"公告打开失败：{result.Error.Message}");
+                }
+        });
+    }
+
     private void LoginGame(Action onSuccess, Action onFail)
     {
         UIController.ShowLoading();
@@ -184,11 +223,13 @@ public class Login : MonoBehaviour
                         Log.I("游戏客户端登录成功");
                         onSuccess.Invoke();
                         
+                        isLogin = true;
                         var currentPlayer = PlayerController.GetPlayer();
                         if(currentPlayer != null)
                         {
                             if(currentPlayer.role.roleId == result.loginInfo.comboId)
                             {
+                                CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
                                 return;
                             }
                             else
@@ -197,6 +238,7 @@ public class Login : MonoBehaviour
                             }
                         }
                         var newPlayer = PlayerController.SpawnPlayer(result.loginInfo.comboId, "测试角色01", "1");
+                        CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
                         DontDestroyOnLoad(newPlayer);
                     }
                     else
@@ -293,6 +335,52 @@ public class Login : MonoBehaviour
         enterGameBtn.interactable = true;
         logoutBtn.interactable = true;
         switchAccountBtn.interactable = true;
+    }
+
+    private void CheckAnnouncements(string profile = null, int? level = null)
+    {
+        var opts = new CheckAnnouncementsOptions();
+        if(profile != null)
+        {
+            opts = new CheckAnnouncementsOptions()
+            {
+                Profile = profile,
+                Level = (int)level
+            };
+        }
+        ComboSDK.CheckAnnouncements(opts, res =>{
+            if(res.IsSuccess)
+            {
+                var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+            }
+            else
+            {
+                Toast.Show($"检查公告信息失败：{res.Error.Message}");
+            }
+        });
+    }
+
+
+    private Image FindImageByTag(Transform parent, string tag)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.CompareTag(tag))
+            {
+                Image image = child.GetComponent<Image>();
+                if (image != null)
+                {
+                    return image;
+                }
+            }
+            Image foundImage = FindImageByTag(child, tag);
+            if (foundImage != null)
+            {
+                return foundImage;
+            }
+        }
+        return null;
     }
 
 }

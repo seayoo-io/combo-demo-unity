@@ -11,6 +11,7 @@ using System.IO;
 public class Game : MonoBehaviour
 {
     public PlayerPanel playerPanel;
+    public Button openAnnouncementsBtn;
 
     void Start()
     {
@@ -20,6 +21,7 @@ public class Game : MonoBehaviour
             SceneManager.LoadScene("Login");
             return;
         }
+        CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
     }
 
     public void OnSetting()
@@ -50,5 +52,76 @@ public class Game : MonoBehaviour
     public void OnPlayerInfo()
     {
         PlayerInfoViewController.ShowPlayerInfoView();
+    }
+
+    public void OpenAnnouncement()
+    {
+        var currentPlayer = PlayerController.GetPlayer();
+        if(currentPlayer != null)
+        {
+            var opts = new OpenAnnouncementsOptions()
+            {
+                Profile = currentPlayer.role.roleId,
+                Level = currentPlayer.role.roleLevel,
+                Width = 70,
+                Height = 70,
+            };
+            ComboSDK.OpenAnnouncements(opts, result =>{
+                if(result.IsSuccess)
+                {
+                    var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                    image.gameObject.SetActive(false);
+                }
+                else
+                {
+                    Toast.Show($"公告打开失败：{result.Error.Message}");
+                }
+            });
+        }
+    }
+
+    private void CheckAnnouncements(string profile = null, int? level = null)
+    {
+        var opts = new CheckAnnouncementsOptions();
+        if(profile != null)
+        {
+            opts = new CheckAnnouncementsOptions()
+            {
+                Profile = profile,
+                Level = (int)level
+            };
+        }
+        ComboSDK.CheckAnnouncements(opts, res =>{
+            if(res.IsSuccess)
+            {
+                var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+            }
+            else
+            {
+                Toast.Show($"检查公告信息失败：{res.Error.Message}");
+            }
+        });
+    }
+
+    private Image FindImageByTag(Transform parent, string tag)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.CompareTag(tag))
+            {
+                Image image = child.GetComponent<Image>();
+                if (image != null)
+                {
+                    return image;
+                }
+            }
+            Image foundImage = FindImageByTag(child, tag);
+            if (foundImage != null)
+            {
+                return foundImage;
+            }
+        }
+        return null;
     }
 }
