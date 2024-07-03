@@ -174,37 +174,14 @@ public class Login : MonoBehaviour
 
     public void OpenAnnouncement()
     {
-        var opts = new OpenAnnouncementsOptions();
-        if(isLogin)
-        {
-            var currentPlayer = PlayerController.GetPlayer();
-            opts = new OpenAnnouncementsOptions()
-            {
-                Profile = currentPlayer.role.roleId,
-                Level = currentPlayer.role.roleLevel,
-                Width = 0,
-                Height = 70,
-            };  
-        }
-        else
-        {
-            opts = new OpenAnnouncementsOptions()
-            {
-                Width = 70,
-                Height = 70,
-            };
-        }
-        ComboSDK.OpenAnnouncements(opts, result =>{
-                if(result.IsSuccess)
-                {
-                    var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
-                    image.gameObject.SetActive(false);
-                }
-                else
-                {
-                    Toast.Show($"公告打开失败：{result.Error.Message}");
-                }
-        });
+        UIController.ShowAnnouncementParameterView(isLogin);
+    }
+
+    [EventSystem.BindEvent]
+    void OpenAnnouncement(OpenAnnouncementsEvent evt)
+    {
+        var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+        image.gameObject.SetActive(false);
     }
 
     private void LoginGame(Action onSuccess, Action onFail)
