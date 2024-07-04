@@ -53,6 +53,7 @@ internal class AnnouncementParameterView : View<AnnouncementParameterView>
                 if(result.IsSuccess)
                 {
                     OpenAnnouncementsEvent.Invoke();
+                    Destroy();
                 }
                 else
                 {
