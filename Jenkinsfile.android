@@ -198,7 +198,7 @@ pipeline {
                             withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                                 writeComboYaml(COMBOSDK_BUILD_KEY)
                             }
-                            sh "${env.WORKSPACE}/outputs/android/combo android build --distros ${params.DISTRO}"
+                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO}"
                         }
                     }
                 }
