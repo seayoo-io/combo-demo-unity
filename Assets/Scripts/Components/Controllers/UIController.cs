@@ -76,4 +76,12 @@ public static class UIController
     {
         TaskView.DestroyAll();
     }
+
+    public static void ShowAnnouncementParameterView(bool isLogin)
+    {
+        AnnouncementParameterView.DestroyAll();
+        var view = AnnouncementParameterView.Instantiate();
+        view.SetIsLogin(isLogin);
+        view.Show();
+    }
 }
