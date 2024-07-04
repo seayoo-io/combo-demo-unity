@@ -107,6 +107,7 @@ public class Login : MonoBehaviour
         {
             if (result.IsSuccess)
             {
+                isLogin = false;
                 GameClient.Logout();
                 var currentPlayer = PlayerController.GetPlayer();
                 if(currentPlayer != null)
