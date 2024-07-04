@@ -56,6 +56,7 @@ internal class AnnouncementParameterView : View<AnnouncementParameterView>
                 {
                     OpenAnnouncementsEvent.Invoke();
                     Destroy();
+                    Log.I("公告打开成功");
                 }
                 else
                 {
