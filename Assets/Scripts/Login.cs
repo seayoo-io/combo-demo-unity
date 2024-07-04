@@ -107,6 +107,14 @@ public class Login : MonoBehaviour
         {
             if (result.IsSuccess)
             {
+                isLogin = false;
+                GameClient.Logout();
+                var currentPlayer = PlayerController.GetPlayer();
+                if(currentPlayer != null)
+                {
+                    Destroy(currentPlayer.gameObject);
+                }
+                CheckAnnouncements();
                 Toast.Show($"玩家 {result.Data.comboId} 退出登录");
                 ShowLoginBtn();
             }
