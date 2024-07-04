@@ -39,7 +39,8 @@ internal class AnnouncementParameterView : View<AnnouncementParameterView>
                 Level = currentPlayer.role.roleLevel,
                 Width = GetInputValue(widthInput),
                 Height = GetInputValue(heightInput),
-            };  
+            };
+            Log.I($"OpenAnnouncementsOptions: Profile =  {opts.Profile}, Level =  {opts.Level}");
         }
         else
         {
@@ -48,6 +49,7 @@ internal class AnnouncementParameterView : View<AnnouncementParameterView>
                 Width = GetInputValue(widthInput),
                 Height = GetInputValue(heightInput),
             };
+            Log.I($"OpenAnnouncementsOptions: 未登录状态");
         }
         ComboSDK.OpenAnnouncements(opts, result =>{
                 if(result.IsSuccess)
@@ -75,10 +77,6 @@ internal class AnnouncementParameterView : View<AnnouncementParameterView>
         }
         else
         {
-            if(int.Parse(inputField.text) > 100)
-            {
-                return 100;
-            }
             return int.Parse(inputField.text);
         }
     }
