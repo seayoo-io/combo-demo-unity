@@ -23,6 +23,13 @@ def downloadUnitySDK() {
     unzip zipFile: files[0].name, dir: env.UNITY_SDK_PATH, quiet: true
 }
 
+def downloadVuplex() {
+    def vuplexZip = "Vuplex.zip"
+
+    sh "curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"
+    unzip zipFile: vuplexZip, dir: env.UNITY_VUPLEX_PATH, quiet: true
+}
+
 def getEndpoint() {
     return (params.TARGET_ENV == "dev") ? "https://api.dev.seayoo.com" : "https://api.seayoo.com"
 }
@@ -77,10 +84,15 @@ pipeline {
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
+        string(name: 'UNITY_VUPLEX_URL',
+            defaultValue: 'https://s3.shiyou.kingsoft.com/software/vuplex/4.8/Vuplex.zip',
+            description: 'Vuplex Path',
+            trim: true)
     }
     environment {
         UNITY_ROOT = getUnityRoot('2019.4.40f1')
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
+        UNITY_VUPLEX_PATH = "${env.WORKSPACE}/Assets"
     }
     stages {
         stage('Clean and Setup') {
@@ -111,6 +123,13 @@ pipeline {
             steps {
                 script {
                     downloadUnitySDK()
+                }
+            }
+        }
+        stage('Integrate Vuplex') {
+            steps {
+                script {
+                    downloadVuplex()
                 }
             }
         }
