@@ -39,9 +39,10 @@ def downloadVuplex() {
     def vuplexZip = "Vuplex.zip"
 
     bat "curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"
-    writeFile file: packageFile, text: """
-vuplex-url: ${params.UNITY_VUPLEX_URL}
-"""
+    def newPackageJson = [
+        "vuplex-url": "${params.UNITY_VUPLEX_URL}"
+    ]
+    writeFile file: packageFile, text: groovy.json.JsonOutput.toJson(newPackageJson)
     unzip zipFile: vuplexZip, dir: env.UNITY_VUPLEX_PATH, quiet: true
 }
 
