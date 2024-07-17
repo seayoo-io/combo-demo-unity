@@ -89,3 +89,7 @@ crashlytics-build.properties
 /[Aa]ssets/ComboSDK/Resources/ComboSDKSettings.asset*
 ComboSDK.json
 ComboSDK.json.meta
+
+# Vuplex
+/Assets/Vuplex
+/Assets/Vuplex.meta
