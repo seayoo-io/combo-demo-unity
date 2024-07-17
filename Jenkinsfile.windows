@@ -24,9 +24,24 @@ def downloadUnitySDK() {
 }
 
 def downloadVuplex() {
+    def packageFile = 'package.json'
+    if(fileExists(packageFile))
+    {
+        def lastVuplexFile = readFile(packageFile)
+        def packageJson = readJSON text: lastVuplexFile
+        def vuplexUrl = packageJson['vuplex-url']
+        if(vuplexUrl == "${params.UNITY_VUPLEX_URL}")
+        {
+            return
+        }
+    }
+    
     def vuplexZip = "Vuplex.zip"
 
     bat "curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"
+    writeFile file: packageFile, text: """
+vuplex-url: ${params.UNITY_VUPLEX_URL}
+"""
     unzip zipFile: vuplexZip, dir: env.UNITY_VUPLEX_PATH, quiet: true
 }
 
