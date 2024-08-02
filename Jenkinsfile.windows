@@ -106,7 +106,7 @@ pipeline {
             trim: true)
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2019.4.40f1')
+        UNITY_ROOT = getUnityRoot('2022.3.38f1')
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         UNITY_VUPLEX_PATH = "${env.WORKSPACE}/Assets"
     }
