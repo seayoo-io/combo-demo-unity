@@ -25,7 +25,7 @@ public static class ButtonManager
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, true}, 
-            {ButtonType.SentryCaptureButton, false}, 
+            {ButtonType.SentryCaptureButton, true}, 
             {ButtonType.SentryCrashButton, true},
             {ButtonType.DataReportButton, false},
             {ButtonType.LinkShareButton, false},
@@ -38,7 +38,7 @@ public static class ButtonManager
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, false}, 
-            {ButtonType.SentryCaptureButton, false}, 
+            {ButtonType.SentryCaptureButton, true}, 
             {ButtonType.SentryCrashButton, true},
             {ButtonType.DataReportButton, false},
             {ButtonType.LinkShareButton, true},
@@ -51,7 +51,7 @@ public static class ButtonManager
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, false}, 
-            {ButtonType.SentryCaptureButton, false}, 
+            {ButtonType.SentryCaptureButton, true}, 
             {ButtonType.SentryCrashButton, true},
             {ButtonType.DataReportButton, false},
             {ButtonType.LinkShareButton, true},
