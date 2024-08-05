@@ -21,7 +21,7 @@ public static class ErrorTrackViewController
     }
     public static void OnSentryCapture()
     {
-
+        SentrySdk.CaptureMessage("Something went wrong");
     }
 
     public static void OnSentryCrash()

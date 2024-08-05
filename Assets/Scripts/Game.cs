@@ -65,6 +65,11 @@ public class Game : MonoBehaviour
         UIController.ShowAnnouncementParameterView(true);
     }
 
+    public void OpenStatusView()
+    {
+        StatusManager.OpenStatusView();
+    }
+
     [EventSystem.BindEvent]
     void OpenAnnouncement(OpenAnnouncementsEvent evt)
     {
