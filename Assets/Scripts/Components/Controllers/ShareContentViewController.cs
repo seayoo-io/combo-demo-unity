@@ -27,7 +27,7 @@ public static class ShareContentViewController
         sharePlatformView.Show();
         ImgShareEvent.Invoke(new ImgShareEvent {
             title = model.title,
-            contents = model.content,
+            text = model.content,
             imageUrl = model.imageUrl,
             hashtag = model.hashtag,
         });
@@ -42,7 +42,7 @@ public static class ShareContentViewController
         sharePlatformView.Show();
         VideoShareEvent.Invoke(new VideoShareEvent {
             title = model.title,
-            contents = model.content,
+            text = model.content,
             videoUrl = model.videoUrl,
             videoCoverUrl = model.videoCoverUrl,
             hashtag = model.hashtag,
@@ -58,7 +58,7 @@ public static class ShareContentViewController
         sharePlatformView.Show();
         LinkShareEvent.Invoke(new LinkShareEvent {
             title = model.title,
-            contents = model.contents,
+            text = model.contents,
             linkUrl = model.linkUrl,
             linkCoverUrl = model.linkCoverUrl,
         });

@@ -68,7 +68,7 @@ public class SharePlatformViewController : MonoBehaviour
         shareType = ShareType.Image;
         imageShareOptions = new ImageShareOptions {
             Title = evt.title,
-            Text = evt.contents,
+            Text = evt.text,
             ImageUrl = evt.imageUrl,
             Hashtag = evt.hashtag,
         };
@@ -80,7 +80,7 @@ public class SharePlatformViewController : MonoBehaviour
         shareType = ShareType.Video;
         videoShareOptions = new VideoShareOptions {
             Title = evt.title,
-            Text = evt.contents,
+            Text = evt.text,
             VideoUrl = evt.videoUrl,
             VideoCoverUrl = evt.videoCoverUrl,
             Hashtag = evt.hashtag,
@@ -93,7 +93,7 @@ public class SharePlatformViewController : MonoBehaviour
         shareType = ShareType.Link;
         linkShareOptions = new LinkShareOptions {
             Title = evt.title,
-            Text = evt.contents,
+            Text = evt.text,
             LinkUrl = evt.linkUrl,
             LinkCoverUrl = evt.linkCoverUrl,
         };
