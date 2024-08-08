@@ -275,7 +275,7 @@ pipeline {
             }
             steps {
                 withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
-                    sh "./combo ios upload-symbols --auth-token $SENTRY_TOKEN --symbols ${DSYM_PATH} --project combo-demo-unity"
+                    sh "./combo ios upload-symbols --auth-token $SENTRY_TOKEN --symbols ${DSYM_PATH} --project combo-demo"
                 }
             }
         }
