@@ -214,7 +214,7 @@ pipeline {
                     withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
                         bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
                             --org sentry \
-                            --project combo-demo-unity \
+                            --project combo-demo \
                             --auth-token ${SENTRY_TOKEN} \
                             --wait Build\\Windows\\combosdk-unity-demo_Data\\Plugins\\x86_64\\sentry.dll Build\\Windows\\GameAssembly.dll Build\\Windows\\UnityPlayer.dll """
                     }
