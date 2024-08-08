@@ -223,7 +223,7 @@ pipeline {
                     withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
                         sh """sentry-cli-Darwin-universal --url=https://sentry.seayoo.com upload-dif \
                             --org sentry \
-                            --project combo-demo-unity \
+                            --project combo-demo \
                             --auth-token ${SENTRY_TOKEN} \
                             --wait ${env.ANDROID_ROOT}/unityLibrary/src/main/jniLibs/ """
                     }
