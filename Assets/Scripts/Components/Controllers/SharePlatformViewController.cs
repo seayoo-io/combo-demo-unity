@@ -68,7 +68,7 @@ public class SharePlatformViewController : MonoBehaviour
         shareType = ShareType.Image;
         imageShareOptions = new ImageShareOptions {
             Title = evt.title,
-            Contents = evt.contents,
+            Text = evt.text,
             ImageUrl = evt.imageUrl,
             Hashtag = evt.hashtag,
         };
@@ -80,7 +80,7 @@ public class SharePlatformViewController : MonoBehaviour
         shareType = ShareType.Video;
         videoShareOptions = new VideoShareOptions {
             Title = evt.title,
-            Contents = evt.contents,
+            Text = evt.text,
             VideoUrl = evt.videoUrl,
             VideoCoverUrl = evt.videoCoverUrl,
             Hashtag = evt.hashtag,
@@ -93,7 +93,7 @@ public class SharePlatformViewController : MonoBehaviour
         shareType = ShareType.Link;
         linkShareOptions = new LinkShareOptions {
             Title = evt.title,
-            Contents = evt.contents,
+            Text = evt.text,
             LinkUrl = evt.linkUrl,
             LinkCoverUrl = evt.linkCoverUrl,
         };
@@ -110,7 +110,7 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new ImageShareOptions { 
                         Target = shareTarget,
                         Title = imageShareOptions.Title,
-                        Contents = imageShareOptions.Contents,
+                        Text = imageShareOptions.Text,
                         ImageUrl = imageShareOptions.ImageUrl,
                         Hashtag = imageShareOptions.Hashtag,
                     };
@@ -120,7 +120,7 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new ImageShareOptions { 
                         Target = shareTarget,
                         Title = imageShareOptions.Title,
-                        Contents = imageShareOptions.Contents,
+                        Text = imageShareOptions.Text,
                         ImageUrl = imageShareOptions.ImageUrl,
                         Hashtag = imageShareOptions.Hashtag,
                         Scene = (ShareScene)shareScene,
@@ -133,7 +133,7 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new VideoShareOptions { 
                         Target = shareTarget,
                         Title = videoShareOptions.Title,
-                        Contents = videoShareOptions.Contents,
+                        Text = videoShareOptions.Text,
                         VideoUrl = videoShareOptions.VideoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
@@ -149,7 +149,7 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new VideoShareOptions { 
                         Target = shareTarget,
                         Title = videoShareOptions.Title,
-                        Contents = videoShareOptions.Contents,
+                        Text = videoShareOptions.Text,
                         VideoUrl = videoUrl,
                         VideoCoverUrl = videoShareOptions.VideoCoverUrl,
                         Hashtag = videoShareOptions.Hashtag,
@@ -163,7 +163,7 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new LinkShareOptions { 
                         Target = shareTarget,
                         Title = linkShareOptions.Title,
-                        Contents = linkShareOptions.Contents,
+                        Text = linkShareOptions.Text,
                         LinkUrl = linkShareOptions.LinkUrl,
                         LinkCoverUrl = linkShareOptions.LinkCoverUrl,
                     };
@@ -173,7 +173,7 @@ public class SharePlatformViewController : MonoBehaviour
                     opts = new LinkShareOptions { 
                         Target = shareTarget,
                         Title = linkShareOptions.Title,
-                        Contents = linkShareOptions.Contents,
+                        Text = linkShareOptions.Text,
                         LinkUrl = linkShareOptions.LinkUrl,
                         LinkCoverUrl = linkShareOptions.LinkCoverUrl,
                         Scene = (ShareScene)shareScene,
