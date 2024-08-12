@@ -22,7 +22,16 @@ public class ReportDataManager : MonoBehaviour
         {
             amount = "0";
         }
-        OnPromoPseudoPurchase(int.Parse(amount));
+        int result;
+        if (int.TryParse(amount, out result))
+        {
+            OnPromoPseudoPurchase(result);
+        }
+        else
+        {
+            Toast.Show("转换失败或数字超出 int 的范围");
+        }
+        
     }
 
     public void OnPromoPseudoPurchase(int amount)
