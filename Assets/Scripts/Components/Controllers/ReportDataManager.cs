@@ -17,7 +17,12 @@ public class ReportDataManager : MonoBehaviour
     [EventSystem.BindEvent]
     void HandlePromoPseudoPurchaseEvent(PromoPseudoPurchaseEvent evt)
     {
-        OnPromoPseudoPurchase(int.Parse(evt.amount));
+        string amount = evt.amount;
+        if (string.IsNullOrEmpty(evt.amount))
+        {
+            amount = "0";
+        }
+        OnPromoPseudoPurchase(int.Parse(amount));
     }
 
     public void OnPromoPseudoPurchase(int amount)
