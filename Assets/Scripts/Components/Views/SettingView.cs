@@ -8,6 +8,7 @@ using UnityEngine.UI;
 internal class SettingView : View<SettingView>
 {
     public InputField shortLink;
+    public InputField promoPseudoPurchaseAmount;
     public Button logoutBtn;
     public Button clearBtn;
     public Button cancelBtn;
@@ -58,6 +59,13 @@ internal class SettingView : View<SettingView>
     public void OnOpenShortLink(){
         OpenShortLinkEvent.Invoke(new OpenShortLinkEvent {
             shortLink = shortLink.text,
+        });
+    }
+
+    public void OnPromoPseudoPurchase()
+    {
+        PromoPseudoPurchaseEvent.Invoke(new PromoPseudoPurchaseEvent {
+            amount = promoPseudoPurchaseAmount.text
         });
     }
 
