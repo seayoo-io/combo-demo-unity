@@ -64,9 +64,11 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             // UNITY_USES_REMOTE_NOTIFICATIONS 0 -> 1
             PatchPreprocessor(report.summary.outputPath);
 
+#if !UNITY_2022
             // PrivacyInfo.xcprivacy
             var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
             AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
+#endif
 
             pbxProject.WriteToFile(projectPath);
 
