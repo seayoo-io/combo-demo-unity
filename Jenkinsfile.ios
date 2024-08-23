@@ -138,7 +138,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2019.4.40f1')
+        UNITY_ROOT = getUnityRoot('2022.3.36f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
         FRAMEWORK_PATH = "${env.WORKSPACE}/Frameworks"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
