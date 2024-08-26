@@ -166,6 +166,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.seayoo.sdk.demo
+    Standalone: com.seayoo.combo-demo
     iPhone: com.ksDemo.omni
   buildNumber:
     Standalone: 0
@@ -823,7 +824,7 @@ PlayerSettings:
     PS5: 1
     QNX: 1
     Stadia: 1
-    Standalone: 1
+    Standalone: 4
     VisionOS: 1
     WebGL: 1
     Windows Store Apps: 1
