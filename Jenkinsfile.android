@@ -193,13 +193,11 @@ pipeline {
 
                     sh 'chmod +x ./combo'
                     dir(env.ANDROID_ROOT) {
-                        withGradle('7.5.1') {
-                            def credentialsId = "combo-${params.GAME_ID}.build-key"
-                            withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
-                                writeComboYaml(COMBOSDK_BUILD_KEY)
-                            }
-                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO}"
+                        def credentialsId = "combo-${params.GAME_ID}.build-key"
+                        withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                            writeComboYaml(COMBOSDK_BUILD_KEY)
                         }
+                        sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO}"
                     }
                 }
             }
