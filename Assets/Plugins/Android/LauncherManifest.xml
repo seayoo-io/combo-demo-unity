@@ -11,6 +11,5 @@
 <!--Set android:allowBackup to"false" https://docs.seayoo.com/combo/tutorial/faq/ -->
     <application android:allowBackup="false"
                  android:label="@string/app_name"
-                 android:icon="@mipmap/app_icon"
-                 tools:node="replace"/>
+                 android:icon="@mipmap/app_icon"/>
 </manifest>
