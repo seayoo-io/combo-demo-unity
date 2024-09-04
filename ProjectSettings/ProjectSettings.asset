@@ -182,7 +182,7 @@ PlayerSettings:
     iPhone: com.ksDemo.omni
   buildNumber: {}
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 22
+  AndroidMinSdkVersion: 23
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
   aotOptions: 
@@ -691,7 +691,8 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: VUPLEX_STANDALONE
   platformArchitecture:
     iPhone: 1
   scriptingBackend:
