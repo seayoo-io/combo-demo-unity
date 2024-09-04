@@ -691,8 +691,7 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
-  scriptingDefineSymbols:
-    1: VUPLEX_STANDALONE
+  scriptingDefineSymbols: {}
   platformArchitecture:
     iPhone: 1
   scriptingBackend:
