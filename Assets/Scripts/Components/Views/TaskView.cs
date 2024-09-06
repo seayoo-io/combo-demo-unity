@@ -12,6 +12,7 @@ internal class TaskView : View<TaskView>
     public Button showAdBtn;
     public Button cancelBtn;
     private Action OnCancel;
+    public InputField scenarioIdField; 
 
     void Awake()
     {
@@ -28,12 +29,14 @@ internal class TaskView : View<TaskView>
     public void OnPreloadAd(){
         PreloadAdEvent.Invoke(new PreloadAdEvent {
             placementId = placementIdField.text,
+            scenarioId = scenarioIdField.text
         });
     }
 
     public void OnShowAd(){
         ShowAdEvent.Invoke(new ShowAdEvent {
             placementId = placementIdField.text,
+            scenarioId = scenarioIdField.text
         });
     }
 
