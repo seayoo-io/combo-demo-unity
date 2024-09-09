@@ -43,7 +43,7 @@ public class AdManager : MonoBehaviour
             placementId = placementId,
             scenarioId = scenarioId
         };
-        Log.I("PreloadAd PlacementId: " + opts.placementId);
+        Log.I($"PreloadAd PlacementId: {opts.placementId} ScenarioId: {scenarioId}");
         ComboSDK.PreloadAd(opts, r =>
         {
             UIController.HideLoading();
