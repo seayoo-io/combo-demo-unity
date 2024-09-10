@@ -21,16 +21,16 @@ public class AdManager : MonoBehaviour
     [EventSystem.BindEvent]
     void HandlePreloadAdEvent(PreloadAdEvent evt)
     {
-        OnPreloadAd(evt.placementId);
+        OnPreloadAd(evt.placementId, evt.scenarioId);
     }
 
     [EventSystem.BindEvent]
     void HandleShowAdEvent(ShowAdEvent evt)
     {
-        OnShowAd(evt.placementId);
+        OnShowAd(evt.placementId, evt.scenarioId);
     }
 
-    public void OnPreloadAd(string placementId)
+    public void OnPreloadAd(string placementId, string scenarioId)
     {
         if (string.IsNullOrEmpty(placementId))
         {
@@ -41,8 +41,9 @@ public class AdManager : MonoBehaviour
         var opts = new PreloadAdOptions
         {
             placementId = placementId,
+            scenarioId = scenarioId
         };
-        Log.I("PreloadAd PlacementId: " + opts.placementId);
+        Log.I($"PreloadAd PlacementId: {opts.placementId} ScenarioId: {scenarioId}");
         ComboSDK.PreloadAd(opts, r =>
         {
             UIController.HideLoading();
@@ -61,7 +62,7 @@ public class AdManager : MonoBehaviour
         });
     }
 
-    public void OnShowAd(string placementId)
+    public void OnShowAd(string placementId, string scenarioId)
     {
         if (string.IsNullOrEmpty(placementId))
         {
@@ -71,6 +72,7 @@ public class AdManager : MonoBehaviour
         var opts = new ShowAdOptions
         {
             placementId = placementId,
+            scenarioId = scenarioId
         };
         UIController.ShowLoading();
         ComboSDK.ShowAd(opts, r =>
