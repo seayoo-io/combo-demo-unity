@@ -22,7 +22,9 @@ public class QuitGameController : MonoBehaviour
             else
             {
                 lastPressTime = Time.time;
+#if UNITY_ANDROID || UNITY_IOS
                 Toast.Show("再次滑动返回退出游戏");
+#endif
             }
         }
     }
