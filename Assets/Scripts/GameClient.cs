@@ -279,6 +279,15 @@ public static class GameClient
 
     private static void LogErrorWithToast(object message)
     {
+        if (message is string messageStr)
+        {
+            if (messageStr == "Cannot connect to destination host")
+            {
+                Toast.Show("网络异常，请检查网络");
+                Log.E($"DemoServer: {message}");
+                return;
+            }
+        }
         Toast.Show(message);
         Log.E($"DemoServer: {message}");
     }
