@@ -38,6 +38,7 @@ public class Login : MonoBehaviour
                 }
             }
         });
+        Application.targetFrameRate = 60;
     }
     void Start()
     {
