@@ -12,10 +12,10 @@ using System.Collections.Generic;
 public class DemoIOSPostBuild : IPostprocessBuildWithReport
 {
     public static class BuildArguments {
-        public static string BundleId => System.Environment.GetEnvironmentVariable("PRODUCT_BUNDLE_IDENTIFIER") ?? "com.ksDemo.omni";
-        public static string SignIdentity => System.Environment.GetEnvironmentVariable("CODE_SIGN_IDENTITY") ?? "Apple Development: TingTing Liu (QWVQYB57WJ)";
-        public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER") ?? "dev_provision";
-        public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM") ?? "SP537S8Q2J";
+        public static string BundleId => System.Environment.GetEnvironmentVariable("PRODUCT_BUNDLE_IDENTIFIER") ?? "com.seayoo.demo.combo";
+        public static string SignIdentity => System.Environment.GetEnvironmentVariable("CODE_SIGN_IDENTITY") ?? "Apple Development: Hao Wu (AVMJXXS6SS)";
+        public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER") ?? "combo_dev_provision";
+        public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM") ?? "3PMCL4FRNT";
         public static string Capabilities => System.Environment.GetEnvironmentVariable("CAPABILITIES") ?? "SignInWithApple";
     }
 
