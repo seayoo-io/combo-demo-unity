@@ -55,10 +55,10 @@ def updateCodeSigningSettings() {
 
 def environmentParams = [
     'demo': [
-        'bundleId': 'com.ksDemo.omni', 
-        'codeSignId': 'Apple Development: TingTing Liu (QWVQYB57WJ)', 
-        'provision': 'dev_provision',
-        'developmentTeam': 'SP537S8Q2J',
+        'bundleId': 'com.seayoo.demo.combo', 
+        'codeSignId': 'Apple Development: Hao Wu (AVMJXXS6SS)', 
+        'provision': 'combo_dev_provision',
+        'developmentTeam': '3PMCL4FRNT',
         'exportOptionsPlist': 'combo-demo.export-options'
     ],
     'catsnsoup': [
