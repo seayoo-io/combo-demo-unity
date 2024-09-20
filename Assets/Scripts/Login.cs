@@ -38,7 +38,6 @@ public class Login : MonoBehaviour
                 }
             }
         });
-        QualitySettings.vSyncCount = 1;
         Application.targetFrameRate = 60;
     }
     void Start()
