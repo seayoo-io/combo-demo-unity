@@ -33,8 +33,8 @@ public class APIStatusController : MonoBehaviour
         { "IsFeatureAvailable", "检查功能是否可用" },
 #if UNITY_ANDROID || UNITY_IOS
         { "GetAvailableShareTargets", "获取可分享的平台" },
-        { "GetDownloadUrl", "获取下载链接" },
 #endif
+        { "GetDownloadUrl", "获取下载链接" },
         { "CheckAnnouncements", "检查公告" },
         { "GetDistro", "获取发行版" },
 #if UNITY_ANDROID
