@@ -36,7 +36,7 @@ public class APIStatusController : MonoBehaviour
 #endif
         { "GetDownloadUrl", "获取下载链接" },
         { "CheckAnnouncements", "检查公告" },
-        { "GetDistro", "获取发行版" },
+        { "GetDistro", "获取发行版本" },
 #if UNITY_ANDROID
         { "GetVariant", "获取分包标识" },
 #endif
