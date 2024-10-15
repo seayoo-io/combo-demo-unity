@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Combo;
 
 [ViewPrefab("Prefabs/ComplainView")]
 internal class ComplainView : View<ComplainView>
 {
+    private RankType rankType = RankType.Character;
     public string playerId;
     public Text accountName;
     public Image playerImage;
@@ -35,11 +37,13 @@ internal class ComplainView : View<ComplainView>
     {
         if(rankType == RankType.Character)
         {
+            rankType = RankType.Character;
             CharacterPanel.gameObject.SetActive(true);
             ZongmenPanel.gameObject.SetActive(false);
         }
         else
         {
+            rankType = RankType.Zongmen;
             ZongmenPanel.gameObject.SetActive(true);
             CharacterPanel.gameObject.SetActive(false);
         }
@@ -72,7 +76,77 @@ internal class ComplainView : View<ComplainView>
 
     void OnComplainConfigBtn()
     {
-        OnComplain.Invoke();
+        var opts = new ComplainOptions()
+        {
+            TargetType = GetTargetType(),
+            TargetId = GetTargetId(),
+            TargetName = GetTargetName(),
+            ServerId = "1",
+            RoleId = GetRoleId(),
+            RoleName = "举报者名称",
+        };
+        ComboSDK.Complain(opts, result =>{
+            if(result.IsSuccess)
+            {
+                Destroy();
+                Toast.Show("游戏内举报成功");
+                Log.I("游戏内举报成功");
+            }
+            else
+            {
+                Toast.Show($"公告打开失败：{result.Error.Message}");
+            }
+        });
+    }
+
+    private string GetTargetType()
+    {
+        if(rankType == RankType.Character)
+        {
+            return "character";
+        }
+        else 
+        {
+            return "zongmen";
+        }
+    }
+
+    private string GetTargetId()
+    {
+        if(rankType == RankType.Character)
+        {
+            return playerId;
+        }
+        else 
+        {
+            return zongmenNumber.text;
+        }
+    }
+
+    private string GetTargetName()
+    {
+        if(rankType == RankType.Character)
+        {
+            return accountName.text;
+        }
+        else 
+        {
+            return zongmenName.text;
+        }
+    }
+
+    private string GetRoleId() 
+    {
+        string roleId;
+        if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
+        {
+            roleId = ComboSDK.SeayooAccount.UserId;
+        }
+        else
+        {
+            roleId = ComboSDK.GetLoginInfo().comboId;
+        }
+        return roleId;
     }
 
     public void SetOnComplainCallback(Action OnComplain)
