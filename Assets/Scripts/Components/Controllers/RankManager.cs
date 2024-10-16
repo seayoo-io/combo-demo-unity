@@ -1,3 +1,4 @@
+using Combo;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -110,14 +111,30 @@ public class RankManager : MonoBehaviour
         view.Show();
     }
 
-    public void OnOpenCharacter(Character character)
+    [EventSystem.BindEvent]
+    public void Complain(ComplainEvent evt)
     {
-        var view = ComplainView.Instantiate();
-
-    }
-
-    public void OnOpenZongmen(Zongmen zongmen)
-    {
-
+        var opts = new ComplainOptions()
+        {
+            TargetType = evt.targetType,
+            TargetId = evt.targetId,
+            TargetName = evt.targetName,
+            ServerId = evt.serverId,
+            RoleId = evt.roleId,
+            RoleName = evt.roleName,
+            Width = evt.width,
+            Height = evt.height
+        };
+        ComboSDK.Complain(opts, result =>{
+            if(result.IsSuccess)
+            {
+                Toast.Show("游戏内举报成功");
+                Log.I("游戏内举报成功");
+            }
+            else
+            {
+                Toast.Show($"举报界面打开失败：{result.Error.Message}");
+            }
+        });
     }
 }

@@ -77,28 +77,16 @@ internal class ComplainView : View<ComplainView>
 
     void OnComplainConfigBtn()
     {
-        var opts = new ComplainOptions()
-        {
-            TargetType = GetTargetType(),
-            TargetId = GetTargetId(),
-            TargetName = GetTargetName(),
-            ServerId = "1",
-            RoleId = GetRoleId(),
-            RoleName = "举报者名称",
-            Width = 100,
-            Height = 100
-        };
-        ComboSDK.Complain(opts, result =>{
-            if(result.IsSuccess)
-            {
-                Destroy();
-                Toast.Show("游戏内举报成功");
-                Log.I("游戏内举报成功");
-            }
-            else
-            {
-                Toast.Show($"公告打开失败：{result.Error.Message}");
-            }
+        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        ComplainEvent.Invoke(new ComplainEvent {
+            targetType = GetTargetType(),
+            targetId = GetTargetId(),
+            targetName = GetTargetName(),
+            serverId = role.serverId,
+            roleId = GetRoleId() ,
+            roleName = role.roleName,
+            width = 100,
+            height = 100
         });
     }
 
