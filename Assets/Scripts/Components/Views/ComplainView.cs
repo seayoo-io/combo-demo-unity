@@ -7,7 +7,7 @@ using Combo;
 [ViewPrefab("Prefabs/ComplainView")]
 internal class ComplainView : View<ComplainView>
 {
-    private RankType rankType = RankType.Character;
+    private RankType rankType;
     public string playerId;
     public Text accountName;
     public Image playerImage;
@@ -35,15 +35,16 @@ internal class ComplainView : View<ComplainView>
 
     public void ComplainType(RankType rankType)
     {
+        Log.I("ComplainType:" + rankType);
         if(rankType == RankType.Character)
         {
-            rankType = RankType.Character;
+            this.rankType = RankType.Character;
             CharacterPanel.gameObject.SetActive(true);
             ZongmenPanel.gameObject.SetActive(false);
         }
         else
         {
-            rankType = RankType.Zongmen;
+            this.rankType = RankType.Zongmen;
             ZongmenPanel.gameObject.SetActive(true);
             CharacterPanel.gameObject.SetActive(false);
         }
@@ -84,6 +85,8 @@ internal class ComplainView : View<ComplainView>
             ServerId = "1",
             RoleId = GetRoleId(),
             RoleName = "举报者名称",
+            Width = 100,
+            Height = 100
         };
         ComboSDK.Complain(opts, result =>{
             if(result.IsSuccess)
@@ -103,7 +106,7 @@ internal class ComplainView : View<ComplainView>
     {
         if(rankType == RankType.Character)
         {
-            return "character";
+            return "role";
         }
         else 
         {
