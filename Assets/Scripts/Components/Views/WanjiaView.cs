@@ -17,9 +17,9 @@ internal class WanjiaView : View<WanjiaView>
     public void OnOpenComplainView(){
         var view = ComplainView.Instantiate();
         view.ComplainType(RankType.Wanjia);
-        view.SetZongmenName(wanjia.wanjiaName);
-        view.SetZongmenLevel(wanjia.level);
-        view.SetZongmenNumber(wanjia.wanjiaId);
+        view.SetWanjiaName(wanjia.wanjiaName);
+        view.SetWanjiaLevel(wanjia.level);
+        view.SetWanjiaId(wanjia.wanjiaId);
     }
 
     void OnDestroy()
