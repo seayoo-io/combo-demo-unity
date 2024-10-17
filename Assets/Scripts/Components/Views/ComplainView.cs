@@ -11,6 +11,9 @@ internal class ComplainView : View<ComplainView>
     public string playerId;
     public Text accountName;
     public Image playerImage;
+    public Text wanjiaName;
+    public Text wanjiaLevel;
+    public Text wanjiaId;
     public Text zongmenName;
     public Text zongmenLevel;
     public Text zongmenNumber;
@@ -19,6 +22,7 @@ internal class ComplainView : View<ComplainView>
     public Button cancelBtn;
     private Action OnComplain;
     public GameObject CharacterPanel;
+    public GameObject WanjiaPanel;
     public GameObject ZongmenPanel;
 
     void Awake()
@@ -40,12 +44,21 @@ internal class ComplainView : View<ComplainView>
         {
             this.rankType = RankType.Character;
             CharacterPanel.gameObject.SetActive(true);
+            WanjiaPanel.gameObject.SetActive(false);
             ZongmenPanel.gameObject.SetActive(false);
         }
-        else
+        else if(rankType == RankType.Wanjia)
+        {
+            this.rankType = RankType.Wanjia;
+            WanjiaPanel.gameObject.SetActive(true);
+            CharacterPanel.gameObject.SetActive(false);
+            ZongmenPanel.gameObject.SetActive(false);
+        }
+        else if(rankType == RankType.Zongmen)
         {
             this.rankType = RankType.Zongmen;
             ZongmenPanel.gameObject.SetActive(true);
+            WanjiaPanel.gameObject.SetActive(false);
             CharacterPanel.gameObject.SetActive(false);
         }
     }
@@ -59,6 +72,17 @@ internal class ComplainView : View<ComplainView>
     }
     public void SetPlayerImage(Sprite sprite) {
         playerImage.sprite = sprite;
+    }
+
+    public void SetWanjiaName(string name) {
+        wanjiaName.text = name;
+    }
+    public void SetWanjiaLevel(string level) {
+        wanjiaLevel.text = level;
+    }
+
+    public void SetWanjiaId(string id) {
+        wanjiaId.text = id;
     }
 
     public void SetZongmenName(string name) {
@@ -88,6 +112,7 @@ internal class ComplainView : View<ComplainView>
             width = 100,
             height = 100
         });
+        Destroy();
     }
 
     private string GetTargetType()
@@ -96,7 +121,11 @@ internal class ComplainView : View<ComplainView>
         {
             return "role";
         }
-        else 
+        else if(rankType == RankType.Wanjia)
+        {
+            return "wanjia";
+        }
+        else
         {
             return "zongmen";
         }
@@ -107,6 +136,10 @@ internal class ComplainView : View<ComplainView>
         if(rankType == RankType.Character)
         {
             return playerId;
+        }
+        else if(rankType == RankType.Wanjia)
+        {
+            return wanjiaId.text;
         }
         else 
         {
@@ -119,6 +152,10 @@ internal class ComplainView : View<ComplainView>
         if(rankType == RankType.Character)
         {
             return accountName.text;
+        }
+        else if(rankType == RankType.Wanjia)
+        {
+            return wanjiaName.text;
         }
         else 
         {
