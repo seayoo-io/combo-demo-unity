@@ -50,6 +50,11 @@ public class Game : MonoBehaviour
         UIController.ShowShopView();
     }
 
+    public void OnRank()
+    {
+        UIController.ShowRankView();
+    }
+
     public void OnTask()
     {
         UIController.ShowTaskView();
