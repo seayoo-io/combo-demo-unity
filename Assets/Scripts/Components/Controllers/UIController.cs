@@ -64,6 +64,16 @@ public static class UIController
         ShopView.DestroyAll();
     }
 
+    public static void ShowRankView()
+    {
+        RankView.DestroyAll();
+        var rankView = RankView.Instantiate();
+        rankView.SetGoHomeCallback(() => {
+            rankView.Destroy();
+        });
+        rankView.Show();
+    }
+
     public static void ShowTaskView()
     {
         TaskView.DestroyAll();
