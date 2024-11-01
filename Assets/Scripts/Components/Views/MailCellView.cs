@@ -24,27 +24,30 @@ internal class MailCellView : View<MailCellView>
         clickBtn.onClick.RemoveListener(OnClickButton);
     }
 
-    public void SetMailInfo(MailType mailType, RewardMailInfo rewardMailInfo = null, MailInfo mailInfo = null)
+    public void SetMailInfo(MailInfo mailInfo)
     {
-        this.mailType = mailType;
-        if(mailType == MailType.System)
+        if(string.IsNullOrEmpty(mailInfo.from))
         {
+            mailType = MailType.System;
             mail = mailInfo;
             mailTypeText.text = "系统邮件";
             mailTitleText.text = mailInfo.title;
         }
-        else if(mailType == MailType.Friend)
+        else
         {
+            mailType = MailType.Friend;
             mail = mailInfo;
             mailTypeText.text = "好友邮件";
             mailTitleText.text = mailInfo.title;
         }
-        else
-        {
-            mail = rewardMailInfo;
-            mailTypeText.text = "活动奖励";
-            mailTitleText.text = "";
-        }
+    }
+
+    public void SetRewardInfo(RewardMailInfo rewardMailInfo)
+    {
+        mailType = MailType.Reward;
+        mail = rewardMailInfo;
+        mailTypeText.text = "活动奖励";
+        mailTitleText.text = "";
     }
 
     public void OnClickButton()
@@ -53,14 +56,14 @@ internal class MailCellView : View<MailCellView>
         {
             SendRewardEvent.Invoke(new SendRewardEvent{
                 rewardMailInfo = (RewardMailInfo)mail,
-                gameObject = this.gameObject
+                gameObject = gameObject
             });
         }
         else
         {
             SendMailEvent.Invoke(new SendMailEvent{
                 mailInfo = (MailInfo)mail,
-                gameObject = this.gameObject
+                gameObject = gameObject
             });
         }
     }

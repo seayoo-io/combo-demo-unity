@@ -88,8 +88,13 @@ internal class MailView : View<MailView>
             MailListManager.Instance.DeleteMail(mailInfo.mailId);
             Destroy(currentMailObject);
         }
+        StartCoroutine(UpdateMailListNextFrame());
+    }
+    private IEnumerator UpdateMailListNextFrame()
+    {
+        yield return null;  // 等待下一帧
         list = MailListManager.Instance.LoadMails();
-        if(list.Count == 0)
+        if (list.Count == 0)
         {
             contentPanel.SetActive(false);
             readAllButton.gameObject.SetActive(false);
@@ -145,7 +150,14 @@ internal class MailView : View<MailView>
     {
         contentPanel.SetActive(true);
         readAllButton.gameObject.SetActive(true);
-        AppendMailView(MailType.System, evt.mailInfo);
+        if(string.IsNullOrEmpty(evt.mailInfo.from))
+        {
+            AppendMailView(MailType.System, evt.mailInfo);
+        }
+        else
+        {
+            AppendMailView(MailType.Friend, evt.mailInfo);
+        }
         if(list.Count == 0)
         {
             currentMail = evt.mailInfo;
@@ -175,7 +187,7 @@ internal class MailView : View<MailView>
     {
         var view = MailCellView.Instantiate();
         view.gameObject.transform.localScale = Vector3.one;
-        view.SetMailInfo(mailType, null, mailInfo);
+        view.SetMailInfo(mailInfo);
         view.gameObject.transform.SetParent(parentTransform, false);
         view.Show();
     }
@@ -187,7 +199,7 @@ internal class MailView : View<MailView>
     {
         var view = MailCellView.Instantiate();
         view.gameObject.transform.localScale = Vector3.one;
-        view.SetMailInfo(mailType, rewardMailInfo);
+        view.SetRewardInfo(rewardMailInfo);
         view.gameObject.transform.SetParent(parentTransform, false);
         view.Show();
     }
@@ -206,6 +218,7 @@ internal class MailView : View<MailView>
         }
         else
         {
+            mailTitle.text = mailInfo.title + $": 来自好友 {mailInfo.from}";
             typeText.text = "好友";
         }
     }
