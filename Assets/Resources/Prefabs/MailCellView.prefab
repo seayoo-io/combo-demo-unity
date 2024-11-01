@@ -102,7 +102,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.6792453, g: 0.6792453, b: 0.6792453, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -447,6 +447,7 @@ GameObject:
   m_Component:
   - component: {fileID: 81644489371237712}
   - component: {fileID: 3528357130329953986}
+  - component: {fileID: 3014018899974319644}
   m_Layer: 5
   m_Name: MailCellView
   m_TagString: Untagged
@@ -482,3 +483,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7141056471628071698}
   m_CullTransparentMesh: 0
+--- !u!114 &3014018899974319644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7141056471628071698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539b2996bdf2cf5498cc8b990cb39c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mailTypeText: {fileID: 2080121616578557167}
+  mailTitleText: {fileID: 1913459190004737697}
+  unrealImage: {fileID: 3360385447444310780}
+  realImage: {fileID: 3723866796533350319}
+  clickBtn: {fileID: 1004766576852503652}
+  isRead: 0

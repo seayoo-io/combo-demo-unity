@@ -1,4 +1,6 @@
+using System;
 using Combo;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityWebSocket;
 
@@ -43,6 +45,7 @@ public class WebSocketComponent : MonoBehaviour
         }
         else
         {
+            MailListManager.Instance.SaveMail(ParseMail(e.Data));
             Message.Show(e.Data);
         }
     }
@@ -74,6 +77,30 @@ public class WebSocketComponent : MonoBehaviour
             webSocket.OnClose += OnClose;
             webSocket.OnError += OnError;
             webSocket.ConnectAsync();
+        }
+    }
+
+    private MailBaseInfo ParseMail(string jsonString)
+    {
+        JObject jsonObject = JObject.Parse(jsonString);
+
+        if (jsonObject.ContainsKey("items") && jsonObject.ContainsKey("present_ratio"))
+        {
+            RewardMailInfo rewardMailInfo = jsonObject.ToObject<RewardMailInfo>();
+            rewardMailInfo.mailId = Guid.NewGuid();
+            ReceivedRewardEvent.Invoke(new ReceivedRewardEvent{
+                rewardMailInfo = rewardMailInfo
+            });
+            return rewardMailInfo;
+        }
+        else
+        {
+            MailInfo mailInfo = jsonObject.ToObject<MailInfo>();
+            mailInfo.mailId = Guid.NewGuid();
+            ReceivedMailEvent.Invoke(new ReceivedMailEvent{
+                mailInfo = mailInfo
+            });
+            return mailInfo;
         }
     }
 }
