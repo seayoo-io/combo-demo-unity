@@ -127,7 +127,7 @@ internal class ShareContentView : View<ShareContentView>
         // var bytes = ScreenCapture.CaptureScreenshotAsTexture().EncodeToPNG();
         // var path = Path.Combine(Application.temporaryCachePath, $"share.png");
         // File.WriteAllBytes(path, bytes);
-        Texture2D texture = Resources.Load<Texture2D>("Textures/coverImg");
+        Texture2D texture = Resources.Load<Texture2D>("Textures/shareImg");
         string coverUrl = Path.Combine(Application.persistentDataPath, $"shareImg.png");
         byte[] bytes = texture.EncodeToPNG();
         File.WriteAllBytes(coverUrl, bytes);
