@@ -80,28 +80,14 @@ public class WebSocketComponent : MonoBehaviour
         }
     }
 
-    private MailBaseInfo ParseMail(string jsonString)
+    private MailInfo ParseMail(string jsonString)
     {
         JObject jsonObject = JObject.Parse(jsonString);
-        Log.I(jsonString);
 
-        if (jsonObject.ContainsKey("items") && jsonObject.ContainsKey("present_ratio"))
-        {
-            RewardMailInfo rewardMailInfo = jsonObject.ToObject<RewardMailInfo>();
-            rewardMailInfo.mailId = Guid.NewGuid();
-            ReceivedRewardEvent.Invoke(new ReceivedRewardEvent{
-                rewardMailInfo = rewardMailInfo
-            });
-            return rewardMailInfo;
-        }
-        else
-        {
-            MailInfo mailInfo = jsonObject.ToObject<MailInfo>();
-            mailInfo.mailId = Guid.NewGuid();
-            ReceivedMailEvent.Invoke(new ReceivedMailEvent{
-                mailInfo = mailInfo
-            });
-            return mailInfo;
-        }
+        MailInfo mailInfo = jsonObject.ToObject<MailInfo>();
+        ReceivedMailEvent.Invoke(new ReceivedMailEvent{
+            mailInfo = mailInfo
+        });
+        return mailInfo;
     }
 }

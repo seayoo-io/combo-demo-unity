@@ -10,7 +10,6 @@ internal class MailView : View<MailView>
     public Text mailContent;
     public Text typeText;
     public Text readBtnText;
-    public Text rewardItemNumber;
     public Text mailItemNumber;
     public Button readButton;
     public Button readAllButton;
@@ -18,12 +17,11 @@ internal class MailView : View<MailView>
     public Transform parentTransform;
     public RectTransform scrollViewPanel;
     public GameObject mailPanel;
-    public GameObject rewardPanel;
     public GameObject contentPanel;
     public GameObject mailItemPanel;
-    private MailBaseInfo currentMail;
+    private MailInfo currentMail;
     private GameObject currentMailObject;
-    private List<MailBaseInfo> list;
+    private List<MailInfo> list;
 
     void Awake()
     {
@@ -35,16 +33,8 @@ internal class MailView : View<MailView>
         list = MailListManager.Instance.LoadMails();
         foreach (var mail in list)
         {
-            if(mail.GetType() == typeof(RewardMailInfo))
-            {
-                var mailInfo = mail as RewardMailInfo;
-                AppendRewardView(MailType.Reward, mailInfo);
-            }
-            else
-            {
-                var mailInfo = mail as MailInfo;
-                AppendMailView(MailType.System, mailInfo);
-            }
+            var mailInfo = mail as MailInfo;
+            AppendMailView(MailType.System, mailInfo);
         }
         if(list.Count == 0)
         {
@@ -74,27 +64,17 @@ internal class MailView : View<MailView>
 
     public void ReadMail()
     {
-        if(currentMail.GetType() == typeof(RewardMailInfo))
+        var mailInfo = currentMail;
+        var number = GetItemNumber(mailInfo);
+        if(number > 0)
         {
-            var mailInfo = currentMail as RewardMailInfo;
-            RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
-                coinOffset = mailInfo.presentRatio
-            });
-            Toast.Show($"获得 {mailInfo.presentRatio} 金币");
-            MailListManager.Instance.DeleteMail(mailInfo.mailId);
-            Destroy(currentMailObject);
-        }
-        else
-        {
-            var mailInfo = currentMail as MailInfo;
-            var number = GetItemNumber(mailInfo);
             RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
                 coinOffset = number
             });
             Toast.Show($"获得 {number} 金币");
-            MailListManager.Instance.DeleteMail(mailInfo.mailId);
-            Destroy(currentMailObject);
         }
+        MailListManager.Instance.DeleteMail(mailInfo.referenceId);
+        Destroy(currentMailObject);
         StartCoroutine(UpdateMailListNextFrame());
     }
     private IEnumerator UpdateMailListNextFrame()
@@ -118,16 +98,7 @@ internal class MailView : View<MailView>
         int number = 0;
         foreach (var mail in list)
         {
-            if(mail.GetType() == typeof(RewardMailInfo))
-            {
-                var mailInfo = mail as RewardMailInfo;
-                number += mailInfo.presentRatio;
-            }
-            else
-            {
-                var mailInfo = mail as MailInfo;
-                number += GetItemNumber(mailInfo);
-            }
+            number += GetItemNumber(mail);
         }
         if(number > 0)
         {
@@ -144,7 +115,7 @@ internal class MailView : View<MailView>
         }
         contentPanel.SetActive(false);
         readAllButton.gameObject.SetActive(false);
-        list = new List<MailBaseInfo>();
+        list = new List<MailInfo>();
     }
 
     
@@ -154,14 +125,6 @@ internal class MailView : View<MailView>
         currentMail = evt.mailInfo;
         currentMailObject = evt.gameObject;
         SetMailInfo(evt.mailInfo);
-    }
-
-    [EventSystem.BindEvent]
-    void ReceiveReward(SendRewardEvent evt)
-    {
-        currentMail = evt.rewardMailInfo;
-        currentMailObject = evt.gameObject;
-        SetRewardInfo(evt.rewardMailInfo);
     }
 
     [EventSystem.BindEvent]
@@ -186,21 +149,6 @@ internal class MailView : View<MailView>
         }
     }
 
-    [EventSystem.BindEvent]
-    void UpdateReward(ReceivedRewardEvent evt)
-    {
-        contentPanel.SetActive(true);
-        readAllButton.gameObject.SetActive(true);
-        AppendRewardView(MailType.Reward, evt.rewardMailInfo);
-        list = MailListManager.Instance.LoadMails();
-        if(list.Count == 0)
-        {
-            currentMail = evt.rewardMailInfo;
-            currentMailObject = parentTransform.GetChild(0).gameObject;
-            SetRewardInfo(evt.rewardMailInfo);
-        }
-    }
-
     private void AppendMailView(
         MailType mailType,
         MailInfo mailInfo
@@ -213,23 +161,9 @@ internal class MailView : View<MailView>
         view.Show();
     }
 
-    private void AppendRewardView(
-        MailType mailType,
-        RewardMailInfo rewardMailInfo
-    )
-    {
-        var view = MailCellView.Instantiate();
-        view.gameObject.transform.localScale = Vector3.one;
-        view.SetRewardInfo(rewardMailInfo);
-        view.gameObject.transform.SetParent(parentTransform, false);
-        view.Show();
-    }
-
-
     private void SetMailInfo(MailInfo mailInfo)
     {
         mailPanel.gameObject.SetActive(true);
-        rewardPanel.gameObject.SetActive(false);
         mailTitle.text = mailInfo.title;
         mailContent.text = mailInfo.content;
         if(mailInfo.attachments != null && mailInfo.attachments.Count > 0)
@@ -259,32 +193,12 @@ internal class MailView : View<MailView>
         }
     }
 
-    private void SetRewardInfo(RewardMailInfo rewardMailInfo)
-    {
-        rewardPanel.gameObject.SetActive(true);
-        mailPanel.gameObject.SetActive(false);
-        mailItemPanel.SetActive(false);
-        mailTitle.text = "活动奖励";
-        rewardItemNumber.text = rewardMailInfo.presentRatio.ToString();
-        readBtnText.text = "领取";
-        typeText.text = "奖励";
-    }
-
-    private void SetFristMail(List<MailBaseInfo> list)
+    private void SetFristMail(List<MailInfo> list)
     {
         var firstMail = list[0];
         currentMail = firstMail;
         currentMailObject = parentTransform.GetChild(0).gameObject;
-        if(firstMail.GetType() == typeof(RewardMailInfo))
-        {
-            var mailInfo = firstMail as RewardMailInfo;
-            SetRewardInfo(mailInfo);
-        }
-        else
-        {
-            var mailInfo = firstMail as MailInfo;
-            SetMailInfo(mailInfo);
-        }
+        SetMailInfo(firstMail);
     }
 
     private int GetItemNumber(MailInfo mailInfo)

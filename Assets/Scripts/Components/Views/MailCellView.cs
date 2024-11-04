@@ -10,9 +10,8 @@ internal class MailCellView : View<MailCellView>
     public GameObject unrealImage;
     public GameObject realImage;
     public Button clickBtn;
-    public bool isRead;
     private MailType mailType;
-    private MailBaseInfo mail;
+    private MailInfo mail;
     void Awake()
     {
         clickBtn.onClick.AddListener(OnClickButton);
@@ -41,30 +40,12 @@ internal class MailCellView : View<MailCellView>
         }
     }
 
-    public void SetRewardInfo(RewardMailInfo rewardMailInfo)
-    {
-        mailType = MailType.Reward;
-        mail = rewardMailInfo;
-        mailTypeText.text = "活动奖励";
-        mailTitleText.text = "";
-    }
-
     public void OnClickButton()
     {
-        if(mailType == MailType.Reward)
-        {
-            SendRewardEvent.Invoke(new SendRewardEvent{
-                rewardMailInfo = (RewardMailInfo)mail,
-                gameObject = gameObject
-            });
-        }
-        else
-        {
-            SendMailEvent.Invoke(new SendMailEvent{
-                mailInfo = (MailInfo)mail,
-                gameObject = gameObject
-            });
-        }
+        SendMailEvent.Invoke(new SendMailEvent{
+            mailInfo = mail,
+            gameObject = gameObject
+        });
     }
 
     protected override IEnumerator OnHide()
