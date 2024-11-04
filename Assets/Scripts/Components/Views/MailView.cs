@@ -166,15 +166,12 @@ internal class MailView : View<MailView>
         mailPanel.gameObject.SetActive(true);
         mailTitle.text = mailInfo.title;
         mailContent.text = mailInfo.content;
-        if(mailInfo.attachments != null && mailInfo.attachments.Count > 0)
+        if(mailInfo.attachments != null && mailInfo.attachments.Count > 0 && GetItemNumber(mailInfo) > 0)
         {
             readBtnText.text = "领取";
-            if(GetItemNumber(mailInfo) != 0)
-            {
-                mailItemNumber.text = GetItemNumber(mailInfo).ToString();
-                mailItemPanel.SetActive(true);
-                scrollViewPanel.offsetMin = new Vector2(0, -125);
-            }
+            mailItemNumber.text = GetItemNumber(mailInfo).ToString();
+            mailItemPanel.SetActive(true);
+            scrollViewPanel.offsetMin = new Vector2(0, -125);
         }
         else
         {
