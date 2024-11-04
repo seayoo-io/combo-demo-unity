@@ -158,6 +158,7 @@ internal class MailView : View<MailView>
         {
             AppendMailView(MailType.Friend, evt.mailInfo);
         }
+        list = MailListManager.Instance.LoadMails();
         if(list.Count == 0)
         {
             currentMail = evt.mailInfo;
@@ -172,6 +173,7 @@ internal class MailView : View<MailView>
         contentPanel.SetActive(true);
         readAllButton.gameObject.SetActive(true);
         AppendRewardView(MailType.Reward, evt.rewardMailInfo);
+        list = MailListManager.Instance.LoadMails();
         if(list.Count == 0)
         {
             currentMail = evt.rewardMailInfo;

@@ -89,6 +89,7 @@ public abstract class Event<T> : Event where T : new() {
         var listeners = EventSystem.GetListeners(eventType);
         if(listeners == null) {
             Log.W($"Event {eventType} has no subscriber");
+            return;
         }
 
         foreach(var lisenerInfo in listeners) {
