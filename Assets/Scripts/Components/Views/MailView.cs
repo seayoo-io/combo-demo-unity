@@ -126,15 +126,17 @@ internal class MailView : View<MailView>
             else
             {
                 var mailInfo = mail as MailInfo;
-                Log.I(GetItemNumber(mailInfo));
                 number += GetItemNumber(mailInfo);
-                Log.I(number);
             }
         }
-        RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
-            coinOffset = number
-        });
-        Toast.Show($"总共获得 {number} 金币");
+        if(number > 0)
+        {
+            RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
+                coinOffset = number
+            });
+            Toast.Show($"总共获得 {number} 金币");
+        }
+        
         MailListManager.Instance.DeleteAllMail();
         foreach (Transform child in parentTransform)
         {
