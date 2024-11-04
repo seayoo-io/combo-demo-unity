@@ -29,6 +29,7 @@ public abstract class MailBaseInfo
 public class MailInfo : MailBaseInfo
 {
     public override string Type => "MailInfo";
+    public List<Attachments> attachments;
     public string content;
     public string description;
     public string from;
@@ -60,4 +61,12 @@ public class RewardItem
     public string id;
     public string name;
     public int type;
+}
+
+public class Attachments
+{
+    [Newtonsoft.Json.JsonProperty("item_count")]
+    public int itemCount;
+    [Newtonsoft.Json.JsonProperty("item_id")]
+    public string itemId;
 }

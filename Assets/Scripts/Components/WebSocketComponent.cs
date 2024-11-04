@@ -83,6 +83,7 @@ public class WebSocketComponent : MonoBehaviour
     private MailBaseInfo ParseMail(string jsonString)
     {
         JObject jsonObject = JObject.Parse(jsonString);
+        Log.I(jsonString);
 
         if (jsonObject.ContainsKey("items") && jsonObject.ContainsKey("present_ratio"))
         {

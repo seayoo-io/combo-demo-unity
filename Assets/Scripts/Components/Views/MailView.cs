@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,14 +10,17 @@ internal class MailView : View<MailView>
     public Text mailContent;
     public Text typeText;
     public Text readBtnText;
-    public Text itemNumber;
+    public Text rewardItemNumber;
+    public Text mailItemNumber;
     public Button readButton;
     public Button readAllButton;
     public Button closeBtn;
     public Transform parentTransform;
+    public RectTransform scrollViewPanel;
     public GameObject mailPanel;
     public GameObject rewardPanel;
     public GameObject contentPanel;
+    public GameObject mailItemPanel;
     private MailBaseInfo currentMail;
     private GameObject currentMailObject;
     private List<MailBaseInfo> list;
@@ -85,6 +87,11 @@ internal class MailView : View<MailView>
         else
         {
             var mailInfo = currentMail as MailInfo;
+            var number = GetItemNumber(mailInfo);
+            RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
+                coinOffset = number
+            });
+            Toast.Show($"获得 {number} 金币");
             MailListManager.Instance.DeleteMail(mailInfo.mailId);
             Destroy(currentMailObject);
         }
@@ -108,16 +115,26 @@ internal class MailView : View<MailView>
     public void ReadAllMail()
     {
         list = MailListManager.Instance.LoadMails();
+        int number = 0;
         foreach (var mail in list)
         {
             if(mail.GetType() == typeof(RewardMailInfo))
             {
                 var mailInfo = mail as RewardMailInfo;
-                RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
-                    coinOffset = mailInfo.presentRatio
-                });
+                number += mailInfo.presentRatio;
+            }
+            else
+            {
+                var mailInfo = mail as MailInfo;
+                Log.I(GetItemNumber(mailInfo));
+                number += GetItemNumber(mailInfo);
+                Log.I(number);
             }
         }
+        RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent{
+            coinOffset = number
+        });
+        Toast.Show($"总共获得 {number} 金币");
         MailListManager.Instance.DeleteAllMail();
         foreach (Transform child in parentTransform)
         {
@@ -213,7 +230,22 @@ internal class MailView : View<MailView>
         rewardPanel.gameObject.SetActive(false);
         mailTitle.text = mailInfo.title;
         mailContent.text = mailInfo.content;
-        readBtnText.text = "删除";
+        if(mailInfo.attachments != null && mailInfo.attachments.Count > 0)
+        {
+            readBtnText.text = "领取";
+            if(GetItemNumber(mailInfo) != 0)
+            {
+                mailItemNumber.text = GetItemNumber(mailInfo).ToString();
+                mailItemPanel.SetActive(true);
+                scrollViewPanel.offsetMin = new Vector2(0, -145);
+            }
+        }
+        else
+        {
+            readBtnText.text = "删除";
+            mailItemPanel.SetActive(false);
+            scrollViewPanel.offsetMin = new Vector2(0, -195);
+        }
         if(string.IsNullOrEmpty(mailInfo.from))
         {
             typeText.text = "系统";
@@ -229,8 +261,9 @@ internal class MailView : View<MailView>
     {
         rewardPanel.gameObject.SetActive(true);
         mailPanel.gameObject.SetActive(false);
+        mailItemPanel.SetActive(false);
         mailTitle.text = "活动奖励";
-        itemNumber.text = rewardMailInfo.presentRatio.ToString();
+        rewardItemNumber.text = rewardMailInfo.presentRatio.ToString();
         readBtnText.text = "领取";
         typeText.text = "奖励";
     }
@@ -250,6 +283,19 @@ internal class MailView : View<MailView>
             var mailInfo = firstMail as MailInfo;
             SetMailInfo(mailInfo);
         }
+    }
+
+    private int GetItemNumber(MailInfo mailInfo)
+    {
+        var itemCount = 0;
+        if(mailInfo.attachments != null && mailInfo.attachments.Count > 0)
+        {
+            foreach (var attachment in mailInfo.attachments)
+            {
+                itemCount += attachment.itemCount;
+            }
+        }
+        return itemCount;
     }
 
     protected override IEnumerator OnHide()
