@@ -124,10 +124,14 @@ internal class ShareContentView : View<ShareContentView>
     }
 
     private string GenerateImagePath() {
-        var bytes = ScreenCapture.CaptureScreenshotAsTexture().EncodeToPNG();
-        var path = Path.Combine(Application.temporaryCachePath, $"share.png");
-        File.WriteAllBytes(path, bytes);
-        return path;
+        // var bytes = ScreenCapture.CaptureScreenshotAsTexture().EncodeToPNG();
+        // var path = Path.Combine(Application.temporaryCachePath, $"share.png");
+        // File.WriteAllBytes(path, bytes);
+        Texture2D texture = Resources.Load<Texture2D>("Textures/coverImg");
+        string coverUrl = Path.Combine(Application.persistentDataPath, $"shareImg.png");
+        byte[] bytes = texture.EncodeToPNG();
+        File.WriteAllBytes(coverUrl, bytes);
+        return coverUrl;
     }
 
     public IEnumerator DownloadVideo(string filePath)
