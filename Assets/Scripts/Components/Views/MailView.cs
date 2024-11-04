@@ -239,14 +239,14 @@ internal class MailView : View<MailView>
             {
                 mailItemNumber.text = GetItemNumber(mailInfo).ToString();
                 mailItemPanel.SetActive(true);
-                scrollViewPanel.offsetMin = new Vector2(0, -145);
+                scrollViewPanel.offsetMin = new Vector2(0, -125);
             }
         }
         else
         {
             readBtnText.text = "删除";
             mailItemPanel.SetActive(false);
-            scrollViewPanel.offsetMin = new Vector2(0, -195);
+            scrollViewPanel.offsetMin = new Vector2(0, -165);
         }
         if(string.IsNullOrEmpty(mailInfo.from))
         {
