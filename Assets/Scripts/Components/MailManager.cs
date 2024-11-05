@@ -48,7 +48,6 @@ public class MailListManager
             TypeNameHandling = TypeNameHandling.Objects
         }) ?? new List<MailInfo>();
 
-        // 按 isRead 属性排序，未读放前面
         return mails;
     }
 
