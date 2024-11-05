@@ -75,6 +75,11 @@ public class Game : MonoBehaviour
         StatusManager.OpenStatusView();
     }
 
+    public void OpenMailView()
+    {
+        MailView.Instantiate();
+    }
+
     [EventSystem.BindEvent]
     void OpenAnnouncement(OpenAnnouncementsEvent evt)
     {

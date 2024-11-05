@@ -1,4 +1,6 @@
+using System;
 using Combo;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityWebSocket;
 
@@ -43,6 +45,7 @@ public class WebSocketComponent : MonoBehaviour
         }
         else
         {
+            MailListManager.Instance.SaveMail(ParseMail(e.Data));
             Message.Show(e.Data);
         }
     }
@@ -75,5 +78,16 @@ public class WebSocketComponent : MonoBehaviour
             webSocket.OnError += OnError;
             webSocket.ConnectAsync();
         }
+    }
+
+    private MailInfo ParseMail(string jsonString)
+    {
+        JObject jsonObject = JObject.Parse(jsonString);
+
+        MailInfo mailInfo = jsonObject.ToObject<MailInfo>();
+        ReceivedMailEvent.Invoke(new ReceivedMailEvent{
+            mailInfo = mailInfo
+        });
+        return mailInfo;
     }
 }
