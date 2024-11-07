@@ -19,6 +19,7 @@ internal class SettingView : View<SettingView>
     public Button privacyChildrenBtn;
     public Button thirdPartyBtn;
     public Button fangchenmiBtn;
+    public Button resetGuestBtn;
     private Action OnLogout;
     private Action OnClear;
     private Action OnCancel; 
@@ -28,6 +29,7 @@ internal class SettingView : View<SettingView>
     private Action OnPrivacyChildren;
     private Action OnThirdParty;
     private Action OnFangchenmi;
+    private Action OnResetGuest;
     void Awake()
     {
         logoutBtn.onClick.AddListener(OnLogoutConfirmBtn);
@@ -39,6 +41,7 @@ internal class SettingView : View<SettingView>
         privacyChildrenBtn.onClick.AddListener(OnPrivacyChildrenBtn);
         thirdPartyBtn.onClick.AddListener(OnThirdPartyBtn);
         fangchenmiBtn.onClick.AddListener(OnFangchenmiBtn);
+        resetGuestBtn.onClick.AddListener(OnResetGuestBtn);
         ButtonManager.SetButtonEnabledByType(logoutBtn, ButtonType.LogoutButton);
         ButtonManager.SetButtonEnabledByType(clearBtn, ButtonType.ClearButton);
     }
@@ -54,6 +57,7 @@ internal class SettingView : View<SettingView>
         privacyChildrenBtn.onClick.RemoveListener(OnPrivacyChildrenBtn);
         thirdPartyBtn.onClick.RemoveListener(OnThirdPartyBtn);
         fangchenmiBtn.onClick.RemoveListener(OnFangchenmiBtn);
+        resetGuestBtn.onClick.RemoveListener(OnResetGuestBtn);
     }
 
     public void OnOpenShortLink(){
@@ -114,6 +118,11 @@ internal class SettingView : View<SettingView>
         OnFangchenmi.Invoke();
     }
 
+    void OnResetGuestBtn()
+    {
+        OnResetGuest.Invoke();
+    }
+
     public void SetLogoutCallback(Action OnLogout)
     {
         this.OnLogout = OnLogout;
@@ -153,6 +162,11 @@ internal class SettingView : View<SettingView>
     public void SetFangchenmiCallback(Action OnFangchenmi)
     {
         this.OnFangchenmi = OnFangchenmi;
+    }
+
+    public void SetResetGuestCallback(Action OnResetGuest)
+    {
+        this.OnResetGuest = OnResetGuest;
     }
 
     protected override IEnumerator OnHide()
