@@ -69,6 +69,12 @@ internal class SettingView : View<SettingView>
         });
     }
 
+    public void OpenLanguageView()
+    {
+        LanguageView.Instantiate();
+        Destroy();
+    }
+
     void OnLogoutConfirmBtn()
     {
         OnLogout.Invoke();
