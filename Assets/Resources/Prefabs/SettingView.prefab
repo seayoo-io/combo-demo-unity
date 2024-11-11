@@ -2155,6 +2155,7 @@ MonoBehaviour:
   privacyChildrenBtn: {fileID: 5911438094310821353}
   thirdPartyBtn: {fileID: 6880787798690420924}
   fangchenmiBtn: {fileID: 6616632435203843833}
+  resetGuestBtn: {fileID: 6816027725347478420}
 --- !u!1 &3493870000808946840
 GameObject:
   m_ObjectHideFlags: 0
