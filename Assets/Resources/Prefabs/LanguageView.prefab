@@ -459,6 +459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentLanguage: {fileID: 2540037664408780623}
   changeLanguageBtn: {fileID: 1203598815867720734}
+  closeBtn: {fileID: 3164863082618789170}
   dropdown: {fileID: 7631107847404878476}
 --- !u!1 &2037552806706237211
 GameObject:

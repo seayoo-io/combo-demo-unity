@@ -7,6 +7,7 @@ internal class LanguageView : View<LanguageView>
 {
     public Text currentLanguage;
     public Button changeLanguageBtn;
+    public Button closeBtn;
     public Dropdown dropdown;
     private LanguagePreference languagePreference = LanguagePreference.ChineseSimplified;
 
@@ -15,12 +16,14 @@ internal class LanguageView : View<LanguageView>
         currentLanguage.text = ComboSDK.LanguageCode;
         dropdown.onValueChanged.AddListener(DropdownChenge);
         changeLanguageBtn.onClick.AddListener(SetLanguagePreference);
+        closeBtn.onClick.AddListener(Destroy);
     }
 
     void OnDestroy()
     {
         dropdown.onValueChanged.RemoveListener(DropdownChenge);
         changeLanguageBtn.onClick.RemoveListener(SetLanguagePreference);
+        closeBtn.onClick.RemoveListener(Destroy);
     }
 
     public void DropdownChenge(int index)
