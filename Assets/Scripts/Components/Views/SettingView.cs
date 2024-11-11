@@ -174,6 +174,10 @@ internal class SettingView : View<SettingView>
         this.OnResetGuest = OnResetGuest;
     }
 
+    public void DisableResetGuestBtn() {
+        resetGuestBtn.interactable = false;
+    }
+
     protected override IEnumerator OnHide()
     {
         yield return null;
