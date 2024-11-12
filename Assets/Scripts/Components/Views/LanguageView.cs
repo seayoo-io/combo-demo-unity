@@ -14,6 +14,7 @@ internal class LanguageView : View<LanguageView>
     void Start()
     {
         currentLanguage.text = ComboSDK.LanguageCode;
+        SetDropdownOption(GetCurrentLanguage());
         dropdown.onValueChanged.AddListener(DropdownChenge);
         changeLanguageBtn.onClick.AddListener(SetLanguagePreference);
         closeBtn.onClick.AddListener(Destroy);
@@ -47,6 +48,30 @@ internal class LanguageView : View<LanguageView>
     {
         ComboSDK.LanguagePreference = languagePreference;
         currentLanguage.text = ComboSDK.LanguageCode;
+    }
+
+    private void SetDropdownOption(int index)
+    {
+        if (dropdown != null && index >= 0 && index < dropdown.options.Count)
+        {
+            dropdown.value = index;
+            // 刷新以确保UI更新
+            dropdown.RefreshShownValue();
+        }
+    }
+
+    private int GetCurrentLanguage()
+    {
+        switch (ComboSDK.LanguageCode)
+        {
+            case "zh-cn":
+                return 0;
+            case "en":
+                return 1;
+            case "i18n":
+            default:
+                return 2;
+        }
     }
 
     protected override IEnumerator OnHide()
