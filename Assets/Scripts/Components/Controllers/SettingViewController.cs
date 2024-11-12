@@ -18,6 +18,9 @@ public static class SettingViewController
         settingView.SetFangchenmiCallback(() => OnOpenGameUrl(GameUrl.FANGCHENMI));
         settingView.SetResetGuestCallback(() => OnResetGuest());
         settingView.Show();
+        if (isNotGuestAccount()) {
+            settingView.DisableResetGuestBtn();
+        }
     }
 
     public static void OnLogout()
@@ -82,5 +85,13 @@ public static class SettingViewController
         else {
             Toast.Show("不存在游客账号");
         }
+    }
+
+    private static bool isNotGuestAccount() {
+        var loginInfo = ComboSDK.GetLoginInfo();
+        if (loginInfo.idp == "guest") {
+            return false;
+        }
+        return true;
     }
 }
