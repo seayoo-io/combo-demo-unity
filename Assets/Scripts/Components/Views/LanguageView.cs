@@ -6,6 +6,7 @@ using UnityEngine.UI;
 internal class LanguageView : View<LanguageView>
 {
     public Text currentLanguage;
+    public Text currentLanguagePre;
     public Button changeLanguageBtn;
     public Button closeBtn;
     public Dropdown dropdown;
@@ -14,6 +15,7 @@ internal class LanguageView : View<LanguageView>
     void Start()
     {
         currentLanguage.text = ComboSDK.LanguageCode;
+        currentLanguagePre.text = ComboSDK.LanguagePreference.ToString();
         SetDropdownOption(GetCurrentLanguage());
         dropdown.onValueChanged.AddListener(DropdownChenge);
         changeLanguageBtn.onClick.AddListener(SetLanguagePreference);
@@ -48,6 +50,7 @@ internal class LanguageView : View<LanguageView>
     {
         ComboSDK.LanguagePreference = languagePreference;
         currentLanguage.text = ComboSDK.LanguageCode;
+        currentLanguagePre.text = ComboSDK.LanguagePreference.ToString();
     }
 
     private void SetDropdownOption(int index)
@@ -73,6 +76,19 @@ internal class LanguageView : View<LanguageView>
                 return 2;
         }
     }
+
+    // private string GetCurrentLanguagePre()
+    // {
+    //     switch (ComboSDK.LanguagePreference)
+    //     {
+    //         case 0:
+    //             return "FollowSystem";
+    //         case 1:
+    //             return "ChineseSimplified";
+    //         case 2:
+    //             return 
+    //     }
+    // }
 
     protected override IEnumerator OnHide()
     {
