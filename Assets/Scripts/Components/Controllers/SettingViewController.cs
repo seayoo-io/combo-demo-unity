@@ -16,7 +16,11 @@ public static class SettingViewController
         settingView.SetPrivacyChildrenCallback(() => OnOpenGameUrl(GameUrl.PRIVACY_CHILDREN));
         settingView.SetThirdPartyCallback(() => OnOpenGameUrl(GameUrl.THIRD_PARTY));
         settingView.SetFangchenmiCallback(() => OnOpenGameUrl(GameUrl.FANGCHENMI));
+        settingView.SetResetGuestCallback(() => OnResetGuest());
         settingView.Show();
+        if (isNotGuestAccount()) {
+            settingView.DisableResetGuestBtn();
+        }
     }
 
     public static void OnLogout()
@@ -68,5 +72,26 @@ public static class SettingViewController
     public static void OnOpenGameUrl(GameUrl gameUrl)
     {
         ComboSDK.OpenGameUrl(gameUrl);
+    }
+
+    public static void OnResetGuest()
+    {
+        var isGuestAccountReset = ComboSDK.ResetGuest();
+        if (isGuestAccountReset) 
+        {
+            Toast.Show("已抹除当前游客账号");
+            OnLogout();
+        }
+        else {
+            Toast.Show("不存在游客账号");
+        }
+    }
+
+    private static bool isNotGuestAccount() {
+        var loginInfo = ComboSDK.GetLoginInfo();
+        if (loginInfo.idp == "guest") {
+            return false;
+        }
+        return true;
     }
 }
