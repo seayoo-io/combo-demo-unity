@@ -17,6 +17,7 @@ public enum ButtonType {
     PreloadAdButton,
     ShowAdButton,
     PurchaseButton,
+    ResetButton
 }
 
 public static class ButtonManager
