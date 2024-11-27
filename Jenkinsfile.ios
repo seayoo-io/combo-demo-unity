@@ -36,6 +36,10 @@ def downloadFrameworks() {
 
     def files = findFiles glob: frameworkZip
     unzip zipFile: files[0].name, dir: env.FRAMEWORK_PATH, quiet: true
+
+    if (params.UI_MODE == "china") {
+        sh "rm -rf ${env.FRAMEWORK_PATH}/ComboSDKGuest.xcframework"
+    }
 }
 
 def downloadComboSDKJson() {
