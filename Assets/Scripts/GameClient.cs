@@ -77,6 +77,16 @@ public class ListProduct : Serializable
     public string iconUrl;
 }
 
+[System.Serializable]
+public class ListServer : Serializable
+{
+
+    [JsonProperty("server_id")]
+    public string serverId;
+    [JsonProperty("server_name")]
+    public string serverName;
+}
+
 
 public static class GameClient
 {
@@ -244,6 +254,30 @@ public static class GameClient
             headers = Headers()
         }, resp => {
             action.Invoke(resp.Body.ToImage());
+        });
+    }
+
+    public static void GetServerList(Action<ListServer[]> action)
+    {
+        HttpRequest.Get(new HttpRequestOptions {
+            url = $"{endpoint}/{gameId}/list-servers ",
+            headers = Headers()
+        }, resp => {
+            Log.D(resp.ToString());
+            try
+            {
+                var data = resp.Body.ToJson<ListServer[]>();
+                if(resp.IsSuccess)
+                {
+                    action.Invoke(data);
+                }
+                else{
+                    LogErrorWithToast(resp.Body.ToText());
+                }
+            } catch(Exception)
+            {
+                
+            }
         });
     }
 

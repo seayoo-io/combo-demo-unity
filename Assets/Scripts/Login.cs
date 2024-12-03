@@ -16,6 +16,7 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Dropdown selectServerDropdown;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -97,8 +98,8 @@ public class Login : MonoBehaviour
 
     public void OnEnterGame()
     {
-        PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
-        SceneManager.LoadScene("Game");
+        // PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
+        SceneManager.LoadScene("Select");
     }
 
     public void OnLogout()
@@ -299,6 +300,7 @@ public class Login : MonoBehaviour
     private void ShowLoginBtn()
     {
         enterGameBtn.gameObject.SetActive(false);
+        selectServerDropdown.gameObject.SetActive(false);
         loginBtn.gameObject.SetActive(true);
         logoutBtn.gameObject.SetActive(false);
         switchAccountBtn.gameObject.SetActive(false);
@@ -307,7 +309,16 @@ public class Login : MonoBehaviour
 
     private void ShowEnterGameBtn()
     {
+        selectServerDropdown.ClearOptions();
+        GameClient.GetServerList(datas => {
+            foreach(var data in datas)
+            {
+                selectServerDropdown.options.Add(new Dropdown.OptionData(data.serverName));
+            }
+        });
+        selectServerDropdown.value = 0;
         enterGameBtn.gameObject.SetActive(true);
+        selectServerDropdown.gameObject.SetActive(true);
         loginBtn.gameObject.SetActive(false);
         logoutBtn.gameObject.SetActive(true);
         switchAccountBtn.gameObject.SetActive(true);
