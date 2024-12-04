@@ -38,6 +38,11 @@ public static class SettingViewController
                 Toast.Show($"用户 {result.comboId} 登出成功");
                 Log.I($"登出成功: UserId - {result.comboId}");
                 GameClient.Logout();
+                var currentPlayer = PlayerController.GetPlayer();
+                if(currentPlayer != null)
+                {
+                    Object.Destroy(currentPlayer.gameObject);
+                }
                 SettingView.DestroyAll();
                 SceneManager.LoadScene("Login");
             }

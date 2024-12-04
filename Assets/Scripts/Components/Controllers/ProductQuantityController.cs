@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ProductQuantityController : MonoBehaviour
@@ -14,10 +11,6 @@ public class ProductQuantityController : MonoBehaviour
     void Start()
     {
         EventSystem.Register(this);
-        productQuantityText.onValidateInput += delegate(string input, int charIndex, char addedChar) 
-        {
-            return ValidateNumberInput(input, addedChar);
-        };
     }
 
     void OnDestroy()
@@ -46,7 +39,7 @@ public class ProductQuantityController : MonoBehaviour
 
     public void OnAddProductQuantity()
     {
-        if(productQuantity >= 100)
+        if(productQuantity >= 99)
         {
             return;
         }
@@ -69,30 +62,13 @@ public class ProductQuantityController : MonoBehaviour
         int numInt;
         if (int.TryParse(productQuantityText.text, out numInt))
         {
-            productQuantity = numInt;
+            productQuantity = numInt == 0 ? 1 : numInt;
         }
         else
         {
             productQuantity = 1;
         }
+        productQuantityText.text = productQuantity.ToString();
         ModifyProductQuantity();
-    }
-
-    char ValidateNumberInput(string input, char addedChar)
-    {
-        if (!char.IsDigit(addedChar))
-        {
-            return '\0';
-        }
-
-        var proposedInput = input + addedChar;
-        var proposedValue = int.Parse(proposedInput);
-
-        if (proposedValue <= 0 ||proposedValue > 100)
-        {
-            return '\0';
-        }
-
-        return addedChar;
     }
 }
