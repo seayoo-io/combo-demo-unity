@@ -39,7 +39,7 @@ public class ProductQuantityController : MonoBehaviour
 
     public void OnAddProductQuantity()
     {
-        if(productQuantity >= 100)
+        if(productQuantity >= 99)
         {
             return;
         }
