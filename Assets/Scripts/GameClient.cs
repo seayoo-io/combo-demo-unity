@@ -77,16 +77,74 @@ public class ListProduct : Serializable
     public string iconUrl;
 }
 
-[System.Serializable]
-public class ListServer : Serializable
+[Serializable]
+public class GameData
 {
-
+    [JsonProperty("game_id")]
+    public string gameId;
+    public Zone zone;
+    public List<Server> servers;
+    [JsonProperty("created_at")]
+    public long createdAt;
+    [JsonProperty("updated_at")]
+    public long updatedAt;
+}
+[Serializable]
+public class Zone
+{
+    [JsonProperty("zone_id")]
+    public int zoneId;
+    [JsonProperty("zone_name")]
+    public string zoneName;
+}
+[Serializable]
+public class Server
+{
     [JsonProperty("server_id")]
-    public string serverId;
+    public int serverId;
     [JsonProperty("server_name")]
     public string serverName;
+    [JsonProperty("zone_id")]
+    public int zoneId;
+    public int visibility;
+    public int status;
 }
 
+[System.Serializable]
+public class CreateRoleRequest : Serializable
+{
+    [JsonProperty("role_name")]
+    public string roleName;
+    public int gender;
+    [JsonProperty("zone_id")]
+    public int zoneId;
+    [JsonProperty("server_id")]
+    public int serverId;
+}
+
+[System.Serializable]
+public class GetRolesListRequest : Serializable
+{
+    [JsonProperty("zone_id")]
+    public int zoneId;
+    [JsonProperty("server_id")]
+    public int serverId;
+}
+
+
+[System.Serializable]
+public class GetRolesListResponse : Serializable
+{
+    [JsonProperty("role_id")]
+    public string roleId;
+    [JsonProperty("role_name")]
+    public string roleName;
+    public int gender;
+    [JsonProperty("zone_id")]
+    public int zoneId;
+    [JsonProperty("server_id")]
+    public int serverId;
+}
 
 public static class GameClient
 {
@@ -257,7 +315,7 @@ public static class GameClient
         });
     }
 
-    public static void GetServerList(Action<ListServer[]> action)
+    public static void GetServerList(Action<GameData[]> action)
     {
         HttpRequest.Get(new HttpRequestOptions {
             url = $"{endpoint}/{gameId}/list-servers ",
@@ -266,7 +324,51 @@ public static class GameClient
             Log.D(resp.ToString());
             try
             {
-                var data = resp.Body.ToJson<ListServer[]>();
+                var data = resp.Body.ToJson<GameData[]>();
+                if(resp.IsSuccess)
+                {
+                    action.Invoke(data);
+                }
+                else{
+                    LogErrorWithToast(resp.Body.ToText());
+                }
+            } catch(Exception error)
+            {
+                Log.I(error);
+            }
+        });
+    }
+
+    public static void CreateRole()
+    {
+        HttpRequest.Post(new HttpRequestOptions
+        {
+            url = $"{endpoint}/{gameId}/create-role",
+            body = new CreateRoleRequest { roleName = "111111", gender = 1, zoneId = 10000, serverId = 10001},
+            headers = Headers()
+        }, resp =>
+        {
+            Log.D(resp.ToString());
+            if (resp.IsSuccess)
+            {
+                
+            } else
+            {
+            }
+        });
+    }
+
+    public static void GetRolesList(Action<GetRolesListResponse[]> action)
+    {
+         HttpRequest.Get(new HttpRequestOptions {
+            url = $"{endpoint}/{gameId}/list-roles",
+            body = new GetRolesListRequest { zoneId = 10000, serverId = 10001 },
+            headers = Headers()
+        }, resp => {
+            Log.D(resp.ToString());
+            try
+            {
+                var data = resp.Body.ToJson<GetRolesListResponse[]>();
                 if(resp.IsSuccess)
                 {
                     action.Invoke(data);
