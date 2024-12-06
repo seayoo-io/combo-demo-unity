@@ -16,11 +16,11 @@ internal class ServerView : View<ServerView>
     public ServerButtonManager manager;
     private List<ServerButtonView> serverButtonViews = new List<ServerButtonView>();
     
-    
     void Start()
     {
+        EventSystem.Register(this);
         closeBtn.onClick.AddListener(Destroy);
-        enterCreateRoleBtn.onClick.AddListener(() => { SceneManager.LoadScene("Select"); });
+        enterCreateRoleBtn.onClick.AddListener(EnterRoleView);
         GameClient.GetServerList((GameData[] datas) =>
         {
             StartCoroutine(InitializeButtonsAsync(datas));
@@ -49,8 +49,14 @@ internal class ServerView : View<ServerView>
 
     void OnDestroy()
     {
+        EventSystem.UnRegister(this);
         closeBtn.onClick.RemoveListener(Destroy);
-        enterCreateRoleBtn.onClick.RemoveListener(() => { SceneManager.LoadScene("Select"); });
+        enterCreateRoleBtn.onClick.RemoveListener(EnterRoleView);
+    }
+
+    public void EnterRoleView()
+    {
+        SceneManager.LoadScene("Select");
     }
 
     public void OnClickZone(GameData gameData)
@@ -63,11 +69,19 @@ internal class ServerView : View<ServerView>
         foreach(var data in gameData.servers)
         {
             var buttonView = ServerButtonView.Instantiate();
-            buttonView.SetInfo(data.serverName, data.status);
+            buttonView.SetInfo(data.serverName, data.status, data.serverId);
             buttonView.gameObject.transform.SetParent(serverParentTransform, false);
             serverButtonViews.Add(buttonView);
         }
         manager.OnButtonViewSelected(serverButtonViews[0]);
+        GameManager.Instance.ZoneId = gameData.zone.zoneId;
+        GameManager.Instance.ServerId = gameData.servers[0].serverId;
+    }
+
+    [EventSystem.BindEvent]
+    public void ClickServer(ClickServerEvent e)
+    {
+        GameManager.Instance.ServerId = e.serverId;
     }
 
     protected override IEnumerator OnHide()

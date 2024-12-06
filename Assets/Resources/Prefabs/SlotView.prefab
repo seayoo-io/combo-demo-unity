@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6111275278046046543}
   - component: {fileID: 4409447155397002976}
   - component: {fileID: 8164988507027130238}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: characterImg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 10.9}
   m_SizeDelta: {x: 140, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4409447155397002976
@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 8469203027242224980}
   - component: {fileID: 840048626912835690}
   - component: {fileID: 3581485283794469804}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: genderText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6062648552798480862}
   - component: {fileID: 3712621559710272721}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: character_panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: 4065298225560273742}
   - component: {fileID: 8180716460137427377}
   - component: {fileID: 1770824026023533310}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: isSeletedImg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,7 +283,7 @@ GameObject:
   - component: {fileID: 7219894988997624770}
   - component: {fileID: 2904987639148926988}
   - component: {fileID: 2439087782634597120}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: idText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 112165199292099407}
   - component: {fileID: 9182048691084418291}
   - component: {fileID: 4358468338295360015}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: glowImg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -435,7 +435,7 @@ GameObject:
   - component: {fileID: 4001984970604169633}
   - component: {fileID: 7986045750011796009}
   - component: {fileID: 4740247301791869207}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: characterView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -514,13 +514,13 @@ GameObject:
   - component: {fileID: 3330102545011320869}
   - component: {fileID: 99977902230161340}
   - component: {fileID: 3938016108280615957}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: addView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5019041630587866825
 RectTransform:
   m_ObjectHideFlags: 0
@@ -539,8 +539,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 100, y: 150}
-  m_SizeDelta: {x: 200, y: 300}
+  m_AnchoredPosition: {x: 100, y: 140}
+  m_SizeDelta: {x: 200, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3330102545011320869
 CanvasRenderer:
@@ -615,7 +615,7 @@ GameObject:
   - component: {fileID: 8587955969528245579}
   - component: {fileID: 5802516549885866371}
   - component: {fileID: 2056969875048084124}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -636,9 +636,9 @@ RectTransform:
   m_Father: {fileID: 5019041630587866825}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -175}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5802516549885866371
@@ -694,7 +694,7 @@ GameObject:
   - component: {fileID: 8789020220925539032}
   - component: {fileID: 5253600381073463504}
   - component: {fileID: 1671009603339101800}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: SlotView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -719,8 +719,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 300}
+  m_AnchoredPosition: {x: 0.980011, y: 0}
+  m_SizeDelta: {x: 201.9574, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8789020220925539032
 CanvasRenderer:
@@ -800,7 +800,26 @@ MonoBehaviour:
   roleId: {fileID: 2439087782634597120}
   gender: {fileID: 3581485283794469804}
   roleName: {fileID: 3284208483696320631}
-  sprite: {fileID: 8164988507027130238}
+  image: {fileID: 8164988507027130238}
+  rolePanel: {fileID: 4083053251283965537}
+  addPanel: {fileID: 4287059743662772421}
+  slotType: 0
+  images:
+  - {fileID: 21300000, guid: 73e615fbb620d1148a67d3edcca70cc5, type: 3}
+  - {fileID: 21300000, guid: b81535882da10c348a2bb4b73f58d847, type: 3}
+  - {fileID: 21300000, guid: 3010e8b61b6ad504a87e605e50a5988e, type: 3}
+  - {fileID: 21300000, guid: 83ce01102b491c045b00be8d035a26cd, type: 3}
+  - {fileID: 21300000, guid: 62c6550205f6fb049803f4cb3f13b0ed, type: 3}
+  - {fileID: 21300000, guid: 2b2e70ef353541c438e0546ff480fb7d, type: 3}
+  - {fileID: 21300000, guid: 6405d0bad0114714cb920c5158219189, type: 3}
+  - {fileID: 21300000, guid: 1c41641c98cc92d408b62b580535ffb4, type: 3}
+  - {fileID: 21300000, guid: 51ab9546dc26e6949a01dcc88cea3a5c, type: 3}
+  - {fileID: 21300000, guid: beb31bbe549e2054dbe0f78b629ee417, type: 3}
+  - {fileID: 21300000, guid: 024caa5184f35574e882b5f347f15483, type: 3}
+  - {fileID: 21300000, guid: cebaf443b60a6554c9e5a28642ca6f55, type: 3}
+  - {fileID: 21300000, guid: 719011e890db62441a5aeb13f8e56262, type: 3}
+  - {fileID: 21300000, guid: 1a8f36efd75b3fa46bf3d8c9008dff75, type: 3}
+  - {fileID: 21300000, guid: e599a8e6cba55f349a357fcb733d0bab, type: 3}
 --- !u!1 &7698900439183554348
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,7 +831,7 @@ GameObject:
   - component: {fileID: 2181048332057482655}
   - component: {fileID: 3158441492267335820}
   - component: {fileID: 3284208483696320631}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: charaterNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -890,7 +909,7 @@ GameObject:
   - component: {fileID: 4391672844371142799}
   - component: {fileID: 3721005517422749851}
   - component: {fileID: 523954396211349768}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -911,9 +930,9 @@ RectTransform:
   m_Father: {fileID: 5019041630587866825}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -125}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3721005517422749851
@@ -963,7 +982,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2856822446709922135}
   - component: {fileID: 5799869588798430871}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: info_panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -315,7 +315,7 @@ GameObject:
   - component: {fileID: 500742291152295325}
   - component: {fileID: 3922965623432115869}
   m_Layer: 5
-  m_Name: manToggle
+  m_Name: womanToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,7 +335,7 @@ RectTransform:
   - {fileID: 6220364733331255565}
   - {fileID: 2784071652078808178}
   m_Father: {fileID: 2475122627818680608}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -388,7 +388,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &1527618881126678110
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,8 +679,9 @@ GameObject:
   - component: {fileID: 763916048792535081}
   - component: {fileID: 4430707075137465595}
   - component: {fileID: 6949209255243576912}
+  - component: {fileID: 1067000756146070433}
   m_Layer: 5
-  m_Name: CharacterSelectView
+  m_Name: RoleSelectView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -770,6 +771,22 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &1067000756146070433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3757219741193575153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16b7c7cf7ca92f2468770c8c163f5cdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameInputField: {fileID: 2687461689975413046}
+  toggles:
+  - {fileID: 3922965623432115869}
+  - {fileID: 3994020521178737104}
 --- !u!1 &4650528243048615747
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,8 +1585,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 500742291152295325}
   - {fileID: 6729789399247848658}
+  - {fileID: 500742291152295325}
   m_Father: {fileID: 30586372537310310}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1758,7 +1775,7 @@ GameObject:
   - component: {fileID: 6729789399247848658}
   - component: {fileID: 3994020521178737104}
   m_Layer: 5
-  m_Name: womanToggle
+  m_Name: manToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1778,7 +1795,7 @@ RectTransform:
   - {fileID: 4610779577871748510}
   - {fileID: 6909748150159883041}
   m_Father: {fileID: 2475122627818680608}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

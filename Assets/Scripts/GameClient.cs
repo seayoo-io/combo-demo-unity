@@ -116,6 +116,7 @@ public class CreateRoleRequest : Serializable
     [JsonProperty("role_name")]
     public string roleName;
     public int gender;
+    public int type;
     [JsonProperty("zone_id")]
     public int zoneId;
     [JsonProperty("server_id")]
@@ -139,11 +140,19 @@ public class GetRolesListResponse : Serializable
     public string roleId;
     [JsonProperty("role_name")]
     public string roleName;
+    public int type;
     public int gender;
     [JsonProperty("zone_id")]
     public int zoneId;
     [JsonProperty("server_id")]
     public int serverId;
+}
+
+[System.Serializable]
+public class DeleteRoleResponse : Serializable
+{
+    [JsonProperty("role_id")]
+    public string roleId;
 }
 
 public static class GameClient
@@ -339,12 +348,12 @@ public static class GameClient
         });
     }
 
-    public static void CreateRole()
+    public static void CreateRole(string roleName, int gender, int roleType, int zoneId, int serverId)
     {
         HttpRequest.Post(new HttpRequestOptions
         {
             url = $"{endpoint}/{gameId}/create-role",
-            body = new CreateRoleRequest { roleName = "111111", gender = 1, zoneId = 10000, serverId = 10001},
+            body = new CreateRoleRequest { roleName = roleName, gender = gender, type = roleType, zoneId = zoneId, serverId = serverId},
             headers = Headers()
         }, resp =>
         {
@@ -358,11 +367,11 @@ public static class GameClient
         });
     }
 
-    public static void GetRolesList(Action<GetRolesListResponse[]> action)
+    public static void GetRolesList(int zoneId, int serverId, Action<GetRolesListResponse[]> action)
     {
          HttpRequest.Get(new HttpRequestOptions {
             url = $"{endpoint}/{gameId}/list-roles",
-            body = new GetRolesListRequest { zoneId = 10000, serverId = 10001 },
+            body = new GetRolesListRequest { zoneId = zoneId, serverId = serverId },
             headers = Headers()
         }, resp => {
             Log.D(resp.ToString());
@@ -376,9 +385,28 @@ public static class GameClient
                 else{
                     LogErrorWithToast(resp.Body.ToText());
                 }
-            } catch(Exception)
+            } catch(Exception error)
+            {
+                Log.I(error);
+            }
+        });
+    }
+
+    public static void DeleteRole(string roleId)
+    {
+        HttpRequest.Post(new HttpRequestOptions
+        {
+            url = $"{endpoint}/{gameId}/delete-role",
+            body = new DeleteRoleResponse { roleId = roleId},
+            headers = Headers()
+        }, resp =>
+        {
+            Log.D(resp.ToString());
+            if (resp.IsSuccess)
             {
                 
+            } else
+            {
             }
         });
     }

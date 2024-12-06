@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [ViewPrefab("Prefabs/ServerButtonView")]
-internal class ServerButtonView : View<ServerButtonView>
+internal class ServerButtonView : View<ServerButtonView>, ISelectableView
 {
     public Button button;
     public Text serverName;
     public Text serverType;
     public Image image;
+    private int serverId;
 
     private ServerButtonManager manager;
 
@@ -24,10 +25,11 @@ internal class ServerButtonView : View<ServerButtonView>
         button.onClick.AddListener(OnButtonClicked);
     }
 
-    public void SetInfo(string text, int serverType)
+    public void SetInfo(string text, int serverType, int serverId)
     {
         serverName.text = text;
         this.serverType.text = GetServerType(serverType);
+        this.serverId = serverId;
     }
 
     private string GetServerType(int serverType)
@@ -54,6 +56,7 @@ internal class ServerButtonView : View<ServerButtonView>
     private void OnButtonClicked()
     {
         manager?.OnButtonViewSelected(this);
+        ClickServerEvent.Invoke(new ClickServerEvent{ serverId = serverId} );
     }
 
     public void Select()

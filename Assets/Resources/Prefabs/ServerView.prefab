@@ -1987,6 +1987,7 @@ MonoBehaviour:
   buttonPrefab: {fileID: 1427665157641872975, guid: 1aa3e6298fe8b464aa77a6484619444c,
     type: 3}
   closeBtn: {fileID: 4995912769431782687}
+  enterCreateRoleBtn: {fileID: 6437224708864568704}
   manager: {fileID: 5633833685485092539}
 --- !u!1 &9046298300477400023
 GameObject:

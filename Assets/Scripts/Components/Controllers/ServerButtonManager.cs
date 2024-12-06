@@ -3,15 +3,15 @@ using UnityEngine;
 
 internal class ServerButtonManager : MonoBehaviour
 {
-    private List<ServerButtonView> buttonViews = new List<ServerButtonView>();
-    private ServerButtonView selectedButtonView = null;
+    private List<ISelectableView> buttonViews = new List<ISelectableView>();
+    private ISelectableView selectedButtonView = null;
 
-    public void RegisterButtonView(ServerButtonView buttonView)
+    public void RegisterButtonView(ISelectableView buttonView)
     {
         buttonViews.Add(buttonView);
     }
 
-    public void OnButtonViewSelected(ServerButtonView buttonView)
+    public void OnButtonViewSelected(ISelectableView buttonView)
     {
         if (selectedButtonView != null && selectedButtonView != buttonView)
         {
