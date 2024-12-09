@@ -56,7 +56,8 @@ internal class ServerView : View<ServerView>
 
     public void EnterRoleView()
     {
-        SceneManager.LoadScene("Select");
+        SelectView.Instantiate();
+        Destroy();
     }
 
     public void OnClickZone(GameData gameData)
@@ -68,6 +69,10 @@ internal class ServerView : View<ServerView>
         serverButtonViews.Clear();
         foreach(var data in gameData.servers)
         {
+            if(data.visibility == 2)
+            {
+                return;
+            }
             var buttonView = ServerButtonView.Instantiate();
             buttonView.SetInfo(data.serverName, data.status, data.serverId);
             buttonView.gameObject.transform.SetParent(serverParentTransform, false);

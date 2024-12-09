@@ -22,7 +22,7 @@ public class Game : MonoBehaviour
             SceneManager.LoadScene("Login");
             return;
         }
-        CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
+        // CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
     }
 
     void OnDestroy()

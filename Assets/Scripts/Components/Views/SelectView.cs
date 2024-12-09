@@ -1,10 +1,13 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Select : MonoBehaviour
+[ViewPrefab("Prefabs/SelectView")]
+internal class SelectView : View<SelectView>
 {
     public Transform parentTransform;
     public Role[] roleInfos;
@@ -25,20 +28,25 @@ public class Select : MonoBehaviour
             GameManager.Instance.RoleDic.Add(i, images[i]);
         }
         ShowRoleList();
-        closeBtn.onClick.AddListener(() => {SceneManager.LoadScene("Login");});
+        closeBtn.onClick.AddListener(Destroy);
         deleleButton.onClick.AddListener(DeleteRole);
+        enterGameBtn.onClick.AddListener(EnterGame);
     }
 
     void OnDestroy()
     {
         EventSystem.UnRegister(this);
-        closeBtn.onClick.RemoveListener(() => {SceneManager.LoadScene("Login");});
+        closeBtn.onClick.RemoveListener(Destroy);
         deleleButton.onClick.RemoveListener(DeleteRole);
+        enterGameBtn.onClick.RemoveListener(EnterGame);
     }
 
     public void DeleteRole()
     {
-        GameClient.DeleteRole(currentRoleId);
+        GameClient.DeleteRole(currentRoleId, data => {
+            ShowRoleList();
+        });
+        
     }
 
     public void EnterGame()
@@ -71,9 +79,12 @@ public class Select : MonoBehaviour
         GameClient.GetRolesList(GameManager.Instance.ZoneId, GameManager.Instance.ServerId, datas => {
             if(datas == null)
             {
+                deleleButton.interactable = false;
                 LoadSlotView(number: 3);
                 return;
             }
+            deleleButton.interactable = true;
+            Array.Sort(datas, (a, b) => a.roleId.CompareTo(b.roleId));
             foreach(var data in datas)
             {
                 LoadSlotView(data);
@@ -111,5 +122,15 @@ public class Select : MonoBehaviour
         }
         manager.OnButtonViewSelected(slotViews[0]);
         currentRoleId = slotViews[0].roleId.text;
+    }
+
+    protected override IEnumerator OnHide()
+    {
+        yield return null;
+    }
+
+    protected override IEnumerator OnShow()
+    {
+        yield return null;
     }
 }

@@ -149,7 +149,7 @@ public class GetRolesListResponse : Serializable
 }
 
 [System.Serializable]
-public class DeleteRoleResponse : Serializable
+public class DeleteRole : Serializable
 {
     [JsonProperty("role_id")]
     public string roleId;
@@ -392,21 +392,28 @@ public static class GameClient
         });
     }
 
-    public static void DeleteRole(string roleId)
+    public static void DeleteRole(string roleId, Action<DeleteRole> action)
     {
         HttpRequest.Post(new HttpRequestOptions
         {
             url = $"{endpoint}/{gameId}/delete-role",
-            body = new DeleteRoleResponse { roleId = roleId},
+            body = new DeleteRole { roleId = roleId},
             headers = Headers()
         }, resp =>
         {
-            Log.D(resp.ToString());
-            if (resp.IsSuccess)
+            try
             {
-                
-            } else
+                var data = resp.Body.ToJson<DeleteRole>();
+                if(resp.IsSuccess)
+                {
+                    action.Invoke(data);
+                }
+                else{
+                    LogErrorWithToast(resp.Body.ToText());
+                }
+            } catch(Exception error)
             {
+                Log.I(error);
             }
         });
     }
