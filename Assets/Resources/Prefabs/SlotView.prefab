@@ -215,7 +215,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4065298225560273742
 RectTransform:
   m_ObjectHideFlags: 0
@@ -801,25 +801,10 @@ MonoBehaviour:
   gender: {fileID: 3581485283794469804}
   roleName: {fileID: 3284208483696320631}
   image: {fileID: 8164988507027130238}
+  isSelectImage: {fileID: 1770824026023533310}
   rolePanel: {fileID: 4083053251283965537}
   addPanel: {fileID: 4287059743662772421}
   slotType: 0
-  images:
-  - {fileID: 21300000, guid: 73e615fbb620d1148a67d3edcca70cc5, type: 3}
-  - {fileID: 21300000, guid: b81535882da10c348a2bb4b73f58d847, type: 3}
-  - {fileID: 21300000, guid: 3010e8b61b6ad504a87e605e50a5988e, type: 3}
-  - {fileID: 21300000, guid: 83ce01102b491c045b00be8d035a26cd, type: 3}
-  - {fileID: 21300000, guid: 62c6550205f6fb049803f4cb3f13b0ed, type: 3}
-  - {fileID: 21300000, guid: 2b2e70ef353541c438e0546ff480fb7d, type: 3}
-  - {fileID: 21300000, guid: 6405d0bad0114714cb920c5158219189, type: 3}
-  - {fileID: 21300000, guid: 1c41641c98cc92d408b62b580535ffb4, type: 3}
-  - {fileID: 21300000, guid: 51ab9546dc26e6949a01dcc88cea3a5c, type: 3}
-  - {fileID: 21300000, guid: beb31bbe549e2054dbe0f78b629ee417, type: 3}
-  - {fileID: 21300000, guid: 024caa5184f35574e882b5f347f15483, type: 3}
-  - {fileID: 21300000, guid: cebaf443b60a6554c9e5a28642ca6f55, type: 3}
-  - {fileID: 21300000, guid: 719011e890db62441a5aeb13f8e56262, type: 3}
-  - {fileID: 21300000, guid: 1a8f36efd75b3fa46bf3d8c9008dff75, type: 3}
-  - {fileID: 21300000, guid: e599a8e6cba55f349a357fcb733d0bab, type: 3}
 --- !u!1 &7698900439183554348
 GameObject:
   m_ObjectHideFlags: 0

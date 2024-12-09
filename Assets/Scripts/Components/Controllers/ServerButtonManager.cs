@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-internal class ServerButtonManager : MonoBehaviour
+public class ServerButtonManager : MonoBehaviour
 {
     private List<ISelectableView> buttonViews = new List<ISelectableView>();
     private ISelectableView selectedButtonView = null;

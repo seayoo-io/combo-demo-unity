@@ -10,14 +10,20 @@ public class GameManager : MonoBehaviour
     public int ServerId { get; set; }
     public Dictionary<int, Sprite> RoleDic = new Dictionary<int, Sprite>();
 
-    private void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void OnBeforeSceneLoad()
     {
         if (Instance == null)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // 保证在切换场景时不会被销毁
+            GameObject gameManagerObject = new GameObject("GameManager");
+            Instance = gameManagerObject.AddComponent<GameManager>();
+            DontDestroyOnLoad(gameManagerObject); // 保证在切换场景时不会被销毁
         }
-        else
+    }
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject); // 确保只有一个实例存在
         }

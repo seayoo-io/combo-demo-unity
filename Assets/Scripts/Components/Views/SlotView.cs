@@ -23,20 +23,16 @@ internal class SlotView : View<SlotView>, ISelectableView
     public Text gender;
     public Text roleName;
     public Image image;
+    public Image isSelectImage;
     public GameObject rolePanel;
     public GameObject addPanel;
     public SlotType slotType;
-    public List<Sprite> images = new List<Sprite>();
     private ServerButtonManager manager;
     private int roleType;
 
     void Start()
     {
         clickBtn.onClick.AddListener(OnClick);
-        for (int i = 0; i < images.Count; i++)
-        {
-            GameManager.Instance.RoleDic.Add(i, images[i]);
-        }
     }
 
     void OnDestroy()
@@ -48,15 +44,16 @@ internal class SlotView : View<SlotView>, ISelectableView
     {
         if(slotType == SlotType.ROLE)
         {
-            
+            manager?.OnButtonViewSelected(this);
+            ClickSlotViewEvent.Invoke(new ClickSlotViewEvent{ roleId = roleId.text });
         }
         else
         {
-            var view = RoleSelectView.Instantiate();
+            RoleSelectView.Instantiate();
         }
     }
 
-    public void SetInfo(SlotType type, string roleId = "", string roleName = "", int? roleType = null)
+    public void SetInfo(SlotType type, string roleId = "", string roleName = "", int gender = 0, int? roleType = null)
     {
         slotType = type;
         if(type == SlotType.ROLE)
@@ -66,6 +63,7 @@ internal class SlotView : View<SlotView>, ISelectableView
             this.roleId.text = roleId;
             this.roleName.text = roleName;
             this.roleType = (int)roleType;
+            this.gender.text = gender == 0 ? "男" : "女";
             Sprite sprite;
             GameManager.Instance.RoleDic.TryGetValue((int)roleType, out sprite);
             image.sprite = sprite;
@@ -86,17 +84,17 @@ internal class SlotView : View<SlotView>, ISelectableView
 
     public void Select()
     {
-        if (image != null)
+        if (isSelectImage != null)
         {
-            image.gameObject.SetActive(true);
+            isSelectImage.gameObject.SetActive(true);
         }
     }
 
     public void Deselect()
     {
-        if (image != null)
+        if (isSelectImage != null)
         {
-            image.gameObject.SetActive(false);
+            isSelectImage.gameObject.SetActive(false);
         }
     }
 
