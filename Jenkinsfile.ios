@@ -42,7 +42,7 @@ def downloadComboSDKJson() {
     sh '''
         chmod +x ./combo
         ./combo ios setup
-        mv *.json "${env.WORKSPACE}/ComboSDK"
+        mv *.json ComboSDK/
     '''
 }
 
