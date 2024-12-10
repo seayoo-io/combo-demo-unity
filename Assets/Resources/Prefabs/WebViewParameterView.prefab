@@ -320,7 +320,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u516C\u544A\u5360\u5C4F\u5927\u5C0F"
+  m_Text: "\u5360\u5C4F\u5927\u5C0F"
 --- !u!1 &2385121711829264401
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,7 +487,7 @@ GameObject:
   - component: {fileID: 6087935297700244675}
   - component: {fileID: 294062003564135509}
   m_Layer: 5
-  m_Name: AnnouncementParameterView
+  m_Name: WebViewParameterView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -586,10 +586,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ff6f4866ad4cbb43b0dd9f40271c504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openAnnouncementBrn: {fileID: 2120939546334365153}
+  openAnnouncementBtn: {fileID: 2120939546334365153}
+  btnText: {fileID: 1096799761309680740}
   closeBtn: {fileID: 434602083786234094}
   widthInput: {fileID: 7973563382227760147}
   heightInput: {fileID: 5920919308247419719}
+  webViewType: 0
 --- !u!1 &3672489671490439362
 GameObject:
   m_ObjectHideFlags: 0

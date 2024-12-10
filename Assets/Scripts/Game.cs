@@ -60,6 +60,11 @@ public class Game : MonoBehaviour
         UIController.ShowTaskView();
     }
 
+    public void OnRedeemGiftCode()
+    {
+        UIController.ShowRedeemGiftCodeView();
+    }
+
     public void OnPlayerInfo()
     {
         PlayerInfoViewController.ShowPlayerInfoView();
