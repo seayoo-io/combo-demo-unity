@@ -165,7 +165,7 @@ pipeline {
                         rm -rf *.ipa
                         rm -rf *.zip
                         rm -rf logs/*
-                        rm -rf ${env.FRAMEWORK_PATH}
+                        rm -rf ${env.COMBO_SDK_PATH}
                         rm -rf ${env.UNITY_SDK_PATH}/com.seayoo.sdk
                     """
                 }
