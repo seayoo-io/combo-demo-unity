@@ -33,7 +33,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     public void OnPostprocessBuild(BuildReport report)
     {
-        var szFrameworkPath = System.Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
         if (report.summary.platform == BuildTarget.iOS)
         {
             string projectPath = report.summary.outputPath + "/Unity-iPhone.xcodeproj/project.pbxproj";
