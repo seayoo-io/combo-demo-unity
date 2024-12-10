@@ -212,7 +212,6 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
-                COMBOSDK_CONFIG_PATH = "${WORKSPACE}/ComboSDK/ComboSDK.json"
                 ENABLE_IOS_POST_BUILD = "true"
             }
             steps {

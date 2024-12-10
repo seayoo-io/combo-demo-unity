@@ -328,8 +328,7 @@ public class Builder : EditorWindow
             Environment.SetEnvironmentVariable("BUNDLE_VERSION", GlobalProps.bundleVersion);
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
-            Environment.SetEnvironmentVariable("FRAMEWORK_PATH", GlobalProps.IOSXCFrameworks);
-            Environment.SetEnvironmentVariable("COMBOSDK_CONFIG_PATH", GlobalProps.IOSComboSDK);
+            Environment.SetEnvironmentVariable("COMBO_SDK_PATH", GlobalProps.IOSComboSDK);
             UpdateComboSDKSettings();
 
             switch (GUIProps.selectedPlatform)
