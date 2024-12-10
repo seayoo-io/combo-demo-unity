@@ -35,13 +35,14 @@ def downloadFrameworks() {
     copyArtifacts projectName: params.IOS_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
 
     def files = findFiles glob: frameworkZip
-    unzip zipFile: files[0].name, dir: env.FRAMEWORK_PATH, quiet: true
+    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
 }
 
 def downloadComboSDKJson() {
     sh '''
         chmod +x ./combo
         ./combo ios setup
+        mv *.json ComboSDK/
     '''
 }
 
@@ -68,7 +69,7 @@ def environmentParams = [
         'developmentTeam': 'G7ZC763G33',
         'exportOptionsPlist': 'combo-catsnsoup.export-options'
     ]
-] 
+]
 
 def installComboCLI() {
     def key = params.GAME_ID
@@ -144,7 +145,7 @@ pipeline {
     environment {
         UNITY_ROOT = getUnityRoot('2019.4.40f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
-        FRAMEWORK_PATH = "${env.WORKSPACE}/Frameworks"
+        COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId'].toString()
@@ -164,7 +165,7 @@ pipeline {
                         rm -rf *.ipa
                         rm -rf *.zip
                         rm -rf logs/*
-                        rm -rf ${env.FRAMEWORK_PATH}
+                        rm -rf ${env.COMBO_SDK_PATH}
                         rm -rf ${env.UNITY_SDK_PATH}/com.seayoo.sdk
                     """
                 }
@@ -211,7 +212,6 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
-                COMBOSDK_CONFIG_PATH = "${WORKSPACE}/ComboSDK.json"
                 ENABLE_IOS_POST_BUILD = "true"
             }
             steps {
