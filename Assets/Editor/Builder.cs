@@ -60,7 +60,7 @@ public class Builder : EditorWindow
             set => EditorPrefs.SetString("FRAMEWORK_PATH", value);
         }
 
-        public static string IOSComboSDKJson {
+        public static string IOSComboSDK {
             get => EditorPrefs.GetString("COMBOSDK_CONFIG_PATH", "");
             set => EditorPrefs.SetString("COMBOSDK_CONFIG_PATH", value);
         }
@@ -168,8 +168,7 @@ public class Builder : EditorWindow
 
 #if UNITY_IOS
         var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
-        var iosXCFrameworks = Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
-        var iosComboSDKJson = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
+        var iosComboSDK = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
 #elif UNITY_ANDROID
         var keepRenderingOnPause = Environment.GetEnvironmentVariable("ENABLE_KEEP_RENDERING_ON_PAUSE") ?? "false";
 #endif
@@ -194,8 +193,7 @@ public class Builder : EditorWindow
         
 #if UNITY_IOS
         scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
-        scriptableObject.IOSXCFrameworks = iosXCFrameworks;
-        scriptableObject.IOSComboSDKJson = iosComboSDKJson;
+        scriptableObject.IOSComboSDK = iosComboSDK;
 #elif UNITY_ANDROID
         scriptableObject.EnableKeepRenderingOnPause = bool.Parse(keepRenderingOnPause);
 #endif
@@ -284,7 +282,7 @@ public class Builder : EditorWindow
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label(new GUIContent("ComboSDK.json", "填入 ComboSDK.json 的文件路径"), GUILayout.Width(120));
-            GlobalProps.IOSComboSDKJson = EditorGUILayout.TextField(GlobalProps.IOSComboSDKJson);
+            GlobalProps.IOSComboSDK = EditorGUILayout.TextField(GlobalProps.IOSComboSDK);
             if (GUILayout.Button("Choose", GUILayout.Width(60)))
             {
                 string selectedFile = EditorUtility.OpenFilePanel("Select ComboSDK.json File", "", "json");
@@ -292,7 +290,7 @@ public class Builder : EditorWindow
                 {
                     string projectPath = Application.dataPath;
                     string releasePath = GetRelativePath(projectPath, selectedFile);
-                    GlobalProps.IOSComboSDKJson = releasePath;
+                    GlobalProps.IOSComboSDK = releasePath;
                     Repaint();
                 }
             }
@@ -331,7 +329,7 @@ public class Builder : EditorWindow
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
             Environment.SetEnvironmentVariable("FRAMEWORK_PATH", GlobalProps.IOSXCFrameworks);
-            Environment.SetEnvironmentVariable("COMBOSDK_CONFIG_PATH", GlobalProps.IOSComboSDKJson);
+            Environment.SetEnvironmentVariable("COMBOSDK_CONFIG_PATH", GlobalProps.IOSComboSDK);
             UpdateComboSDKSettings();
 
             switch (GUIProps.selectedPlatform)
