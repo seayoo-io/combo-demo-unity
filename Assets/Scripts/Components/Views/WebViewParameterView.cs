@@ -90,7 +90,7 @@ internal class WebViewParameterView : View<WebViewParameterView>
     {
         var opts = new RedeemGiftCodeOptions()
         {
-            ServerId = "10001",
+            ServerId = 10001,
             RoleId = "1",
             RoleName = "测试人员1",
             Width = GetInputValue(widthInput),
