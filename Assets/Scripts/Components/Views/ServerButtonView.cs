@@ -56,7 +56,7 @@ internal class ServerButtonView : View<ServerButtonView>, ISelectableView
     private void OnButtonClicked()
     {
         manager?.OnButtonViewSelected(this);
-        ClickServerEvent.Invoke(new ClickServerEvent{ serverId = serverId} );
+        ClickServerEvent.Invoke(new ClickServerEvent{ serverId = serverId, serverName = serverName.text} );
     }
 
     public void Select()

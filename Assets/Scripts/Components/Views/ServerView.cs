@@ -89,6 +89,7 @@ internal class ServerView : View<ServerView>
     public void ClickServer(ClickServerEvent e)
     {
         GameManager.Instance.ServerId = e.serverId;
+        GameManager.Instance.ServerName = e.serverName;
     }
 
     protected override IEnumerator OnHide()
