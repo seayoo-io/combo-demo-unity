@@ -29,6 +29,7 @@ internal class SlotView : View<SlotView>, ISelectableView
     public SlotType slotType;
     private ServerButtonManager manager;
     private int roleType;
+    private Role role;
 
     void Start()
     {
@@ -45,7 +46,7 @@ internal class SlotView : View<SlotView>, ISelectableView
         if(slotType == SlotType.ROLE)
         {
             manager?.OnButtonViewSelected(this);
-            ClickSlotViewEvent.Invoke(new ClickSlotViewEvent{ roleId = roleId.text });
+            ClickSlotViewEvent.Invoke(new ClickSlotViewEvent{ role = role });
         }
         else
         {
@@ -53,19 +54,20 @@ internal class SlotView : View<SlotView>, ISelectableView
         }
     }
 
-    public void SetInfo(SlotType type, string roleId = "", string roleName = "", int gender = 0, int? roleType = null)
+    public void SetInfo(SlotType type, Role r = null)
     {
         slotType = type;
         if(type == SlotType.ROLE)
         {
+            role = r;
             rolePanel.gameObject.SetActive(true);
             addPanel.gameObject.SetActive(false);
-            this.roleId.text = roleId;
-            this.roleName.text = roleName;
-            this.roleType = (int)roleType;
-            this.gender.text = gender == 0 ? "男" : "女";
+            this.roleId.text = r.roleId;
+            this.roleName.text = r.roleName;
+            this.roleType = r.type;
+            this.gender.text = r.gender == 0 ? "男" : "女";
             Sprite sprite;
-            GameManager.Instance.RoleDic.TryGetValue((int)roleType, out sprite);
+            GameManager.Instance.RoleDic.TryGetValue((int)r.type, out sprite);
             image.sprite = sprite;
 
             manager = FindObjectOfType<ServerButtonManager>();

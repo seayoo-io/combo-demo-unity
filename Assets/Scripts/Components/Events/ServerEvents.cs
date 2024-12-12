@@ -15,5 +15,5 @@ public class CloseSeleteRoleEvent : Event<CloseSeleteRoleEvent>
 
 public class ClickSlotViewEvent : Event<ClickSlotViewEvent>
 {
-    public string roleId;
+    public Role role;
 }

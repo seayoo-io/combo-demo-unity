@@ -10,13 +10,13 @@ using UnityEngine.UI;
 internal class SelectView : View<SelectView>
 {
     public Transform parentTransform;
-    public Role[] roleInfos;
+    public Dictionary<string, Role> roleInfos = new Dictionary<string, Role>();
     public Button deleleButton;
     public Button enterGameBtn;
     public Button closeBtn;
     public ServerButtonManager manager;
     public List<Sprite> images = new List<Sprite>();
-    private string currentRoleId;
+    private Role currentRole;
     private List<SlotView> slotViews = new List<SlotView>();
 
     void Start()
@@ -43,15 +43,18 @@ internal class SelectView : View<SelectView>
 
     public void DeleteRole()
     {
-        GameClient.DeleteRole(currentRoleId, data => {
+        GameClient.DeleteRole(currentRole.roleId, data => {
             ShowRoleList();
         });
         
     }
 
     public void EnterGame()
-    {
+    {  
         SceneManager.LoadScene("Game");
+        var newPlayer = PlayerController.SpawnPlayer(currentRole);
+        DontDestroyOnLoad(newPlayer);
+        PlayerController.UpdateRole(PlayerController.GetPlayer(), currentRole);
     }
 
     [EventSystem.BindEvent]
@@ -67,7 +70,10 @@ internal class SelectView : View<SelectView>
     [EventSystem.BindEvent]
     public void SelectRole(ClickSlotViewEvent e)
     {
-        currentRoleId = e.roleId;
+        if (e.role != null)
+        {
+            currentRole = e.role;
+        };
     }
 
     private void ShowRoleList()
@@ -80,13 +86,15 @@ internal class SelectView : View<SelectView>
             if(datas == null)
             {
                 deleleButton.interactable = false;
+                enterGameBtn.interactable = false;
                 LoadSlotView(number: 3);
                 return;
             }
             deleleButton.interactable = true;
-            Array.Sort(datas, (a, b) => a.roleId.CompareTo(b.roleId));
+            enterGameBtn.interactable = true;
             foreach(var data in datas)
             {
+                roleInfos[data.roleId] = data;
                 LoadSlotView(data);
             }
             if(datas.Count() < 3)
@@ -100,7 +108,7 @@ internal class SelectView : View<SelectView>
         });
     }
 
-    private void LoadSlotView(GetRolesListResponse data = null, int number = 1)
+    private void LoadSlotView(Role data = null, int number = 1)
     {
         for (int i = 0; i < number; i++)
         {
@@ -111,7 +119,7 @@ internal class SelectView : View<SelectView>
             }
             else
             {
-                slotView.SetInfo(SlotType.ROLE, data.roleId, data.roleName, data.gender, data.type);
+                slotView.SetInfo(SlotType.ROLE, r: data);
                 slotViews.Add(slotView);
             }
             slotView.gameObject.transform.SetParent(parentTransform, false);
@@ -121,7 +129,7 @@ internal class SelectView : View<SelectView>
             return;
         }
         manager.OnButtonViewSelected(slotViews[0]);
-        currentRoleId = slotViews[0].roleId.text;
+        currentRole = roleInfos[slotViews[0].roleId.text];
     }
 
     protected override IEnumerator OnHide()

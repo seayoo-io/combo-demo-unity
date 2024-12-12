@@ -367,7 +367,7 @@ public static class GameClient
         });
     }
 
-    public static void GetRolesList(int zoneId, int serverId, Action<GetRolesListResponse[]> action)
+    public static void GetRolesList(int zoneId, int serverId, Action<List<Role>> action)
     {
          HttpRequest.Get(new HttpRequestOptions {
             url = $"{endpoint}/{gameId}/list-roles",
@@ -378,9 +378,29 @@ public static class GameClient
             try
             {
                 var data = resp.Body.ToJson<GetRolesListResponse[]>();
+                if (data == null)
+                {
+                    action.Invoke(null);
+                    return;
+                }
+                List<Role> roles = new List<Role>();
                 if(resp.IsSuccess)
                 {
-                    action.Invoke(data);
+                    foreach(var r in data)
+                    {
+                        var role = new Role
+                        {
+                            roleId = r.roleId,
+                            roleName = r.roleName,
+                            serverId = r.serverId,
+                            zoneId = r.zoneId,
+                            gender = r.gender,
+                            type = r.type
+                        };
+                        roles.Add(role);
+                    }
+                    roles.Sort((r1, r2) => r1.roleId.CompareTo(r2.roleId));
+                    action.Invoke(roles);
                 }
                 else{
                     LogErrorWithToast(resp.Body.ToText());

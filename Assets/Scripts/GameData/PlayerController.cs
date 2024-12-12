@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using Combo;
 using UnityEngine;
 
@@ -10,11 +11,11 @@ public class PlayerController
         return go?.GetComponent<Player>();
     }
 
-    public static GameObject SpawnPlayer(string roleId, string roleName, string serverId)
+    public static GameObject SpawnPlayer(Role role)
     {
         var go = GameObject.Instantiate(Resources.Load("Prefabs/Player")) as GameObject;
         var playComp = go.GetComponent<Player>();
-        playComp.CreateRole(roleId, roleName, serverId);
+        playComp.CreateRole(role);
         return go;
     }
 
@@ -29,5 +30,15 @@ public class PlayerController
     public static Role GetRoleInfo(Player player)
     {
         return player.role;
+    }
+
+    public static void UpdateRole(Player player, Role role)
+    {
+        player.UpdateRole(role);
+    }
+
+    public static void ClearInfo(Player player)
+    {
+        player.ClearInfo();
     }
 }

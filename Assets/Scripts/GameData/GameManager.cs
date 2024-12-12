@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 
     public int ZoneId { get; set; }
     public int ServerId { get; set; }
+    public string ServerName { get; set; }
+    public string ZoneName { get; set; }
     public Dictionary<int, Sprite> RoleDic = new Dictionary<int, Sprite>();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]

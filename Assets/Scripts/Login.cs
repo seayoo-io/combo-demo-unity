@@ -115,6 +115,7 @@ public class Login : MonoBehaviour
                 // }
                 CheckAnnouncements();
                 Toast.Show($"玩家 {result.Data.comboId} 退出登录");
+                PlayerController.ClearInfo(PlayerController.GetPlayer());
                 ShowLoginBtn();
             }
             else

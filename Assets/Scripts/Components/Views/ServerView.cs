@@ -81,6 +81,8 @@ internal class ServerView : View<ServerView>
         manager.OnButtonViewSelected(serverButtonViews[0]);
         GameManager.Instance.ZoneId = gameData.zone.zoneId;
         GameManager.Instance.ServerId = gameData.servers[0].serverId;
+        GameManager.Instance.ServerName = gameData.servers[0].serverName;
+        GameManager.Instance.ZoneName = gameData.zone.zoneName;
     }
 
     [EventSystem.BindEvent]
