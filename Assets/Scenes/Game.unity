@@ -2257,7 +2257,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 47.54286, y: 0}
+  m_AnchoredPosition: {x: 48.85496, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &428129844
@@ -4710,6 +4710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed0e5d953fe2ed4b8b74b4136d9427a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayMode: 0
   tabButtons: []
   tabPages:
   - {fileID: 698907794}
@@ -8782,6 +8783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPanel: {fileID: 1729257449}
   openAnnouncementsBtn: {fileID: 921861524}
+  roleImage: {fileID: 2028370500}
 --- !u!114 &1849570593
 MonoBehaviour:
   m_ObjectHideFlags: 0

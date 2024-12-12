@@ -25,7 +25,7 @@ public class Game : MonoBehaviour
         }
         var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
         Sprite sprite;
-        GameManager.Instance.RoleDic.TryGetValue((int)role.type, out sprite);
+        GameManager.Instance.RoleDic.TryGetValue(role.type, out sprite);
         roleImage.sprite = sprite;
         CheckAnnouncements(role.roleId, role.roleLevel);
     }

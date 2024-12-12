@@ -108,14 +108,8 @@ public class Login : MonoBehaviour
             {
                 isLogin = false;
                 GameClient.Logout();
-                // var currentPlayer = PlayerController.GetPlayer();
-                // if(currentPlayer != null)
-                // {
-                //     Destroy(currentPlayer.gameObject);
-                // }
                 CheckAnnouncements();
-                Toast.Show($"玩家 {result.Data.comboId} 退出登录");
-                PlayerController.ClearInfo(PlayerController.GetPlayer());
+                Toast.Show($"用户 {result.Data.comboId} 退出登录");
                 ShowLoginBtn();
             }
             else
@@ -209,22 +203,6 @@ public class Login : MonoBehaviour
                         onSuccess.Invoke();
                         
                         isLogin = true;
-                        // var currentPlayer = PlayerController.GetPlayer();
-                        // if(currentPlayer != null)
-                        // {
-                        //     if(currentPlayer.role.roleId == result.loginInfo.comboId)
-                        //     {
-                        //         CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
-                        //         return;
-                        //     }
-                        //     else
-                        //     {
-                        //         Destroy(currentPlayer.gameObject);
-                        //     }
-                        // }
-                        // var newPlayer = PlayerController.SpawnPlayer(result.loginInfo.comboId, "测试角色01", "1");
-                        // CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
-                        // DontDestroyOnLoad(newPlayer);
                     }
                     else
                     {
