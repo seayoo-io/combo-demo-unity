@@ -361,8 +361,10 @@ public static class GameClient
             if (resp.IsSuccess)
             {
                 
-            } else
+            }
+            else
             {
+                LogErrorWithToast(resp.Body.ToText());
             }
         });
     }

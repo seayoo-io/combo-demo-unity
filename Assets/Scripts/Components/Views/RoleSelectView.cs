@@ -75,11 +75,9 @@ internal class RoleSelectView : View<RoleSelectView>
             {
                 case "manToggle":
                     gender = 0;
-                    Log.I("男");
                     break;
                 case "womanToggle":
                     gender = 1;
-                    Log.I("女");
                     break;
             }
         }
