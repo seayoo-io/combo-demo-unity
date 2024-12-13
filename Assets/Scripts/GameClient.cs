@@ -409,7 +409,7 @@ public static class GameClient
                         };
                         roles.Add(role);
                     }
-                    roles.Sort((r1, r2) => int.Parse(r1.roleId).CompareTo(int.Parse(r2.roleId)));
+                    roles.Sort((r1, r2) => long.Parse(r1.roleId).CompareTo(long.Parse(r2.roleId)));
                     action.Invoke(roles);
                 }
                 else{
