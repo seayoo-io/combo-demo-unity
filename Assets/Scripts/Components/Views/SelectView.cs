@@ -43,20 +43,23 @@ internal class SelectView : View<SelectView>
 
     public void DeleteRole()
     {
-        GameClient.DeleteRole(currentRole.roleId, data => {
-            ShowRoleList();
-        }, (error) => {
-            if(error != "invalid headers") return;
-            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
-                Login login = FindObjectOfType<Login>();
-                if(login != null)
-                {
-                    login.OnSwitchAccount();
-                    Destroy();
-                }
+        UIController.Alert(UIAlertType.Singleton, "提示", $"是否删除该账号 {currentRole.roleId}", "取消", "确认删除",
+        () => {},
+        () =>{
+            GameClient.DeleteRole(currentRole.roleId, data => {
+                ShowRoleList();
+            }, (error) => {
+                if(error != "invalid headers") return;
+                UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                    Login login = FindObjectOfType<Login>();
+                    if(login != null)
+                    {
+                        login.OnSwitchAccount();
+                        Destroy();
+                    }
+                });
             });
-        });
-        
+        });  
     }
 
     public void EnterGame()
