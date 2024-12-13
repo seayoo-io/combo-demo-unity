@@ -56,6 +56,17 @@ internal class RoleSelectView : View<RoleSelectView>
         GameClient.CreateRole(nameInputField.text, gender, index, GameManager.Instance.ZoneId, GameManager.Instance.ServerId, (roleId) => {
             Destroy();
             CloseSeleteRoleEvent.Invoke(new CloseSeleteRoleEvent{ isFinish = true });
+        }, (error) => {
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    CloseSeleteView.Invoke();
+                    Destroy();
+                }
+            });
         }); 
     }
 

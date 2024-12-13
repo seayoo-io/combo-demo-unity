@@ -288,7 +288,13 @@ public static class GameClient
                 }
                 else
                 {
-                    LogErrorWithToast(resp.Body.ToText());
+                    try
+                    {
+                        LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                    } catch (Exception)
+                    {
+                        LogErrorWithToast(resp.Body.ToText());
+                    }
                     action.Invoke(new PlayerItems[0]);
                 }
             } catch (Exception)
@@ -307,13 +313,19 @@ public static class GameClient
             Log.D(resp.ToString());
             try
             {
-                var data = resp.Body.ToJson<ListProduct[]>();
                 if(resp.IsSuccess)
                 {
+                    var data = resp.Body.ToJson<ListProduct[]>();
                     action.Invoke(data);
                 }
                 else{
-                    LogErrorWithToast(resp.Body.ToText());
+                    try
+                    {
+                        LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                    } catch (Exception)
+                    {
+                        LogErrorWithToast(resp.Body.ToText());
+                    }
                 }
             } catch(Exception)
             {
@@ -331,31 +343,42 @@ public static class GameClient
         });
     }
 
-    public static void GetServerList(Action<GameData[]> action)
+    public static void GetServerList(Action<GameData[]> action, Action<string> onError)
     {
         HttpRequest.Get(new HttpRequestOptions {
             url = $"{endpoint}/{gameId}/list-servers ",
             headers = Headers()
         }, resp => {
             Log.D(resp.ToString());
-            try
+            if (resp.IsSuccess)
             {
-                var data = resp.Body.ToJson<GameData[]>();
-                if(resp.IsSuccess)
+                try
                 {
+                    var data = resp.Body.ToJson<GameData[]>();
                     action.Invoke(data);
+                } catch(Exception error)
+                {
+                    Log.E(error);
+                    onError.Invoke(error.Message);
                 }
-                else{
-                    LogErrorWithToast(resp.Body.ToText());
-                }
-            } catch(Exception error)
-            {
-                Log.I(error);
             }
+            else
+            {
+                try
+                {
+                    LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                    onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                } catch (Exception)
+                {
+                    LogErrorWithToast(resp.Body.ToText());
+                    onError.Invoke(resp.Body.ToText());
+                }
+            }
+            
         });
     }
 
-    public static void CreateRole(string roleName, int gender, int roleType, int zoneId, int serverId, Action<string> action)
+    public static void CreateRole(string roleName, int gender, int roleType, int zoneId, int serverId, Action<string> action, Action<string> onError)
     {
         HttpRequest.Post(new HttpRequestOptions
         {
@@ -365,19 +388,27 @@ public static class GameClient
         }, resp =>
         {
             Log.D(resp.ToString());
-            var data = resp.Body.ToJson<CreateRoleResponest>();
             if (resp.IsSuccess)
             {
+                var data = resp.Body.ToJson<CreateRoleResponest>();
                 action.Invoke(data.roleId);
             }
             else
             {
-                LogErrorWithToast(resp.Body.ToText());
+                try
+                {
+                    LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                    onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                } catch (Exception)
+                {
+                    LogErrorWithToast(resp.Body.ToText());
+                    onError.Invoke(resp.Body.ToText());
+                }
             }
         });
     }
 
-    public static void GetRolesList(int zoneId, int serverId, Action<List<Role>> action)
+    public static void GetRolesList(int zoneId, int serverId, Action<List<Role>> action, Action<string> onError)
     {
          HttpRequest.Get(new HttpRequestOptions {
             url = $"{endpoint}/{gameId}/list-roles",
@@ -387,15 +418,15 @@ public static class GameClient
             Log.D(resp.ToString());
             try
             {
-                var data = resp.Body.ToJson<GetRolesListResponse[]>();
-                if (data == null)
-                {
-                    action.Invoke(null);
-                    return;
-                }
-                List<Role> roles = new List<Role>();
                 if(resp.IsSuccess)
                 {
+                    var data = resp.Body.ToJson<GetRolesListResponse[]>();
+                    if (data == null)
+                    {
+                        action.Invoke(null);
+                        return;
+                    }
+                    List<Role> roles = new List<Role>();
                     foreach(var r in data)
                     {
                         var role = new Role
@@ -413,7 +444,15 @@ public static class GameClient
                     action.Invoke(roles);
                 }
                 else{
-                    LogErrorWithToast(resp.Body.ToText());
+                    try
+                    {
+                        LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                        onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                    } catch (Exception)
+                    {
+                        LogErrorWithToast(resp.Body.ToText());
+                        onError.Invoke(resp.Body.ToText());
+                    }
                 }
             } catch(Exception error)
             {
@@ -422,7 +461,7 @@ public static class GameClient
         });
     }
 
-    public static void DeleteRole(string roleId, Action<DeleteRole> action)
+    public static void DeleteRole(string roleId, Action<DeleteRole> action, Action<string> onError)
     {
         HttpRequest.Post(new HttpRequestOptions
         {
@@ -433,13 +472,21 @@ public static class GameClient
         {
             try
             {
-                var data = resp.Body.ToJson<DeleteRole>();
                 if(resp.IsSuccess)
                 {
+                    var data = resp.Body.ToJson<DeleteRole>();
                     action.Invoke(data);
                 }
                 else{
-                    LogErrorWithToast(resp.Body.ToText());
+                    try
+                    {
+                        LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                        onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                    } catch (Exception)
+                    {
+                        LogErrorWithToast(resp.Body.ToText());
+                        onError.Invoke(resp.Body.ToText());
+                    }
                 }
             } catch(Exception error)
             {
@@ -482,7 +529,7 @@ public static class GameClient
     {
         if (message is string messageStr)
         {
-            if (messageStr == "Cannot connect to destination host")
+            if (messageStr == "Cannot connect to destination host" || messageStr == "Cannot resolve destination host")
             {
                 Toast.Show("网络异常，请检查网络");
                 Log.E($"DemoServer: {message}");

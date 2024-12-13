@@ -45,6 +45,16 @@ internal class SelectView : View<SelectView>
     {
         GameClient.DeleteRole(currentRole.roleId, data => {
             ShowRoleList();
+        }, (error) => {
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    Destroy();
+                }
+            });
         });
         
     }
@@ -76,6 +86,12 @@ internal class SelectView : View<SelectView>
         };
     }
 
+    [EventSystem.BindEvent]
+    public void Close(CloseSeleteView e)
+    {
+        Destroy();
+    }
+    
     private void ShowRoleList()
     {   
         foreach (Transform child in parentTransform)
@@ -106,6 +122,18 @@ internal class SelectView : View<SelectView>
             {
                 LoadSlotView();
             }
+        }, (error) => {
+            deleleButton.interactable = false;
+            enterGameBtn.interactable = false;
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    Destroy();
+                }
+            });
         });
     }
 

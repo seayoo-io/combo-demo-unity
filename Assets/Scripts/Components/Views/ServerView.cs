@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Combo;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -24,6 +25,17 @@ internal class ServerView : View<ServerView>
         GameClient.GetServerList((GameData[] datas) =>
         {
             StartCoroutine(InitializeButtonsAsync(datas));
+        }, (error) => {
+            enterCreateRoleBtn.interactable = false;
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    Destroy();
+                }
+            });
         });
     }
     
