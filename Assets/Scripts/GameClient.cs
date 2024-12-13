@@ -124,6 +124,13 @@ public class CreateRoleRequest : Serializable
 }
 
 [System.Serializable]
+public class CreateRoleResponest : Serializable
+{
+    [JsonProperty("role_id")]
+    public string roleId;
+}
+
+[System.Serializable]
 public class GetRolesListRequest : Serializable
 {
     [JsonProperty("zone_id")]
@@ -348,7 +355,7 @@ public static class GameClient
         });
     }
 
-    public static void CreateRole(string roleName, int gender, int roleType, int zoneId, int serverId)
+    public static void CreateRole(string roleName, int gender, int roleType, int zoneId, int serverId, Action<string> action)
     {
         HttpRequest.Post(new HttpRequestOptions
         {
@@ -358,9 +365,10 @@ public static class GameClient
         }, resp =>
         {
             Log.D(resp.ToString());
+            var data = resp.Body.ToJson<CreateRoleResponest>();
             if (resp.IsSuccess)
             {
-                
+                action.Invoke(data.roleId);
             }
             else
             {

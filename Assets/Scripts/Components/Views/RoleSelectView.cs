@@ -53,9 +53,10 @@ internal class RoleSelectView : View<RoleSelectView>
             Toast.Show("请输入角色名称");
             return;
         }
-        GameClient.CreateRole(nameInputField.text, gender, index, GameManager.Instance.ZoneId, GameManager.Instance.ServerId);
-        Destroy();
-        CloseSeleteRoleEvent.Invoke(new CloseSeleteRoleEvent{ isFinish = true });
+        GameClient.CreateRole(nameInputField.text, gender, index, GameManager.Instance.ZoneId, GameManager.Instance.ServerId, (roleId) => {
+            Destroy();
+            CloseSeleteRoleEvent.Invoke(new CloseSeleteRoleEvent{ isFinish = true });
+        }); 
     }
 
     [EventSystem.BindEvent]

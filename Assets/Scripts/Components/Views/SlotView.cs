@@ -62,10 +62,10 @@ internal class SlotView : View<SlotView>, ISelectableView
             role = r;
             rolePanel.gameObject.SetActive(true);
             addPanel.gameObject.SetActive(false);
-            this.roleId.text = r.roleId;
-            this.roleName.text = r.roleName;
-            this.roleType = r.type;
-            this.gender.text = r.gender == 0 ? "男" : "女";
+            roleId.text = r.roleId;
+            roleName.text = r.roleName;
+            roleType = r.type;
+            gender.text = r.gender == 0 ? "男" : "女";
             Sprite sprite;
             GameManager.Instance.RoleDic.TryGetValue((int)r.type, out sprite);
             image.sprite = sprite;

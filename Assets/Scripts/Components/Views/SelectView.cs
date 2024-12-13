@@ -82,6 +82,7 @@ internal class SelectView : View<SelectView>
         {
             Destroy(child.gameObject);
         }
+        slotViews.Clear();
         GameClient.GetRolesList(GameManager.Instance.ZoneId, GameManager.Instance.ServerId, datas => {
             if(datas == null)
             {
