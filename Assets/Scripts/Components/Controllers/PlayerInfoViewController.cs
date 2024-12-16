@@ -89,6 +89,9 @@ public static class PlayerInfoViewController
 
         view.SetPlayerId(playerId);
         view.SetAccountName(accountName);
+        view.SetRole(PlayerController.GetPlayer().role);
+        view.SetServer(GameManager.Instance.ZoneName, GameManager.Instance.ServerName);
+        
     }
 
 }
