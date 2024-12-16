@@ -12,6 +12,7 @@ public class Game : MonoBehaviour
 {
     public PlayerPanel playerPanel;
     public Button openAnnouncementsBtn;
+    public Image roleImage;
 
     void Start()
     {
@@ -22,7 +23,11 @@ public class Game : MonoBehaviour
             SceneManager.LoadScene("Login");
             return;
         }
-        CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
+        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        Sprite sprite;
+        GameManager.Instance.RoleDic.TryGetValue(role.type, out sprite);
+        roleImage.sprite = sprite;
+        CheckAnnouncements(role.roleId, role.roleLevel);
     }
 
     void OnDestroy()

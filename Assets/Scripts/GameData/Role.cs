@@ -3,6 +3,9 @@ public class Role {
     public string roleId;
     public int roleLevel;
     public string roleName;
-    public string serverId;
+    public int serverId;
     public string serverName;
+    public int zoneId;
+    public int gender;
+    public int type;
 }

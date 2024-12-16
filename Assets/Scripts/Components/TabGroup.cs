@@ -1,11 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TabGroup : MonoBehaviour
 {
+    public enum DisplayMode
+    {
+        ScrollView,
+        Panel
+    }
+
+    public DisplayMode displayMode;
+
     [HideInInspector]
     public List<TabButton> tabButtons = new List<TabButton>();
+
+    //当选择 ScrollView 模式时，用来显示内容
+    public List<Action> actions = new List<Action>();
+
+    // 当选择 Panel 模式时，用来控制面板显隐
     public List<GameObject> tabPages = new List<GameObject>();
 
     public Sprite tabIdleSprite;
@@ -59,16 +73,26 @@ public class TabGroup : MonoBehaviour
 
         ResetTabs();
         tabButton.background.sprite = tabSelectedSprite;
+        
         int index = tabButton.transform.GetSiblingIndex();
-        for (int i = 0; i < tabPages.Count; i++)
+
+        // 根据选择的模式处理
+        if (displayMode == DisplayMode.ScrollView)
         {
-            if (i == index)
+            actions[index].Invoke();
+        }
+        else if (displayMode == DisplayMode.Panel)
+        {
+            for (int i = 0; i < tabPages.Count; i++)
             {
-                tabPages[i].SetActive(true);
-            }
-            else
-            {
-                tabPages[i].SetActive(false);
+                if (i == index)
+                {
+                    tabPages[i].SetActive(true);
+                }
+                else
+                {
+                    tabPages[i].SetActive(false);
+                }
             }
         }
     }

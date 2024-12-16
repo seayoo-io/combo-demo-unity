@@ -15,6 +15,11 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Button changePasswordBtn;
     public Button deleteAccountBtn;
     public Button contactSupportBtn;
+    public Image iconImg;
+    public Text roleId;
+    public Text serverName;
+    public Text gender;
+    public Text roleName;
     private Action OnCopy;
     private Action OnCancel;
     private Action OnManageAccount;
@@ -30,6 +35,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
         changePasswordBtn.onClick.AddListener(OnChangePasswordConfigBtn);
         deleteAccountBtn.onClick.AddListener(OnDeleteAccountConfigBtn);
         contactSupportBtn.onClick.AddListener(OnContactSupportConfigBtn);
+        SetIcon();
     }
 
     void OnDestroy()
@@ -48,6 +54,19 @@ internal class PlayerInfoView : View<PlayerInfoView>
 
     public void SetAccountName(string name) {
         accountName.text = name;
+    }
+
+    public void SetRole(Role r)
+    {
+        roleId.text = "角色 ID：" + r.roleId;
+        var str = r.gender == 0 ? "男" : "女";
+        gender.text = "性别：" + str;
+        roleName.text = "角色名：" + r.roleName;
+    }
+
+    public void SetServer(string z, string s)
+    {
+        serverName.text = z + s;
     }
 
     void OnCopyConfigBtn()
@@ -106,5 +125,14 @@ internal class PlayerInfoView : View<PlayerInfoView>
     protected override IEnumerator OnShow()
     {
         yield return null;
+    }
+
+    // 设置头像
+    private void SetIcon()
+    {
+        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        Sprite sprite;
+        GameManager.Instance.RoleDic.TryGetValue((int)role.type, out sprite);
+        iconImg.sprite = sprite;
     }
 }
