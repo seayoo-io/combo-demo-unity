@@ -29,7 +29,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         }
     }
 
-    private static readonly string ComboSDKFrameworks = "ComboSDKFrameworks";
+    private static readonly string ComboSDKDirectory = "ComboSDK";
 
     public void OnPostprocessBuild(BuildReport report)
     {
@@ -161,10 +161,10 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
     private void AddPrivacyInfo(BuildReport report, PBXProject pbxProject, string unityFrameworkTargetGuid, string privacyPath)
     {
-        string destJsonFilePath = Path.Combine(report.summary.outputPath, ComboSDKFrameworks, "PrivacyInfo.xcprivacy");
+        string destJsonFilePath = Path.Combine(report.summary.outputPath, ComboSDKDirectory, "PrivacyInfo.xcprivacy");
         Debug.Log($"PrivacyInfo.xcprivacy = {destJsonFilePath}");
         Builder.CopyFile(privacyPath, destJsonFilePath);
-        string projPathOfFile = $"{ComboSDKFrameworks}/PrivacyInfo.xcprivacy";
+        string projPathOfFile = $"{ComboSDKDirectory}/PrivacyInfo.xcprivacy";
         var guid = pbxProject.AddFile(projPathOfFile, projPathOfFile, PBXSourceTree.Source);
         pbxProject.AddFileToBuild(unityFrameworkTargetGuid, guid);
     }
