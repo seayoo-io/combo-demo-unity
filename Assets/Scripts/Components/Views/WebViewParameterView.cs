@@ -88,11 +88,12 @@ internal class WebViewParameterView : View<WebViewParameterView>
 
     public void RedeemGiftCode()
     {
+        var currentPlayer = PlayerController.GetPlayer();
         var opts = new RedeemGiftCodeOptions()
         {
-            ServerId = 10001,
-            RoleId = "1",
-            RoleName = "测试人员1",
+            ServerId = currentPlayer.role.serverId,
+            RoleId = currentPlayer.role.roleId,
+            RoleName = currentPlayer.role.roleName,
             Width = GetInputValue(widthInput),
             Height = GetInputValue(heightInput)
         };
