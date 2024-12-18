@@ -101,7 +101,7 @@ internal class WebViewParameterView : View<WebViewParameterView>
             if(result.IsSuccess)
             {
                 Destroy();
-                Log.I("礼包码兑换成功成功");
+                Log.I("礼包码兑换流程结束");
             }
             else
             {
