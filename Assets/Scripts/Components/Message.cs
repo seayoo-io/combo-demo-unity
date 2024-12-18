@@ -25,7 +25,6 @@ public class Message : MonoBehaviour
     {
         Log.I($"receive message: {str}");
         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(str.ToString());
-        string comboId = data["combo_id"].ToString();
         string roleId = data["role_id"].ToString();
         int serverId = Convert.ToInt32(data["server_id"]);
         if (IsUserMatching(roleId, serverId))
