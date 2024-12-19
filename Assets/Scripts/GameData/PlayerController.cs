@@ -23,8 +23,8 @@ public class PlayerController
         player.EnterGame();
     }
 
-    public static void PlayerLevelUp(Player player) {
-        player.LevelUp();
+    public static void PlayerLevelUpdate(Player player, int changeLevel) {
+        player.UpDateLevel(changeLevel);
     }
 
     public static Role GetRoleInfo(Player player)

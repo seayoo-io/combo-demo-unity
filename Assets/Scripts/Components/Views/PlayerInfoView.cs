@@ -15,6 +15,10 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Button changePasswordBtn;
     public Button deleteAccountBtn;
     public Button contactSupportBtn;
+    public Button addBtn;
+    public Button subBtn;
+    public InputField levelText;
+    private int level = 1;
     public Image iconImg;
     public Text roleId;
     public Text serverName;
@@ -69,6 +73,42 @@ internal class PlayerInfoView : View<PlayerInfoView>
         serverName.text = z + s;
     }
 
+    public void OnAddLevel()
+    {
+        if(level >= 999999)
+        {
+            return;
+        }
+        level++;
+        levelText.text = $"{level}";
+        PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
+    }
+
+    public void OnSubLevel()
+    {
+        if(level <= 0)
+        {
+            return;
+        }
+        level--;
+        levelText.text = $"{level}";
+        PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
+    }
+
+    public void SynchronizeLevel()
+    {
+        int numInt;
+        if (int.TryParse(levelText.text, out numInt))
+        {
+            level = numInt == 0 ? 1 : numInt;
+        }
+        else
+        {
+            level = 1;
+        }
+        levelText.text = level.ToString();
+        PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
+    }
     void OnCopyConfigBtn()
     {
         OnCopy.Invoke();
