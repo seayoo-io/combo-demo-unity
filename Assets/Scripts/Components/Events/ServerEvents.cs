@@ -20,3 +20,8 @@ public class ClickSlotViewEvent : Event<ClickSlotViewEvent>
 {
     public Role role;
 }
+
+public class ChangeRoleEvent : Event<ChangeRoleEvent>
+{
+    public Role role;
+}

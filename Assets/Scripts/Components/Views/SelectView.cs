@@ -6,6 +6,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum SceneType
+{
+    Login,
+    Game
+}
+
 [ViewPrefab("Prefabs/SelectView")]
 internal class SelectView : View<SelectView>
 {
@@ -14,10 +20,12 @@ internal class SelectView : View<SelectView>
     public Button deleleButton;
     public Button enterGameBtn;
     public Button closeBtn;
+    public Text btnText;
     public ServerButtonManager manager;
     public List<Sprite> images = new List<Sprite>();
     private Role currentRole;
     private List<SlotView> slotViews = new List<SlotView>();
+    private SceneType sceneType = SceneType.Login;
 
     void Start()
     {
@@ -30,7 +38,7 @@ internal class SelectView : View<SelectView>
         ShowRoleList();
         closeBtn.onClick.AddListener(Destroy);
         deleleButton.onClick.AddListener(DeleteRole);
-        enterGameBtn.onClick.AddListener(EnterGame);
+        enterGameBtn.onClick.AddListener(ButtonAction);
     }
 
     void OnDestroy()
@@ -38,7 +46,22 @@ internal class SelectView : View<SelectView>
         EventSystem.UnRegister(this);
         closeBtn.onClick.RemoveListener(Destroy);
         deleleButton.onClick.RemoveListener(DeleteRole);
-        enterGameBtn.onClick.RemoveListener(EnterGame);
+        enterGameBtn.onClick.RemoveListener(ButtonAction);
+    }
+
+    public void SetViewInfo(SceneType sceneType)
+    {
+        this.sceneType = sceneType;
+        switch (sceneType)
+        {
+            case SceneType.Login:
+                btnText.text = "进入游戏";
+                break;
+            case SceneType.Game:
+                btnText.text = "更换角色";
+                break;
+        }
+    
     }
 
     public void DeleteRole()
@@ -62,12 +85,34 @@ internal class SelectView : View<SelectView>
         });  
     }
 
-    public void EnterGame()
-    {  
+    public void ButtonAction()
+    {
+        switch (sceneType)
+        {
+            case SceneType.Login:
+                EnterGame();
+                break;
+            case SceneType.Game:
+                ChangeRole();
+                break;
+        }
+    }
+
+    private void EnterGame()
+    {
         SceneManager.LoadScene("Game");
         var newPlayer = PlayerController.SpawnPlayer(currentRole);
         DontDestroyOnLoad(newPlayer);
         PlayerController.UpdateRole(PlayerController.GetPlayer(), currentRole);
+    }
+
+    private void ChangeRole()
+    {
+        var currentPlayer = PlayerController.GetPlayer();
+        PlayerController.ClearInfo(currentPlayer);
+        PlayerController.UpdateRole(PlayerController.GetPlayer(), currentRole);
+        ChangeRoleEvent.Invoke(new ChangeRoleEvent{ role = currentRole });
+        Destroy();
     }
 
     [EventSystem.BindEvent]

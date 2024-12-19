@@ -11,6 +11,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Text accountName;
     public Button copyBtn;
     public Button cancelBtn;
+    public Button changeRoleBtn;
     public Button manageAccountBtn;
     public Button changePasswordBtn;
     public Button deleteAccountBtn;
@@ -39,6 +40,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
         changePasswordBtn.onClick.AddListener(OnChangePasswordConfigBtn);
         deleteAccountBtn.onClick.AddListener(OnDeleteAccountConfigBtn);
         contactSupportBtn.onClick.AddListener(OnContactSupportConfigBtn);
+        changeRoleBtn.onClick.AddListener(ChangeRole);
         SetIcon();
     }
 
@@ -50,6 +52,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
         changePasswordBtn.onClick.RemoveListener(OnChangePasswordConfigBtn);
         deleteAccountBtn.onClick.RemoveListener(OnDeleteAccountConfigBtn);
         contactSupportBtn.onClick.RemoveListener(OnContactSupportConfigBtn);
+        changeRoleBtn.onClick.RemoveListener(ChangeRole);
     }
     
     public void SetPlayerId(string id) {
@@ -109,6 +112,14 @@ internal class PlayerInfoView : View<PlayerInfoView>
         levelText.text = level.ToString();
         PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
     }
+
+    public void ChangeRole()
+    {
+        var view = SelectView.Instantiate();
+        view.SetViewInfo(SceneType.Game);
+        Destroy();
+    }
+
     void OnCopyConfigBtn()
     {
         OnCopy.Invoke();
