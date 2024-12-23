@@ -19,7 +19,6 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Button addBtn;
     public Button subBtn;
     public InputField levelText;
-    private int level = 1;
     public Image iconImg;
     public Text roleId;
     public Text serverName;
@@ -31,6 +30,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     private Action OnChangePassword;
     private Action OnDeleteAccount;
     private Action OnContactSupport;
+    private int level;
 
     void Awake()
     {
@@ -42,6 +42,9 @@ internal class PlayerInfoView : View<PlayerInfoView>
         contactSupportBtn.onClick.AddListener(OnContactSupportConfigBtn);
         changeRoleBtn.onClick.AddListener(ChangeRole);
         SetIcon();
+        Log.I(PlayerController.GetPlayer().role);
+        level = PlayerController.GetPlayer().role.roleLevel;
+        levelText.text = level.ToString();
     }
 
     void OnDestroy()
@@ -85,6 +88,17 @@ internal class PlayerInfoView : View<PlayerInfoView>
         level++;
         levelText.text = $"{level}";
         PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
+        GameClient.UpdateRoleLevel(PlayerController.GetPlayer().role.roleId, level, (error) => {
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    Destroy();
+                }
+            });
+        });
     }
 
     public void OnSubLevel()
@@ -96,6 +110,17 @@ internal class PlayerInfoView : View<PlayerInfoView>
         level--;
         levelText.text = $"{level}";
         PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
+        GameClient.UpdateRoleLevel(PlayerController.GetPlayer().role.roleId, level, (error) => {
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    Destroy();
+                }
+            });
+        });
     }
 
     public void SynchronizeLevel()
@@ -111,6 +136,17 @@ internal class PlayerInfoView : View<PlayerInfoView>
         }
         levelText.text = level.ToString();
         PlayerController.PlayerLevelUpdate(PlayerController.GetPlayer(), level);
+        GameClient.UpdateRoleLevel(PlayerController.GetPlayer().role.roleId, level, (error) => {
+            if(error != "invalid headers") return;
+            UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
+                Login login = FindObjectOfType<Login>();
+                if(login != null)
+                {
+                    login.OnSwitchAccount();
+                    Destroy();
+                }
+            });
+        });
     }
 
     public void ChangeRole()
