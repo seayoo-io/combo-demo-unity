@@ -118,6 +118,8 @@ public class CreateRoleRequest : Serializable
     public int zoneId;
     [JsonProperty("server_id")]
     public int serverId;
+    [JsonProperty("created_at")]
+    public long roleCreateTime;
 }
 
 [Serializable]
@@ -153,7 +155,7 @@ public class GetRolesListResponse : Serializable
     [JsonProperty("server_id")]
     public int serverId;
     [JsonProperty("created_at")]
-    public int roleCreateTime;
+    public long roleCreateTime;
     
 }
 
@@ -397,12 +399,12 @@ public static class GameClient
     }
 
     // 创建角色
-    public static void CreateRole(string roleName, int gender, int roleType, int zoneId, int serverId, Action<string> action, Action<string> onError)
+    public static void CreateRole(string roleName, int gender, long createRoleTime, int roleType, int zoneId, int serverId, Action<string> action, Action<string> onError)
     {
         HttpRequest.Post(new HttpRequestOptions
         {
             url = $"{endpoint}/{gameId}/create-role",
-            body = new CreateRoleRequest { roleName = roleName, gender = gender, type = roleType, zoneId = zoneId, serverId = serverId},
+            body = new CreateRoleRequest { roleName = roleName, gender = gender, roleCreateTime = createRoleTime, type = roleType, zoneId = zoneId, serverId = serverId},
             headers = Headers()
         }, resp =>
         {
@@ -462,7 +464,7 @@ public static class GameClient
                         };
                         roles.Add(role);
                     }
-                    roles.Sort((r1, r2) => long.Parse(r1.roleId).CompareTo(long.Parse(r2.roleId)));
+                    roles.Sort((r1, r2) => r1.roleCreateTime.CompareTo(r2.roleCreateTime));
                     action.Invoke(roles);
                 }
                 else{

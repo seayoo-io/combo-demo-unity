@@ -54,10 +54,10 @@ public class DatePickerGroup : MonoBehaviour {
     /// </summary>
     public void onDateUpdate()
     {
-        Debug.Log("当前选择日期：" + _selectDate.ToString("yyyy/MM/dd HH : mm : ss"));
         for (int i = 0; i < _datePickerList.Count; i++)
         {
             _datePickerList[i].RefreshDateList();
         }
+        UpdateRoleCreateTimeEvent.Invoke(new UpdateRoleCreateTimeEvent{ changeTime = _selectDate });
     }
 }
