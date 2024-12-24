@@ -413,6 +413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed0e5d953fe2ed4b8b74b4136d9427a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayMode: 1
   tabButtons: []
   tabPages:
   - {fileID: 7412643226310733835}
