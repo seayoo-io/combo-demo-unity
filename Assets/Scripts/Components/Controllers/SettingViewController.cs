@@ -46,6 +46,7 @@ public static class SettingViewController
                 }
                 SettingView.DestroyAll();
                 SceneManager.LoadScene("Login");
+                GameManager.Instance.sdkIsLogin = false;
             }
             else
             {

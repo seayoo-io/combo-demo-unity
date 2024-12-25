@@ -69,7 +69,6 @@ internal class ServerView : View<ServerView>
     public void EnterRoleView()
     {
         var view = SelectView.Instantiate();
-        view.SetViewInfo(SceneType.Login);
         Destroy();
     }
 

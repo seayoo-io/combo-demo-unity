@@ -41,6 +41,12 @@ public class Login : MonoBehaviour
     }
     void Start()
     {
+        CheckAnnouncements();
+        if(GameManager.Instance.sdkIsLogin)
+        {
+            ShowEnterGameBtn();
+            return;
+        }
         var buildParams = BuildParams.Load();
 
         if (buildParams.hotUpdate || buildParams.forceUpdate)
@@ -54,8 +60,6 @@ public class Login : MonoBehaviour
         if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
             contactSupportBtn.gameObject.SetActive(false);
         }
-
-        CheckAnnouncements();
     }
 
     void OnDestroy()
@@ -111,6 +115,7 @@ public class Login : MonoBehaviour
                 CheckAnnouncements();
                 Toast.Show($"用户 {result.Data.comboId} 退出登录");
                 ShowLoginBtn();
+                GameManager.Instance.sdkIsLogin = false;
             }
             else
             {
@@ -226,6 +231,7 @@ public class Login : MonoBehaviour
                     new Dictionary<string, object>() { { "role_name", "test_player" } }
                 );
                 GameClientLogin(result);
+                GameManager.Instance.sdkIsLogin = true;
             }
             else
             {

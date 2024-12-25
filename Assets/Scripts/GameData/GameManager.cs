@@ -4,7 +4,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
+    public bool sdkIsLogin { get; set; }
     public int ZoneId { get; set; }
     public int ServerId { get; set; }
     public string ServerName { get; set; }

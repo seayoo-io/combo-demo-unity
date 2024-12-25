@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [ViewPrefab("Prefabs/PlayerInfoView")]
@@ -46,8 +46,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
         var roleInfo = PlayerController.GetPlayer().role;
         level = roleInfo.roleLevel;
         levelText.text = level.ToString();
-        DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        DateTime dateTime = unixEpoch.AddSeconds(roleInfo.roleCreateTime);
+        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(roleInfo.roleCreateTime).LocalDateTime;
         createTime.text = "创建日期：" + dateTime.ToString();
     }
 
@@ -155,8 +154,11 @@ internal class PlayerInfoView : View<PlayerInfoView>
 
     public void ChangeRole()
     {
+        
         var view = SelectView.Instantiate();
-        view.SetViewInfo(SceneType.Game);
+        view.SetViewInfo(() => {
+            SceneManager.LoadScene("Login");
+        });
         Destroy();
     }
 

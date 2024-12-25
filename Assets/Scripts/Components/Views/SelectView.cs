@@ -6,12 +6,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum SceneType
-{
-    Login,
-    Game
-}
-
 [ViewPrefab("Prefabs/SelectView")]
 internal class SelectView : View<SelectView>
 {
@@ -25,7 +19,7 @@ internal class SelectView : View<SelectView>
     public List<Sprite> images = new List<Sprite>();
     private Role currentRole;
     private List<SlotView> slotViews = new List<SlotView>();
-    private SceneType sceneType = SceneType.Login;
+    private Action CloseAction;
 
     void Start()
     {
@@ -36,32 +30,28 @@ internal class SelectView : View<SelectView>
             GameManager.Instance.RoleDic.Add(i, images[i]);
         }
         ShowRoleList();
-        closeBtn.onClick.AddListener(Destroy);
+        closeBtn.onClick.AddListener(OnReturnBtnAction);
         deleleButton.onClick.AddListener(DeleteRole);
-        enterGameBtn.onClick.AddListener(ButtonAction);
+        enterGameBtn.onClick.AddListener(EnterGame);
     }
 
     void OnDestroy()
     {
         EventSystem.UnRegister(this);
-        closeBtn.onClick.RemoveListener(Destroy);
+        closeBtn.onClick.RemoveListener(OnReturnBtnAction);
         deleleButton.onClick.RemoveListener(DeleteRole);
-        enterGameBtn.onClick.RemoveListener(ButtonAction);
+        enterGameBtn.onClick.RemoveListener(EnterGame);
     }
 
-    public void SetViewInfo(SceneType sceneType)
+    public void SetViewInfo(Action returnBtnAction)
     {
-        this.sceneType = sceneType;
-        switch (sceneType)
-        {
-            case SceneType.Login:
-                btnText.text = "进入游戏";
-                break;
-            case SceneType.Game:
-                btnText.text = "更换角色";
-                break;
-        }
-    
+        CloseAction = returnBtnAction;
+    }
+
+    public void OnReturnBtnAction()
+    {
+        CloseAction?.Invoke();
+        Destroy();
     }
 
     public void DeleteRole()
@@ -85,19 +75,6 @@ internal class SelectView : View<SelectView>
         });  
     }
 
-    public void ButtonAction()
-    {
-        switch (sceneType)
-        {
-            case SceneType.Login:
-                EnterGame();
-                break;
-            case SceneType.Game:
-                ChangeRole();
-                break;
-        }
-    }
-
     private void EnterGame()
     {
         SceneManager.LoadScene("Game");
@@ -107,14 +84,6 @@ internal class SelectView : View<SelectView>
         MailListManager.Instance.RefreshPath();
     }
 
-    private void ChangeRole()
-    {
-        var currentPlayer = PlayerController.GetPlayer();
-        PlayerController.ClearInfo(currentPlayer);
-        PlayerController.UpdateRole(PlayerController.GetPlayer(), currentRole);
-        ChangeRoleEvent.Invoke(new ChangeRoleEvent{ role = currentRole });
-        Destroy();
-    }
 
     [EventSystem.BindEvent]
     public void Refresh(CloseSeleteRoleEvent e)
