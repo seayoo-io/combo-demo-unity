@@ -14,10 +14,12 @@ internal class SelectView : View<SelectView>
     public Button deleleButton;
     public Button enterGameBtn;
     public Button closeBtn;
+    public Text btnText;
     public ServerButtonManager manager;
     public List<Sprite> images = new List<Sprite>();
     private Role currentRole;
     private List<SlotView> slotViews = new List<SlotView>();
+    private Action CloseAction;
 
     void Start()
     {
@@ -28,7 +30,7 @@ internal class SelectView : View<SelectView>
             GameManager.Instance.RoleDic.Add(i, images[i]);
         }
         ShowRoleList();
-        closeBtn.onClick.AddListener(Destroy);
+        closeBtn.onClick.AddListener(OnReturnBtnAction);
         deleleButton.onClick.AddListener(DeleteRole);
         enterGameBtn.onClick.AddListener(EnterGame);
     }
@@ -36,9 +38,20 @@ internal class SelectView : View<SelectView>
     void OnDestroy()
     {
         EventSystem.UnRegister(this);
-        closeBtn.onClick.RemoveListener(Destroy);
+        closeBtn.onClick.RemoveListener(OnReturnBtnAction);
         deleleButton.onClick.RemoveListener(DeleteRole);
         enterGameBtn.onClick.RemoveListener(EnterGame);
+    }
+
+    public void SetViewInfo(Action returnBtnAction)
+    {
+        CloseAction = returnBtnAction;
+    }
+
+    public void OnReturnBtnAction()
+    {
+        CloseAction?.Invoke();
+        Destroy();
     }
 
     public void DeleteRole()
@@ -62,14 +75,15 @@ internal class SelectView : View<SelectView>
         });  
     }
 
-    public void EnterGame()
-    {  
+    private void EnterGame()
+    {
         SceneManager.LoadScene("Game");
         var newPlayer = PlayerController.SpawnPlayer(currentRole);
         DontDestroyOnLoad(newPlayer);
         PlayerController.UpdateRole(PlayerController.GetPlayer(), currentRole);
         MailListManager.Instance.RefreshPath();
     }
+
 
     [EventSystem.BindEvent]
     public void Refresh(CloseSeleteRoleEvent e)

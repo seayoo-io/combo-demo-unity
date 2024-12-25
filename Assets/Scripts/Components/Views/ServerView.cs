@@ -68,7 +68,7 @@ internal class ServerView : View<ServerView>
 
     public void EnterRoleView()
     {
-        SelectView.Instantiate();
+        var view = SelectView.Instantiate();
         Destroy();
     }
 

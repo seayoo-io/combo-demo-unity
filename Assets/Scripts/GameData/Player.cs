@@ -35,9 +35,10 @@ public class Player : MonoBehaviour {
         role = r;
     }
 
-    public void LevelUp()
+    public void UpDateLevel(int changeLevel)
     {
-        role.roleLevel++;
+        role.roleLevel = changeLevel;
+        Log.I("current level: " + role.roleLevel);
     }
 
     public void ClearInfo()

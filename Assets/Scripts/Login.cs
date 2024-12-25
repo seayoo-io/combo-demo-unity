@@ -19,7 +19,6 @@ public class Login : MonoBehaviour
 
     private int loginRetryCount = 0;
     private string lastError = "";
-    private bool isLogin = false;
 
     void Awake()
     {
@@ -41,6 +40,12 @@ public class Login : MonoBehaviour
     }
     void Start()
     {
+        CheckAnnouncements();
+        if(GameManager.Instance.sdkIsLogin)
+        {
+            ShowEnterGameBtn();
+            return;
+        }
         var buildParams = BuildParams.Load();
 
         if (buildParams.hotUpdate || buildParams.forceUpdate)
@@ -54,8 +59,6 @@ public class Login : MonoBehaviour
         if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
             contactSupportBtn.gameObject.SetActive(false);
         }
-
-        CheckAnnouncements();
     }
 
     void OnDestroy()
@@ -106,11 +109,11 @@ public class Login : MonoBehaviour
         {
             if (result.IsSuccess)
             {
-                isLogin = false;
                 GameClient.Logout();
                 CheckAnnouncements();
                 Toast.Show($"用户 {result.Data.comboId} 退出登录");
                 ShowLoginBtn();
+                GameManager.Instance.sdkIsLogin = false;
             }
             else
             {
@@ -176,7 +179,7 @@ public class Login : MonoBehaviour
 
     public void OpenAnnouncement()
     {
-        UIController.ShowAnnouncementParameterView(isLogin);
+        UIController.ShowAnnouncementParameterView(false);
     }
 
     [EventSystem.BindEvent]
@@ -201,8 +204,6 @@ public class Login : MonoBehaviour
                         Toast.Show($"游戏客户端登录成功");
                         Log.I("游戏客户端登录成功");
                         onSuccess.Invoke();
-                        
-                        isLogin = true;
                     }
                     else
                     {
@@ -226,6 +227,7 @@ public class Login : MonoBehaviour
                     new Dictionary<string, object>() { { "role_name", "test_player" } }
                 );
                 GameClientLogin(result);
+                GameManager.Instance.sdkIsLogin = true;
             }
             else
             {

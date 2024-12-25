@@ -97,6 +97,15 @@ public class Game : MonoBehaviour
         image.gameObject.SetActive(false);
     }
 
+    [EventSystem.BindEvent]
+    void ChangeRole(ChangeRoleEvent evt)
+    {
+        Sprite sprite;
+        GameManager.Instance.RoleDic.TryGetValue(evt.role.type, out sprite);
+        roleImage.sprite = sprite;
+        CheckAnnouncements(evt.role.roleId, evt.role.roleLevel);
+    }
+
     private void CheckAnnouncements(string profile = null, int? level = null)
     {
         var opts = new CheckAnnouncementsOptions();
