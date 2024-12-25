@@ -24,6 +24,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Text serverName;
     public Text gender;
     public Text roleName;
+    public Text createTime;
     private Action OnCopy;
     private Action OnCancel;
     private Action OnManageAccount;
@@ -42,9 +43,12 @@ internal class PlayerInfoView : View<PlayerInfoView>
         contactSupportBtn.onClick.AddListener(OnContactSupportConfigBtn);
         changeRoleBtn.onClick.AddListener(ChangeRole);
         SetIcon();
-        Log.I(PlayerController.GetPlayer().role);
-        level = PlayerController.GetPlayer().role.roleLevel;
+        var roleInfo = PlayerController.GetPlayer().role;
+        level = roleInfo.roleLevel;
         levelText.text = level.ToString();
+        DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        DateTime dateTime = unixEpoch.AddSeconds(roleInfo.roleCreateTime);
+        createTime.text = "创建日期：" + dateTime.ToString();
     }
 
     void OnDestroy()
