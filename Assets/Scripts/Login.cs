@@ -19,7 +19,6 @@ public class Login : MonoBehaviour
 
     private int loginRetryCount = 0;
     private string lastError = "";
-    private bool isLogin = false;
 
     void Awake()
     {
@@ -110,7 +109,6 @@ public class Login : MonoBehaviour
         {
             if (result.IsSuccess)
             {
-                isLogin = false;
                 GameClient.Logout();
                 CheckAnnouncements();
                 Toast.Show($"用户 {result.Data.comboId} 退出登录");
@@ -181,7 +179,7 @@ public class Login : MonoBehaviour
 
     public void OpenAnnouncement()
     {
-        UIController.ShowAnnouncementParameterView(isLogin);
+        UIController.ShowAnnouncementParameterView(false);
     }
 
     [EventSystem.BindEvent]
@@ -206,8 +204,6 @@ public class Login : MonoBehaviour
                         Toast.Show($"游戏客户端登录成功");
                         Log.I("游戏客户端登录成功");
                         onSuccess.Invoke();
-                        
-                        isLogin = true;
                     }
                     else
                     {
