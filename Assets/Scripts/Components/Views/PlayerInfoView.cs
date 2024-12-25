@@ -79,7 +79,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
 
     public void SetServer(string z, string s)
     {
-        serverName.text = z + s;
+        serverName.text = z + "：" + s;
     }
 
     public void OnAddLevel()
