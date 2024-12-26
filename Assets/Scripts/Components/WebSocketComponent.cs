@@ -11,7 +11,6 @@ public class WebSocketComponent : MonoBehaviour
     private string address ="";
     void Start()
     {
-        Log.I("WebSocketComponent Start");
         var demoEndpoint = GameClient.GetClientEndPoint().Replace("https://", "");
         address = $"wss://{demoEndpoint}:443/{ComboSDK.GetGameId()}/ws/{ComboSDK.GetLoginInfo().comboId}";
         webSocket = new WebSocket(address);
@@ -26,7 +25,6 @@ public class WebSocketComponent : MonoBehaviour
 
     void OnDestroy()
     {
-        Log.I("WebSocketComponent Destroy");
         webSocket.OnOpen -= OnOpen;
         webSocket.OnMessage -= OnMessage;
         webSocket.OnClose -= OnClose;
@@ -38,17 +36,6 @@ public class WebSocketComponent : MonoBehaviour
     {
         Log.I("WebSocket connection opened.");
     }
-
-    void OnApplicationPause(bool pauseStatus)
-    {
-        Log.I($"Application pause: {pauseStatus}");
-    }
-
-    void OnApplicationFocus(bool hasFocus)
-    {
-        Log.I($"Application focus: {hasFocus}");
-    }
-
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
@@ -73,7 +60,6 @@ public class WebSocketComponent : MonoBehaviour
     {
         webSocket.SendAsync("PING");
         lastPongReceiveTime = Time.time;
-        Log.I(Time.time + "    send ping");
     }
 
     private void CheckConnectionStatus()
