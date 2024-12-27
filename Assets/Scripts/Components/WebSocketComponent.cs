@@ -39,11 +39,7 @@ public class WebSocketComponent : MonoBehaviour
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
-        if (e.Data == "PONG")
-        {
-            lastPongReceiveTime = Time.time;
-        }
-        else
+        if (e.Data != "PONG")
         {
             MailListManager.Instance.SaveMail(ParseMail(e.Data));
             Message.Show(e.Data);
@@ -63,6 +59,7 @@ public class WebSocketComponent : MonoBehaviour
     private void SendPingFrame()
     {
         webSocket.SendAsync("PING");
+        lastPongReceiveTime = Time.time;
     }
 
     private void CheckConnectionStatus()

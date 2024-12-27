@@ -63,7 +63,7 @@ public class RankManager : MonoBehaviour
         selectedBtn = characterBtn;
     }
 
-    public void Destroy()
+    public void OnDestroy()
     {
         EventSystem.UnRegister(this);
     }
