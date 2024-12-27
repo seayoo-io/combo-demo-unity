@@ -64,7 +64,7 @@ def environmentParams = [
     ],
     'catsnsoup': [
         'bundleId': 'com.mt.zhuoli', 
-        'codeSignId': 'iPhone Developer: fei gao (KDF9BF4JFY)', 
+        'codeSignId': 'Apple Development: 乐 李 (Z7J3K9MRC6)', 
         'provision': 'MaoTang Dev',
         'developmentTeam': 'G7ZC763G33',
         'exportOptionsPlist': 'combo-catsnsoup.export-options'
