@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Types;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 class ErrorResponse : Serializable
 {
@@ -173,6 +174,35 @@ public class UpdateRoleLevel : Serializable
     public string roleId;
     [JsonProperty("role_level")]
     public int roleLevel;
+}
+
+[Serializable]
+public class ReportEventBase : Serializable
+{
+    public string time;
+    public string type;
+    [JsonProperty("combo_id")]
+    public string comboId;
+    [JsonProperty("server_id")]
+    public int serverId;
+    [JsonProperty("role_id")]
+    public string roleId;
+}
+
+[Serializable]
+public class LoginReportEvent : ReportEventBase
+{
+    [JsonProperty("role_level")]
+    public int roleLevel;
+}
+
+[Serializable]
+public class ActiveValueReportEvent : ReportEventBase
+{
+    [JsonProperty("activity_points")]
+    public int activityPoints;
+    [JsonProperty("points_changed")]
+    public int pointsChanged;
 }
 
 public static class GameClient
@@ -527,6 +557,68 @@ public static class GameClient
         {
             url = $"{endpoint}/{gameId}/update-role",
             body = new UpdateRoleLevel { roleId = roleId, roleLevel = roleLevel },
+            headers = Headers()
+        }, resp =>
+        {
+            try
+            {
+                Log.D(resp.ToString());
+                if(resp.IsSuccess)
+                {
+                }
+                else
+                {
+                    try
+                    {
+                        LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                        onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                    } catch (Exception)
+                    {
+                        LogErrorWithToast(resp.Body.ToText());
+                        onError.Invoke(resp.Body.ToText());
+                    }
+                }
+            } catch(Exception error)
+            {
+                Log.I(error);
+            }
+        });
+    }
+
+    public static void ReportEvent(ReportEventBase reportEventBase, Action<string> onError)
+    {
+        Serializable body = new ReportEventBase();
+        if(reportEventBase is LoginReportEvent)
+        {
+            var loginReport = (LoginReportEvent)reportEventBase;
+            body = new LoginReportEvent
+            {
+                time = loginReport.time,
+                type = loginReport.type,
+                comboId = loginReport.comboId,
+                serverId = loginReport.serverId,
+                roleId = loginReport.roleId,
+                roleLevel = loginReport.roleLevel
+            };
+        }
+        else
+        {
+            var activeValue = (ActiveValueReportEvent)reportEventBase;
+            body = new ActiveValueReportEvent
+            {
+                time = activeValue.time,
+                type = activeValue.type,
+                comboId = activeValue.comboId,
+                serverId = activeValue.serverId,
+                roleId = activeValue.roleId,
+                activityPoints = activeValue.activityPoints,
+                pointsChanged = activeValue.pointsChanged
+            };
+        }
+        HttpRequest.Post(new HttpRequestOptions
+        {
+            url = $"{endpoint}/{gameId}/report-event",
+            body = body,
             headers = Headers()
         }, resp =>
         {

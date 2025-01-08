@@ -1,8 +1,9 @@
 using System;
-using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 
-public class ChangeRoleTimeController : MonoBehaviour
+[ViewPrefab("Prefabs/ChangeTimeView")]
+internal class ChangeTimeView : View<ChangeTimeView>
 {
     public Button confirmBtn;
     public Button closeBtn;
@@ -28,7 +29,7 @@ public class ChangeRoleTimeController : MonoBehaviour
     }
 
     [EventSystem.BindEvent]
-    public void ChangeRoleCreateTime(UpdateRoleCreateTimeEvent evt)
+    public void ChangeRoleCreateTime(UpdateTimeEvent evt)
     {
         currentTime = evt.changeTime;
         YMDText.text = $"{currentTime.Year}年{currentTime.Month}月{currentTime.Day}日";
@@ -42,9 +43,19 @@ public class ChangeRoleTimeController : MonoBehaviour
 
         // 计算时间差并转换为秒数
         long unixTimestamp = Convert.ToInt64((currentTime.ToUniversalTime() - unixEpoch).TotalSeconds);
-        ChangeRoleCreateTimeEvent.Invoke(new ChangeRoleCreateTimeEvent{
+        ChangeTimeEvent.Invoke(new ChangeTimeEvent{
             unixTime = unixTimestamp
         });
-        gameObject.SetActive(false);
+        Destroy();
+    }
+
+    protected override IEnumerator OnHide()
+    {
+        yield return null;
+    }
+
+    protected override IEnumerator OnShow()
+    {
+        yield return null;
     }
 }
