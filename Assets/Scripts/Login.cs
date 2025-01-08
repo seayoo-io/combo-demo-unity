@@ -33,6 +33,7 @@ public class Login : MonoBehaviour
                 }
                 else
                 {
+                    GameManager.Instance.sdkIsLogin = false;
                     SceneManager.LoadScene("Login");
                 }
             }
