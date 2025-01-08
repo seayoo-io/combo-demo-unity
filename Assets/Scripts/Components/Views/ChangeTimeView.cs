@@ -18,14 +18,14 @@ internal class ChangeTimeView : View<ChangeTimeView>
         YMDText.text = $"{currentTime.Year}年{currentTime.Month}月{currentTime.Day}日";
         TimeText.text = $"{currentTime.Hour}时{currentTime.Minute}分{currentTime.Second}秒";
         confirmBtn.onClick.AddListener(Confirm);
-        closeBtn.onClick.AddListener(() => { gameObject.SetActive(false); });
+        closeBtn.onClick.AddListener(() => { Destroy(); });
     }
 
     void OnDestroy()
     {
         EventSystem.UnRegister(this);
         confirmBtn.onClick.RemoveListener(Confirm);
-        closeBtn.onClick.RemoveListener(() => { gameObject.SetActive(false); });
+        closeBtn.onClick.RemoveListener(() => { Destroy(); });
     }
 
     [EventSystem.BindEvent]

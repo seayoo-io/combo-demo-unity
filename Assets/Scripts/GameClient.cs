@@ -627,6 +627,7 @@ public static class GameClient
                 Log.D(resp.ToString());
                 if(resp.IsSuccess)
                 {
+                    Toast.Show("上报成功");
                 }
                 else
                 {

@@ -118,13 +118,32 @@ public class ReportDataManager : MonoBehaviour
 
     public static string ConvertUnixTimeToIso8601(long unixTime)
     {
-        // 将 Unix 时间戳转换为 DateTime
+        // 将 Unix 时间戳转换为 DateTimeOffset
         DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTime);
 
-        // 获取东八区的时区信息
-        TimeZoneInfo chinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
-        
-        // 转换为东八区的时间
+        // 定义一个时区信息变量
+        TimeZoneInfo chinaTimeZone = null;
+
+        try
+        {
+            // 尝试获取 "China Standard Time" 时区信息
+            chinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            try
+            {
+                // 如果找不到，尝试获取 "Asia/Shanghai" 时区信息
+                chinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai");
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                // 如果仍然找不到，抛出一个自定义异常或使用本地时区作为替代
+                chinaTimeZone = TimeZoneInfo.Local;
+            }
+        }
+
+        // 转换为目标时区的时间
         DateTimeOffset chinaTime = TimeZoneInfo.ConvertTime(dateTimeOffset, chinaTimeZone);
 
         // 格式化为 ISO 8601 字符串
