@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using Combo;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +30,7 @@ internal class WebViewParameterView : View<WebViewParameterView>
         EventSystem.Register(this);
         closeBtn.onClick.AddListener(Destroy);
         openAnnouncementBtn.onClick.AddListener(OnConfirm);
+        giftInput.onValueChanged.AddListener(ValidateInput);
     }
 
     void OnDestroy()
@@ -37,6 +39,12 @@ internal class WebViewParameterView : View<WebViewParameterView>
         closeBtn.onClick.RemoveListener(Destroy);
         openAnnouncementBtn.onClick.RemoveListener(OnConfirm);
     }
+
+        void ValidateInput(string input)
+        {
+            // 用正则表达式匹配并移除空格
+            giftInput.text = Regex.Replace(input, @"\s+", "");
+        }
 
     public void OnConfirm()
     {
