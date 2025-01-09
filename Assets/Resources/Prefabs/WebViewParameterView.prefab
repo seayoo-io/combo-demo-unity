@@ -588,6 +588,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openAnnouncementBtn: {fileID: 2120939546334365153}
   btnText: {fileID: 1096799761309680740}
+  titleText: {fileID: 225357159533079773}
   closeBtn: {fileID: 434602083786234094}
   giftInput: {fileID: 3104398239976539014}
   widthInput: {fileID: 7973563382227760147}
