@@ -16,9 +16,11 @@ internal class WebViewParameterView : View<WebViewParameterView>
     public Button openAnnouncementBtn;
     public Text btnText;
     public Button closeBtn;
+    public InputField giftInput;
     public InputField widthInput;
     public InputField heightInput;
     public WebViewType webViewType;
+    public GameObject giftPanel;
     private bool isLogin;
     
     void Awake()
@@ -89,14 +91,31 @@ internal class WebViewParameterView : View<WebViewParameterView>
     public void RedeemGiftCode()
     {
         var currentPlayer = PlayerController.GetPlayer();
-        var opts = new RedeemGiftCodeOptions()
+        RedeemGiftCodeOptions opts = new RedeemGiftCodeOptions();
+        if(giftInput.text == "")
         {
-            ServerId = currentPlayer.role.serverId,
-            RoleId = currentPlayer.role.roleId,
-            RoleName = currentPlayer.role.roleName,
-            Width = GetInputValue(widthInput),
-            Height = GetInputValue(heightInput)
-        };
+            opts = new RedeemGiftCodeOptions()
+            {
+                ServerId = currentPlayer.role.serverId,
+                RoleId = currentPlayer.role.roleId,
+                RoleName = currentPlayer.role.roleName,
+                Width = GetInputValue(widthInput),
+                Height = GetInputValue(heightInput)
+            };
+        }
+        else
+        {
+            opts = new RedeemGiftCodeOptions()
+            {
+                GiftCode = giftInput.text,
+                ServerId = currentPlayer.role.serverId,
+                RoleId = currentPlayer.role.roleId,
+                RoleName = currentPlayer.role.roleName,
+                Width = GetInputValue(widthInput),
+                Height = GetInputValue(heightInput)
+            };
+        }
+        
         ComboSDK.RedeemGiftCode(opts, result => {
             if(result.IsSuccess)
             {
@@ -121,6 +140,7 @@ internal class WebViewParameterView : View<WebViewParameterView>
     {
         this.btnText.text = btnText;
         this.webViewType = webViewType;
+        giftPanel.SetActive(true);
     }
 
     private int GetInputValue(InputField inputField)
