@@ -99,6 +99,6 @@ public static class UIController
     {
         WebViewParameterView.DestroyAll();
         var view = WebViewParameterView.Instantiate();
-        view.SetGift("兑换/打开页面", WebViewType.GIFT);
+        view.SetGift("兑换/打开页面", "礼包码", WebViewType.GIFT);
     }
 }

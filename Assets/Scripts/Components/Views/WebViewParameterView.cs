@@ -15,6 +15,7 @@ internal class WebViewParameterView : View<WebViewParameterView>
 {
     public Button openAnnouncementBtn;
     public Text btnText;
+    public Text titleText;
     public Button closeBtn;
     public InputField giftInput;
     public InputField widthInput;
@@ -136,9 +137,10 @@ internal class WebViewParameterView : View<WebViewParameterView>
         this.webViewType = webViewType;
     }
 
-    public void SetGift(string btnText, WebViewType webViewType)
+    public void SetGift(string btnText, string title, WebViewType webViewType)
     {
         this.btnText.text = btnText;
+        titleText.text = title;
         this.webViewType = webViewType;
         giftPanel.SetActive(true);
     }
