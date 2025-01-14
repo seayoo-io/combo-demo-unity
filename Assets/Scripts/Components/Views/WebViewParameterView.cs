@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using Combo;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,10 +16,13 @@ internal class WebViewParameterView : View<WebViewParameterView>
 {
     public Button openAnnouncementBtn;
     public Text btnText;
+    public Text titleText;
     public Button closeBtn;
+    public InputField giftInput;
     public InputField widthInput;
     public InputField heightInput;
     public WebViewType webViewType;
+    public GameObject giftPanel;
     private bool isLogin;
     
     void Awake()
@@ -26,6 +30,7 @@ internal class WebViewParameterView : View<WebViewParameterView>
         EventSystem.Register(this);
         closeBtn.onClick.AddListener(Destroy);
         openAnnouncementBtn.onClick.AddListener(OnConfirm);
+        giftInput.onValueChanged.AddListener(ValidateInput);
     }
 
     void OnDestroy()
@@ -34,6 +39,12 @@ internal class WebViewParameterView : View<WebViewParameterView>
         closeBtn.onClick.RemoveListener(Destroy);
         openAnnouncementBtn.onClick.RemoveListener(OnConfirm);
     }
+
+        void ValidateInput(string input)
+        {
+            // 用正则表达式匹配并移除空格
+            giftInput.text = Regex.Replace(input, @"\s+", "");
+        }
 
     public void OnConfirm()
     {
@@ -89,14 +100,31 @@ internal class WebViewParameterView : View<WebViewParameterView>
     public void RedeemGiftCode()
     {
         var currentPlayer = PlayerController.GetPlayer();
-        var opts = new RedeemGiftCodeOptions()
+        RedeemGiftCodeOptions opts = new RedeemGiftCodeOptions();
+        if(giftInput.text == "")
         {
-            ServerId = currentPlayer.role.serverId,
-            RoleId = currentPlayer.role.roleId,
-            RoleName = currentPlayer.role.roleName,
-            Width = GetInputValue(widthInput),
-            Height = GetInputValue(heightInput)
-        };
+            opts = new RedeemGiftCodeOptions()
+            {
+                ServerId = currentPlayer.role.serverId,
+                RoleId = currentPlayer.role.roleId,
+                RoleName = currentPlayer.role.roleName,
+                Width = GetInputValue(widthInput),
+                Height = GetInputValue(heightInput)
+            };
+        }
+        else
+        {
+            opts = new RedeemGiftCodeOptions()
+            {
+                GiftCode = giftInput.text,
+                ServerId = currentPlayer.role.serverId,
+                RoleId = currentPlayer.role.roleId,
+                RoleName = currentPlayer.role.roleName,
+                Width = GetInputValue(widthInput),
+                Height = GetInputValue(heightInput)
+            };
+        }
+        
         ComboSDK.RedeemGiftCode(opts, result => {
             if(result.IsSuccess)
             {
@@ -117,10 +145,12 @@ internal class WebViewParameterView : View<WebViewParameterView>
         this.webViewType = webViewType;
     }
 
-    public void SetGift(string btnText, WebViewType webViewType)
+    public void SetGift(string btnText, string title, WebViewType webViewType)
     {
         this.btnText.text = btnText;
+        titleText.text = title;
         this.webViewType = webViewType;
+        giftPanel.SetActive(true);
     }
 
     private int GetInputValue(InputField inputField)
