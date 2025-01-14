@@ -69,6 +69,8 @@ internal class SlotView : View<SlotView>, ISelectableView
             Sprite sprite;
             GameManager.Instance.RoleDic.TryGetValue((int)r.type, out sprite);
             image.sprite = sprite;
+            role.serverId = GameManager.Instance.ServerId;
+            role.serverName = GameManager.Instance.ServerName;
 
             manager = FindObjectOfType<ServerButtonManager>();
             if (manager != null)
