@@ -58,6 +58,6 @@ public class DatePickerGroup : MonoBehaviour {
         {
             _datePickerList[i].RefreshDateList();
         }
-        UpdateRoleCreateTimeEvent.Invoke(new UpdateRoleCreateTimeEvent{ changeTime = _selectDate });
+        UpdateTimeEvent.Invoke(new UpdateTimeEvent{ changeTime = _selectDate });
     }
 }

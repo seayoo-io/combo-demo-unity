@@ -9,6 +9,7 @@ internal class SettingView : View<SettingView>
 {
     public InputField shortLink;
     public InputField promoPseudoPurchaseAmount;
+    public InputField activeValue;
     public Button logoutBtn;
     public Button clearBtn;
     public Button cancelBtn;
@@ -71,6 +72,18 @@ internal class SettingView : View<SettingView>
         PromoPseudoPurchaseEvent.Invoke(new PromoPseudoPurchaseEvent {
             amount = promoPseudoPurchaseAmount.text
         });
+    }
+
+    public void OnActiveAvlue()
+    {
+        ActiveValueEvent.Invoke(new ActiveValueEvent {
+            value = activeValue.text
+        });
+    }
+
+    public void OnLoginReport()
+    {
+        LoginEvent.Invoke(new LoginEvent {});
     }
 
     public void OpenLanguageView()

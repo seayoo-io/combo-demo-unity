@@ -15,7 +15,6 @@ internal class RoleSelectView : View<RoleSelectView>
     public Button returnBtn;
     public Button changeRoleCreateTimeBtn;
     public Image roleImage;
-    public GameObject changeTimePanel;
     private int index = 0;
     private int gender = 0;
     private long createRoleTime;
@@ -77,7 +76,7 @@ internal class RoleSelectView : View<RoleSelectView>
 
     public void ClickChangeRoleTimeBtn()
     {
-        changeTimePanel.SetActive(true);
+        ChangeTimeView.Instantiate();
     }
 
     [EventSystem.BindEvent]
@@ -90,7 +89,7 @@ internal class RoleSelectView : View<RoleSelectView>
     }
 
     [EventSystem.BindEvent]
-    public void ChangeRoleTime(ChangeRoleCreateTimeEvent evt)
+    public void ChangeRoleTime(ChangeTimeEvent evt)
     {
         createRoleTime = evt.unixTime;
     }

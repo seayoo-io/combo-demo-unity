@@ -28,14 +28,14 @@ public class ChangeRoleEvent : Event<ChangeRoleEvent>
     public Role role;
 }
 
-// 用于更新角色创建时间，通知给 Text 使用
-public class UpdateRoleCreateTimeEvent : Event<UpdateRoleCreateTimeEvent>
+// 用于更新时间，通知给 Text 使用
+public class UpdateTimeEvent : Event<UpdateTimeEvent>
 {
     public DateTime changeTime;
 }
 
-// 用于改变角色创建时间，通知的是最终更改的角色创建时间
-public class ChangeRoleCreateTimeEvent : Event<ChangeRoleCreateTimeEvent>
+// 用于改变时间，通知的是最终时间
+public class ChangeTimeEvent : Event<ChangeTimeEvent>
 {
     public long unixTime;
 }
