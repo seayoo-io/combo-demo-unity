@@ -10,6 +10,7 @@ public static class ShareContentViewController
         shareContentView.SetCloseCallback(() => shareContentView.Destroy());
         shareContentView.SetImgShareOptionCallback(data => OpenImgPlatformShareView(data));
         shareContentView.SetVideoShareOptionCallback(data => OpenVideoPlatformShareView(data));
+        shareContentView.SetVideoLocationShareOptionCallback(data => OpenVideoPlatformShareView(data));
         shareContentView.SetLinkShareOptionCallback(data => OpenLinkPlatformShareView(data));
         shareContentView.Show();
     }
