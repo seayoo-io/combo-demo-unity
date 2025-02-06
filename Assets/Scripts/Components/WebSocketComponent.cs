@@ -7,7 +7,8 @@ using UnityWebSocket;
 public class WebSocketComponent : MonoBehaviour
 {
     private IWebSocket webSocket;
-    private float lastPongReceiveTime = 0f;
+    private float lastPingTime = 0f;
+    private float lastPongTime = 0f;
     private string address ="";
     void Start()
     {
@@ -44,6 +45,10 @@ public class WebSocketComponent : MonoBehaviour
             MailListManager.Instance.SaveMail(ParseMail(e.Data));
             Message.Show(e.Data);
         }
+        else
+        {
+            lastPongTime = Time.time;
+        }
     }
 
     private void OnClose(object sender, CloseEventArgs e)
@@ -59,13 +64,14 @@ public class WebSocketComponent : MonoBehaviour
     private void SendPingFrame()
     {
         webSocket.SendAsync("PING");
-        lastPongReceiveTime = Time.time;
+        lastPingTime = Time.time;
     }
 
     private void CheckConnectionStatus()
     {
-        float timeSinceLastPong = Time.time - lastPongReceiveTime;
-        if (timeSinceLastPong > 3f)
+        float timeSinceLastPing = Time.time - lastPingTime;
+        float timeSinceLastPong = Time.time - lastPongTime;
+        if (timeSinceLastPing > 3f || timeSinceLastPong > 3f)
         {
             Log.I("WebSocket connection lost, trying to reconnect...");
             webSocket = new WebSocket(address);
