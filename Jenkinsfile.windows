@@ -251,6 +251,13 @@ pipeline {
                 def downloads = [
                     ['name': '[zip]', 'url': zipUrl]
                 ]
+                def distros = params.DISTRO.split(',')
+                distros.each { distro -> 
+                    def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")    
+                    downloads += [                       
+                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${zipName}"
+                    ]
+                }
                 notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads
             }
         }
