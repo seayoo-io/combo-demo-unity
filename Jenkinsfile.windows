@@ -248,9 +248,7 @@ pipeline {
     post {
         success {
             script {
-                def downloads = [
-                    ['name': '[zip]', 'url': zipUrl]
-                ]
+                def downloads = []
                 def distros = params.DISTRO.split(',')
                 distros.each { distro -> 
                     def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")    
