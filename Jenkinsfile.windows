@@ -253,10 +253,10 @@ pipeline {
                 distros.each { distro -> 
                     def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")    
                     downloads += [                       
-                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${zipName}"
+                        'name': "[${distro}]", 'url': zipUrl
                     ]
                 }
-                notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads
+                notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
             }
         }
         failure {
