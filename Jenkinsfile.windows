@@ -191,7 +191,7 @@ pipeline {
                     writeComboYaml(COMBOSDK_BUILD_KEY)
                 }
                 bat """
-                    combo windows setup --distros ${params.DISTRO}
+                    combo windows setup --distro ${params.DISTRO}
                     move /Y ComboSDK.json Assets/Resources
                 """
             }
