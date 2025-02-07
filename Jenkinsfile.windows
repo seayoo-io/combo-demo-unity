@@ -182,15 +182,15 @@ pipeline {
         }
         stage('Gen and Build') {
             steps {
-                script {
-                    environment {
-                        EXPORT_PATH = "${env.WORKSPACE}\\Build\\${distro}"
-                        DEMO_ENDPOINT = getDemoEndpoint()
-                        BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
-                        CHECK_UPDATE = "${params.CHECK_UPDATE}"
-                    }
+                script { 
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
+                        environment {
+                            EXPORT_PATH = "${env.WORKSPACE}\\Build\\${distro}"
+                            DEMO_ENDPOINT = getDemoEndpoint()
+                            BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
+                            CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                        }
                         echo "Generating and building for distro: ${distro}"
 
                         // 定义一个特定于distro的输出路径
