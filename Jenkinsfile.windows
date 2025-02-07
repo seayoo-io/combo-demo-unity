@@ -221,7 +221,7 @@ pipeline {
                         }
 
                         // 构建, 使用特定的输出目录
-                        callUnity(commands: "-executeMethod Builder.BuildWindowsDemo -outputPath ${outputDir}")
+                        callUnity(commands: "-executeMethod Builder.BuildWindowsDemo")
 
                         // 归档
                         def zipFileName = "combo-demo-${distro}.zip"
