@@ -188,13 +188,16 @@ pipeline {
                 withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
                     writeComboYaml(COMBOSDK_BUILD_KEY)
                 }
-                def distros = params.DISTRO.split(',')
-                distros.each { distro ->
-                    bat """
-                        combo windows setup --distro ${distro}
-                        move /Y ComboSDK.json Assets/Resources
-                    """
+                script {
+                    def distros = params.DISTRO.split(',')
+                    distros.each { distro ->
+                        bat """
+                            combo windows setup --distro ${distro}
+                            move /Y ComboSDK.json Assets/Resources
+                        """
+                    }
                 }
+                
             }
         }
         stage('Update Settings') {
