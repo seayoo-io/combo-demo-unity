@@ -183,6 +183,12 @@ pipeline {
         stage('Gen and Build') {
             steps {
                 script {
+                    environment {
+                        EXPORT_PATH = "${env.WORKSPACE}\\Build\\${distro}"
+                        DEMO_ENDPOINT = getDemoEndpoint()
+                        BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
+                        CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                    }
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
                         echo "Generating and building for distro: ${distro}"
