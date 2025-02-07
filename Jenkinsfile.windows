@@ -191,7 +191,7 @@ pipeline {
                     }
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
-                        def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                        def buildDir = "${env.WORKSPACE}\\Build\\${distro}"
                         bat "IF NOT EXIST ${buildDir} mkdir ${buildDir}"
                         bat """
                             combo windows setup --distro ${distro}
@@ -225,7 +225,7 @@ pipeline {
                 script {
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
-                        def exportPath = "${env.WORKSPACE}/Build/${distro}"
+                        def exportPath = "${env.WORKSPACE}\\Build\\${distro}"
                         callUnity commands: "-executeMethod Builder.BuildWindowsDemo -buildPath ${exportPath}"
                     }
                 }
@@ -236,7 +236,7 @@ pipeline {
                 script {
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
-                        def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                        def buildDir = "${env.WORKSPACE}\\Build\\${distro}"
                         def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                         zip zipFile: zipFileName, dir: buildDir, archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
                     }
@@ -248,7 +248,7 @@ pipeline {
                 script {
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
-                        def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                        def buildDir = "${env.WORKSPACE}\\Build\\${distro}"
                         withSentryCLI() {
                             withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
                                 bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
