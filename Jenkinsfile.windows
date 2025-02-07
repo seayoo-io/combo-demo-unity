@@ -27,17 +27,15 @@ def downloadUnitySDK() {
 
 def downloadVuplex() {
     def packageFile = 'package.json'
-    if(fileExists(packageFile))
-    {
+    if (fileExists(packageFile)) {
         def lastVuplexFile = readFile(packageFile)
         def packageJson = readJSON text: lastVuplexFile
         def vuplexUrl = packageJson['vuplex-url']
-        if(vuplexUrl == "${params.UNITY_VUPLEX_URL}")
-        {
+        if (vuplexUrl == "${params.UNITY_VUPLEX_URL}") {
             return
         }
     }
-    
+
     def vuplexZip = "Vuplex.zip"
 
     bat "curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"
@@ -61,7 +59,7 @@ def getTargetDistros() {
 }
 
 def setVisibleItemCount() {
-    return DISTRO_LIST.size()   
+    return DISTRO_LIST.size()
 }
 
 def writeComboYaml(buildKey) {
@@ -103,7 +101,7 @@ pipeline {
         extendedChoice(
             name: 'DISTRO',
             type: 'PT_MULTI_SELECT',
-            description: '选择发布的模块， 支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)',
+            description: '选择发布的模块，支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)',
             value: getTargetDistros(),
             defaultValue: 'windows',
             multiSelectDelimiter: ',',
@@ -116,7 +114,7 @@ pipeline {
             choices: ['dev', 'prod'],
             description: 'Which environment to build.')
         string(name: 'UNITY_SDK_PROJECT_NAME',
-            defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
+            defaultValue: "SDK/Client/Combo/unity/${SAFE_BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         booleanParam(name: 'CLEAN_WS',
@@ -178,7 +176,7 @@ pipeline {
                     if (fileExists(platformFile)) {
                         echo 'Current platform was already Win64, skip switch.'
                     } else {
-                        callUnity  commands: '-buildTarget Win64'
+                        callUnity commands: '-buildTarget Win64'
                         writeFile file: platformFile, text: 'Win64'
                     }
                 }
@@ -225,7 +223,7 @@ pipeline {
         stage('Archive') {
             steps {
                 script {
-                    def zipFileName = artifactName name: "combo-demo", extension: "zip"
+                    def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                     zip zipFile: zipFileName, dir: "Build\\Windows", archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
                     zipUrl = "${env.BUILD_URL}artifact/${zipFileName}"
                 }
@@ -234,7 +232,7 @@ pipeline {
         stage('Upload Symbol') {
             steps {
                 withSentryCLI() {
-                    withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
+                    withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
                         bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
                             --org sentry \
                             --project combo-demo \
@@ -264,6 +262,8 @@ pipeline {
         }
         always {
             script {
+                currentBuild.displayName = "${BUILD_DISPLAY_NAME} ${params.GAME_ID} ${params.TARGET_ENV}"
+                currentBuild.description = "distro: ${params.DISTRO}"
                 zip archive: true, zipFile: 'logs.zip', dir: 'logs'
             }
         }
