@@ -184,20 +184,21 @@ pipeline {
         }
         stage('Gen') {
             steps {
-                installComboCLI()
-                withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
-                    writeComboYaml(COMBOSDK_BUILD_KEY)
-                }
                 script {
+                    installComboCLI()
+                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
+                        writeComboYaml(COMBOSDK_BUILD_KEY)
+                    }
                     def distros = params.DISTRO.split(',')
                     distros.each { distro ->
+                        def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                        bat "IF NOT EXIST ${buildDir} mkdir ${buildDir}"
                         bat """
                             combo windows setup --distro ${distro}
-                            move /Y ComboSDK.json Assets/Resources
+                            move /Y ComboSDK.json ${buildDir}/Assets/Resources
                         """
                     }
                 }
-                
             }
         }
         stage('Update Settings') {
@@ -222,28 +223,39 @@ pipeline {
             }
             steps {
                 script {
-                    callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+                    def distros = params.DISTRO.split(',')
+                    distros.each { distro ->
+                        def exportPath = "${env.WORKSPACE}/Build/${distro}"
+                        callUnity commands: "-executeMethod Builder.BuildWindowsDemo -buildPath ${exportPath}"
+                    }
                 }
             }
         }
         stage('Archive') {
             steps {
                 script {
-                    def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
-                    zip zipFile: zipFileName, dir: "Build\\Windows", archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
-                    zipUrl = "${env.BUILD_URL}artifact/${zipFileName}"
+                    def distros = params.DISTRO.split(',')
+                    distros.each { distro ->
+                        def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                        def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                        zip zipFile: zipFileName, dir: buildDir, archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
+                    }
                 }
             }
         }
         stage('Upload Symbol') {
             steps {
-                withSentryCLI() {
-                    withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
-                        bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
-                            --org sentry \
-                            --project combo-demo \
-                            --auth-token ${SENTRY_TOKEN} \
-                            --wait Build\\Windows\\combosdk-unity-demo_Data\\Plugins\\x86_64\\sentry.dll Build\\Windows\\GameAssembly.dll Build\\Windows\\UnityPlayer.dll """
+                def distros = params.DISTRO.split(',')
+                distros.each { distro ->
+                    def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                    withSentryCLI() {
+                        withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
+                            bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
+                                --org sentry \
+                                --project combo-demo \
+                                --auth-token ${SENTRY_TOKEN} \
+                                --wait ${buildDir}/combosdk-unity-demo_Data/Plugins/x86_64/sentry.dll ${buildDir}/GameAssembly.dll ${buildDir}/UnityPlayer.dll """
+                        }
                     }
                 }
             }
@@ -257,7 +269,7 @@ pipeline {
                 distros.each { distro -> 
                     def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")    
                     downloads += [                       
-                        'name': "[${distro}]", 'url': zipUrl
+                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${zipName}"
                     ]
                 }
                 notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
