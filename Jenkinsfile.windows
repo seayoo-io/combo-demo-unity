@@ -245,16 +245,18 @@ pipeline {
         }
         stage('Upload Symbol') {
             steps {
-                def distros = params.DISTRO.split(',')
-                distros.each { distro ->
-                    def buildDir = "${env.WORKSPACE}/Build/${distro}"
-                    withSentryCLI() {
-                        withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
-                            bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
-                                --org sentry \
-                                --project combo-demo \
-                                --auth-token ${SENTRY_TOKEN} \
-                                --wait ${buildDir}/combosdk-unity-demo_Data/Plugins/x86_64/sentry.dll ${buildDir}/GameAssembly.dll ${buildDir}/UnityPlayer.dll """
+                script {
+                    def distros = params.DISTRO.split(',')
+                    distros.each { distro ->
+                        def buildDir = "${env.WORKSPACE}/Build/${distro}"
+                        withSentryCLI() {
+                            withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
+                                bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
+                                    --org sentry \
+                                    --project combo-demo \
+                                    --auth-token ${SENTRY_TOKEN} \
+                                    --wait ${buildDir}/combosdk-unity-demo_Data/Plugins/x86_64/sentry.dll ${buildDir}/GameAssembly.dll ${buildDir}/UnityPlayer.dll """
+                            }
                         }
                     }
                 }
