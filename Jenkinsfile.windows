@@ -186,6 +186,8 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
+                COMBOSDK_ENDPOINT = getEndpoint()
             }
             steps {
                 script { 
@@ -212,11 +214,6 @@ pipeline {
                             move /Y ComboSDK.json Assets/Resources
                         """
 
-                        // 更新设置
-                        environment {
-                            COMBOSDK_GAME_ID = "${params.GAME_ID}"
-                            COMBOSDK_ENDPOINT = getEndpoint()
-                        }
                         withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: 'combo-demo.publishable-key')]) {
                             callUnity(commands: "-executeMethod Builder.UpdateComboSDKSettings")
                         }
