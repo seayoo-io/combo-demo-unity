@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+DISTRO_LIST = ['windows', 'lenovo_pc', 'windows_17173']
+
 SAFE_BRANCH_NAME = env.BRANCH_NAME ?: 'main'
 
 zipUrl = ''
@@ -25,17 +27,15 @@ def downloadUnitySDK() {
 
 def downloadVuplex() {
     def packageFile = 'package.json'
-    if(fileExists(packageFile))
-    {
+    if (fileExists(packageFile)) {
         def lastVuplexFile = readFile(packageFile)
         def packageJson = readJSON text: lastVuplexFile
         def vuplexUrl = packageJson['vuplex-url']
-        if(vuplexUrl == "${params.UNITY_VUPLEX_URL}")
-        {
+        if (vuplexUrl == "${params.UNITY_VUPLEX_URL}") {
             return
         }
     }
-    
+
     def vuplexZip = "Vuplex.zip"
 
     bat "curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"
@@ -52,6 +52,14 @@ def getEndpoint() {
 
 def getDemoEndpoint() {
     return (params.TARGET_ENV == "dev") ? "https://combo-demo.dev.seayoo.com" : "https://combo-demo.seayoo.com"
+}
+
+def getTargetDistros() {
+    return DISTRO_LIST.join(',')
+}
+
+def setVisibleItemCount() {
+    return DISTRO_LIST.size()
 }
 
 def writeComboYaml(buildKey) {
@@ -90,12 +98,23 @@ pipeline {
     parameters {
         string(name: 'GAME_ID', defaultValue: 'demo', description: 'GAME_ID', trim: true)
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
+        extendedChoice(
+            name: 'DISTRO',
+            type: 'PT_MULTI_SELECT',
+            description: '选择发布的模块，仅能单选',
+            value: getTargetDistros(),
+            defaultValue: 'windows',
+            multiSelectDelimiter: ',',
+            quoteValue: false,
+            saveJSONParameterToFile: false,
+            visibleItemCount: setVisibleItemCount()
+        )
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
         choice(name: 'TARGET_ENV',
             choices: ['dev', 'prod'],
             description: 'Which environment to build.')
         string(name: 'UNITY_SDK_PROJECT_NAME',
-            defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
+            defaultValue: "SDK/Client/Combo/unity/${SAFE_BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         booleanParam(name: 'CLEAN_WS',
@@ -157,22 +176,10 @@ pipeline {
                     if (fileExists(platformFile)) {
                         echo 'Current platform was already Win64, skip switch.'
                     } else {
-                        callUnity  commands: '-buildTarget Win64'
+                        callUnity commands: '-buildTarget Win64'
                         writeFile file: platformFile, text: 'Win64'
                     }
                 }
-            }
-        }
-        stage('Gen') {
-            steps {
-                installComboCLI()
-                withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
-                    writeComboYaml(COMBOSDK_BUILD_KEY)
-                }
-                bat '''
-                    combo windows setup
-                    move /Y ComboSDK.json Assets/Resources
-                '''
             }
         }
         stage('Update Settings') {
@@ -188,49 +195,84 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+       stage('Build') {
             environment {
-                EXPORT_PATH = "${env.WORKSPACE}\\Build\\Windows"
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
             }
             steps {
-                script {
-                    callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+                installComboCLI()
+                withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: 'combo-demo.build-key')]) {
+                    writeComboYaml(COMBOSDK_BUILD_KEY)
                 }
-            }
-        }
-        stage('Archive') {
-            steps {
+
+                // 根据DISTRO的值进行不同的构建和导出路径设置
                 script {
-                    def zipFileName = artifactName name: "combo-demo", extension: "zip"
-                    zip zipFile: zipFileName, dir: "Build\\Windows", archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
-                    zipUrl = "${env.BUILD_URL}artifact/${zipFileName}"
-                }
-            }
-        }
-        stage('Upload Symbol') {
-            steps {
-                withSentryCLI() {
-                    withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: ' sentry-token.seayoo-cn')]) {
-                        bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
-                            --org sentry \
-                            --project combo-demo \
-                            --auth-token ${SENTRY_TOKEN} \
-                            --wait Build\\Windows\\combosdk-unity-demo_Data\\Plugins\\x86_64\\sentry.dll Build\\Windows\\GameAssembly.dll Build\\Windows\\UnityPlayer.dll """
+                    def distros = params.DISTRO.split(',')
+                    def downloads = []
+                    
+                    distros.each { distro ->
+                        // 设置导出路径
+                        def exportPath = "${env.WORKSPACE}\\Build\\${distro}"
+                        def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                        def zipFilePath = "${exportPath}\\${zipFileName}"
+                        
+                        bat """
+                            mkdir "${exportPath}" || exit /b 0
+                            combo windows setup --distro ${distro}
+                            move /Y ComboSDK.json Assets/Resources
+                        """
+                        // 设置环境变量
+                        env.EXPORT_PATH = exportPath
+                        // 调用 Unity 进行构建
+                        callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+
+                        // 压缩构建结果
+                        zip zipFile: zipFileName, dir: exportPath, archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
+
+                        // 保存下载地址
+                        downloads << [
+                            name: "[${distro}]",
+                            url: "${env.BUILD_URL}artifact/${zipFileName}"
+                        ]
+
+                        // 上传符号文件到 Sentry
+                        withSentryCLI() {
+                            withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
+                                bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
+                                    --org sentry \
+                                    --project combo-demo \
+                                    --auth-token ${SENTRY_TOKEN} \
+                                    --wait ${exportPath}\\combosdk-unity-demo_Data\\Plugins\\x86_64\\sentry.dll \
+                                    ${exportPath}\\GameAssembly.dll \
+                                    ${exportPath}\\UnityPlayer.dll """
+                            }
+                        }
                     }
+
+                    // 将下载信息传递给通知或其他后续步骤
+                    notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
                 }
             }
         }
+
     }
     post {
         success {
             script {
-                def downloads = [
-                    ['name': '[zip]', 'url': zipUrl]
-                ]
-                notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads
+                def downloads = []
+                def distros = params.DISTRO.split(',')
+                distros.each { distro ->
+                    // 根据每个 distro 生成下载链接
+                    def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                    def downloadUrl = "${env.BUILD_URL}artifact/Build/${distro}/${zipName}"
+                    downloads << [
+                        'name': "[${distro}]",
+                        'url': downloadUrl
+                    ]
+                }
+                notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
             }
         }
         failure {
@@ -238,6 +280,8 @@ pipeline {
         }
         always {
             script {
+                currentBuild.displayName = "${BUILD_DISPLAY_NAME} ${params.GAME_ID} ${params.TARGET_ENV}"
+                currentBuild.description = "distro: ${params.DISTRO}"
                 zip archive: true, zipFile: 'logs.zip', dir: 'logs'
             }
         }
