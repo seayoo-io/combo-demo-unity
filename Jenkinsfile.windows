@@ -195,7 +195,7 @@ pipeline {
                 }
             }
         }
-       stage('Build') {
+       stage('Gen-Build-Archive') {
             environment {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
@@ -207,13 +207,11 @@ pipeline {
                     writeComboYaml(COMBOSDK_BUILD_KEY)
                 }
 
-                // 根据DISTRO的值进行不同的构建和导出路径设置
                 script {
                     def distros = params.DISTRO.split(',')
                     def downloads = []
                     
                     distros.each { distro ->
-                        // 设置导出路径
                         def exportPath = "${env.WORKSPACE}\\Build\\${distro}"
                         def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                         def zipFilePath = "${exportPath}\\${zipFileName}"
@@ -223,21 +221,16 @@ pipeline {
                             combo windows setup --distro ${distro}
                             move /Y ComboSDK.json Assets/Resources
                         """
-                        // 设置环境变量
                         env.EXPORT_PATH = exportPath
-                        // 调用 Unity 进行构建
                         callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
 
-                        // 压缩构建结果
                         zip zipFile: zipFileName, dir: exportPath, archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
 
-                        // 保存下载地址
                         downloads << [
                             name: "[${distro}]",
                             url: "${env.BUILD_URL}artifact/${zipFileName}"
                         ]
 
-                        // 上传符号文件到 Sentry
                         withSentryCLI() {
                             withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
                                 bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
@@ -251,7 +244,6 @@ pipeline {
                         }
                     }
 
-                    // 将下载信息传递给通知或其他后续步骤
                     notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
                 }
             }
@@ -264,7 +256,6 @@ pipeline {
                 def downloads = []
                 def distros = params.DISTRO.split(',')
                 distros.each { distro ->
-                    // 根据每个 distro 生成下载链接
                     def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                     def downloadUrl = "${env.BUILD_URL}artifact/${zipName}"
                     downloads << [
