@@ -202,10 +202,12 @@ pipeline {
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
             }
             steps {
-                installComboCLI()
-                def credentialsId = "combo-${params.GAME_ID}.build-key"
-                withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
-                    writeComboYaml(COMBOSDK_BUILD_KEY)
+                script {
+                    installComboCLI()
+                    def credentialsId = "combo-${params.GAME_ID}.build-key"
+                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                        writeComboYaml(COMBOSDK_BUILD_KEY)
+                    }
                 }
 
                 script {
