@@ -106,7 +106,7 @@ internal class ComplainView : View<ComplainView>
             targetType = GetTargetType(),
             targetId = GetTargetId(),
             targetName = GetTargetName(),
-            serverId = role.serverId,
+            serverId = role.serverId.ToString(),
             roleId = GetRoleId() ,
             roleName = role.roleName,
             width = 100,

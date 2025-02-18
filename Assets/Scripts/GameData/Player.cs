@@ -10,21 +10,13 @@ public class Player : MonoBehaviour {
             roleId = role.roleId,
             roleLevel = role.roleLevel,
             roleName = role.roleName,
-            serverId = role.serverId,
+            serverId = $"{role.serverId}",
             serverName = role.serverName
         });
     }
 
-    public void CreateRole(string roleId, string roleName, string serverId) {
-        role = new Role
-        {
-            roleCreateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            roleId = roleId,
-            roleLevel = 1,
-            roleName = roleName,
-            serverId = serverId,
-            serverName = $"mock-server-{serverId}",
-        };
+    public void CreateRole(Role r) {
+        role = r;
 
         ComboSDK.ReportCreateRole(
             new RoleInfo
@@ -33,14 +25,24 @@ public class Player : MonoBehaviour {
                 roleId = role.roleId,
                 roleLevel = role.roleLevel,
                 roleName = role.roleName,
-                serverId = role.serverId,
+                serverId = $"{role.serverId}",
                 serverName = role.serverName
             }
         );
     }
 
-    public void LevelUp()
+    public void UpdateRole(Role r) {
+        role = r;
+    }
+
+    public void UpDateLevel(int changeLevel)
     {
-        role.roleLevel++;
+        role.roleLevel = changeLevel;
+        Log.I("current level: " + role.roleLevel);
+    }
+
+    public void ClearInfo()
+    {
+        role = null;
     }
 }
