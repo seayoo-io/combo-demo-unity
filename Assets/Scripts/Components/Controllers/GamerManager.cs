@@ -29,7 +29,8 @@ public class GamerManager : MonoBehaviour
         }
         var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
         var gameData = new Dictionary<string, string>(){
-            {"server_id", role.serverId},
+            {"server_id", role.serverId.ToString()},
+            {"server_name", role.serverName},
             {"role_id", role.roleId},
             {"role_name", role.roleName},
             {"role_level", role.roleLevel.ToString()},

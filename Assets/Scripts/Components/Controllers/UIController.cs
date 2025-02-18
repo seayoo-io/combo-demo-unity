@@ -89,9 +89,16 @@ public static class UIController
 
     public static void ShowAnnouncementParameterView(bool isLogin)
     {
-        AnnouncementParameterView.DestroyAll();
-        var view = AnnouncementParameterView.Instantiate();
-        view.SetIsLogin(isLogin);
+        WebViewParameterView.DestroyAll();
+        var view = WebViewParameterView.Instantiate();
+        view.SetAnnounceInfoLogin(isLogin, "打开公告", WebViewType.ANNOUNCEMENT);
         view.Show();
+    }
+
+    public static void ShowRedeemGiftCodeView()
+    {
+        WebViewParameterView.DestroyAll();
+        var view = WebViewParameterView.Instantiate();
+        view.SetGift("兑换/打开页面", "礼包码", WebViewType.GIFT);
     }
 }

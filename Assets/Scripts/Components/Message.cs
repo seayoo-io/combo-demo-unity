@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using Newtonsoft.Json;
+using System;
 
 public class Message : MonoBehaviour
 {
@@ -21,16 +23,30 @@ public class Message : MonoBehaviour
 
     public static void Show(object str)
     {
-        if(messageObject == null)
+        Log.I($"receive message: {str}");
+        var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(str.ToString());
+        string roleId = data["role_id"].ToString();
+        int serverId = Convert.ToInt32(data["server_id"]);
+        if (IsUserMatching(roleId, serverId))
         {
-            messagePrefab = Resources.Load("Prefabs/Message") as GameObject;
-            messageObject = Instantiate(messagePrefab, Vector3.zero, Quaternion.identity);
+            if(messageObject == null)
+            {
+                messagePrefab = Resources.Load("Prefabs/Message") as GameObject;
+                messageObject = Instantiate(messagePrefab, Vector3.zero, Quaternion.identity);
+            }
+            if (coroutine != null) instance.StopCoroutine(coroutine);
+            _messageText.text = AddLineBreaks(str.ToString());
+            instance.gameObject.SetActive(true);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(instance.gameObject.GetComponent<RectTransform>());
+            coroutine = instance.StartCoroutine(HideMessage());
         }
-        if (coroutine != null) instance.StopCoroutine(coroutine);
-        _messageText.text = AddLineBreaks(str.ToString());
-        instance.gameObject.SetActive(true);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(instance.gameObject.GetComponent<RectTransform>());
-        coroutine = instance.StartCoroutine(HideMessage());
+        
+    }
+    //检查是否为当前角色
+    private static bool IsUserMatching(string roleId, int serverId)
+    {
+        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        return roleId == role.roleId && serverId == role.serverId;
     }
 
     private static IEnumerator HideMessage()

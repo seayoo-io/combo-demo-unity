@@ -24,7 +24,7 @@ internal class MailCellView : View<MailCellView>
 
     public void SetMailInfo(MailInfo mailInfo)
     {
-        if(string.IsNullOrEmpty(mailInfo.from))
+        if(string.IsNullOrEmpty(mailInfo.sender))
         {
             mailType = MailType.System;
             mail = mailInfo;

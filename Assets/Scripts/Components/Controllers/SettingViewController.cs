@@ -42,9 +42,11 @@ public static class SettingViewController
                 if(currentPlayer != null)
                 {
                     Object.Destroy(currentPlayer.gameObject);
+                    PlayerController.ClearInfo(currentPlayer);
                 }
                 SettingView.DestroyAll();
                 SceneManager.LoadScene("Login");
+                GameManager.Instance.sdkIsLogin = false;
             }
             else
             {

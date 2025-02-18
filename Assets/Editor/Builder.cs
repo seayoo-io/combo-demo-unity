@@ -55,14 +55,9 @@ public class Builder : EditorWindow
             set => EditorPrefs.SetString("COMBOSDK_DEMO_ENDPOINT", value);
         }
 
-        public static string IOSXCFrameworks {
-            get => EditorPrefs.GetString("FRAMEWORK_PATH", "");
-            set => EditorPrefs.SetString("FRAMEWORK_PATH", value);
-        }
-
-        public static string IOSComboSDKJson {
-            get => EditorPrefs.GetString("COMBOSDK_CONFIG_PATH", "");
-            set => EditorPrefs.SetString("COMBOSDK_CONFIG_PATH", value);
+        public static string IOSComboSDK {
+            get => EditorPrefs.GetString("COMBO_SDK_PATH", "");
+            set => EditorPrefs.SetString("COMBO_SDK_PATH", value);
         }
 
         public static string exportPath = "outputs/android";
@@ -168,8 +163,7 @@ public class Builder : EditorWindow
 
 #if UNITY_IOS
         var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
-        var iosXCFrameworks = Environment.GetEnvironmentVariable("FRAMEWORK_PATH") ?? "Frameworks";
-        var iosComboSDKJson = Environment.GetEnvironmentVariable("COMBOSDK_CONFIG_PATH");
+        var iosComboSDK = Environment.GetEnvironmentVariable("COMBO_SDK_PATH");
 #elif UNITY_ANDROID
         var keepRenderingOnPause = Environment.GetEnvironmentVariable("ENABLE_KEEP_RENDERING_ON_PAUSE") ?? "false";
 #endif
@@ -194,8 +188,7 @@ public class Builder : EditorWindow
         
 #if UNITY_IOS
         scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
-        scriptableObject.IOSXCFrameworks = iosXCFrameworks;
-        scriptableObject.IOSComboSDKJson = iosComboSDKJson;
+        scriptableObject.IOSComboSDK = iosComboSDK;
 #elif UNITY_ANDROID
         scriptableObject.EnableKeepRenderingOnPause = bool.Parse(keepRenderingOnPause);
 #endif
@@ -283,32 +276,16 @@ public class Builder : EditorWindow
             EditorGUILayout.HelpBox("可填入 ComboSDK.json 和 XCFrameworks 的文件夹路径，PostBuild 会自动装配至 Xcode Project", MessageType.Info);
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label(new GUIContent("ComboSDK.json", "填入 ComboSDK.json 的文件路径"), GUILayout.Width(120));
-            GlobalProps.IOSComboSDKJson = EditorGUILayout.TextField(GlobalProps.IOSComboSDKJson);
+            GUILayout.Label(new GUIContent("Combo SDK Dir", "填入含有配置文件及产物的文件夹"), GUILayout.Width(120));
+            GlobalProps.IOSComboSDK = EditorGUILayout.TextField(GlobalProps.IOSComboSDK );
             if (GUILayout.Button("Choose", GUILayout.Width(60)))
             {
-                string selectedFile = EditorUtility.OpenFilePanel("Select ComboSDK.json File", "", "json");
-                if (!string.IsNullOrEmpty(selectedFile))
-                {
-                    string projectPath = Application.dataPath;
-                    string releasePath = GetRelativePath(projectPath, selectedFile);
-                    GlobalProps.IOSComboSDKJson = releasePath;
-                    Repaint();
-                }
-            }
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label(new GUIContent("XCFrameworks Dir", "填入含有 XCFrameworks 的文件夹"), GUILayout.Width(120));
-            GlobalProps.IOSXCFrameworks = EditorGUILayout.TextField(GlobalProps.IOSXCFrameworks );
-            if (GUILayout.Button("Choose", GUILayout.Width(60)))
-            {
-                string selectedFolder = EditorUtility.OpenFolderPanel("Select XCFrameworks Files", "", "");
+                string selectedFolder = EditorUtility.OpenFolderPanel("Select Combo SDK Files", "", "");
                 if (!string.IsNullOrEmpty(selectedFolder))
                 {
                     string projectPath = Application.dataPath;
                     string releasePath = GetRelativePath(projectPath, selectedFolder);
-                    GlobalProps.IOSXCFrameworks = releasePath;
+                    GlobalProps.IOSComboSDK = releasePath;
                     Repaint();
                 }
             }
@@ -330,8 +307,7 @@ public class Builder : EditorWindow
             Environment.SetEnvironmentVariable("BUNDLE_VERSION", GlobalProps.bundleVersion);
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
-            Environment.SetEnvironmentVariable("FRAMEWORK_PATH", GlobalProps.IOSXCFrameworks);
-            Environment.SetEnvironmentVariable("COMBOSDK_CONFIG_PATH", GlobalProps.IOSComboSDKJson);
+            Environment.SetEnvironmentVariable("COMBO_SDK_PATH", GlobalProps.IOSComboSDK);
             UpdateComboSDKSettings();
 
             switch (GUIProps.selectedPlatform)

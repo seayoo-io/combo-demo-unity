@@ -22,6 +22,8 @@ public class SharePlatformViewController : MonoBehaviour
     public Button douyinEditBtn;
     public Button douyinPublishBtn;
     public Button douyinContactsBtn;
+    public Button qqBtn;
+    public Button qzoneBtn;
     public Button[] buttons = new Button[] {};
     private ImageShareOptions imageShareOptions;
     private VideoShareOptions videoShareOptions;
@@ -45,6 +47,8 @@ public class SharePlatformViewController : MonoBehaviour
         douyinEditBtn.onClick.AddListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_EDIT));
         douyinPublishBtn.onClick.AddListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_PUBLISH));
         douyinContactsBtn.onClick.AddListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_CONTACTS));
+        qqBtn.onClick.AddListener(() => Share(ShareTarget.QQ, ShareScene.QQ));
+        qzoneBtn.onClick.AddListener(() => Share(ShareTarget.QQ, ShareScene.QZONE));
     }
 
     void OnDestroy()
@@ -59,6 +63,8 @@ public class SharePlatformViewController : MonoBehaviour
         douyinEditBtn.onClick.RemoveListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_EDIT));
         douyinPublishBtn.onClick.RemoveListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_PUBLISH));
         douyinContactsBtn.onClick.RemoveListener(() => Share(ShareTarget.DOUYIN, ShareScene.DOUYIN_CONTACTS));
+        qqBtn.onClick.RemoveListener(() => Share(ShareTarget.QQ, ShareScene.QQ));
+        qzoneBtn.onClick.RemoveListener(() => Share(ShareTarget.QQ, ShareScene.QZONE));
         EventSystem.UnRegister(this);
     }
 
@@ -212,6 +218,7 @@ public class SharePlatformViewController : MonoBehaviour
             {ShareTarget.WEIXIN, buttons[3]},
             {ShareTarget.WEIBO, buttons[4]},
             {ShareTarget.DOUYIN, buttons[5]},
+            {ShareTarget.QQ, buttons[6]}
         };
         var shareTargets = ComboSDK.GetAvailableShareTargets();
         foreach(ShareTarget shareTarget in shareTargets)

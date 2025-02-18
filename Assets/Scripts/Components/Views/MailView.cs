@@ -132,7 +132,7 @@ internal class MailView : View<MailView>
     {
         contentPanel.SetActive(true);
         readAllButton.gameObject.SetActive(true);
-        if(string.IsNullOrEmpty(evt.mailInfo.from))
+        if(string.IsNullOrEmpty(evt.mailInfo.sender))
         {
             AppendMailView(MailType.System, evt.mailInfo);
         }
@@ -179,13 +179,13 @@ internal class MailView : View<MailView>
             mailItemPanel.SetActive(false);
             scrollViewPanel.offsetMin = new Vector2(0, -165);
         }
-        if(string.IsNullOrEmpty(mailInfo.from))
+        if(string.IsNullOrEmpty(mailInfo.sender))
         {
             typeText.text = "系统";
         }
         else
         {
-            mailTitle.text = mailInfo.title + $": 来自好友 {mailInfo.from}";
+            mailTitle.text = mailInfo.title + $": 来自好友 {mailInfo.sender}";
             typeText.text = "好友";
         }
     }

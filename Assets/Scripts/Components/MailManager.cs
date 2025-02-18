@@ -28,6 +28,11 @@ public class MailListManager
         }
     }
 
+    public void RefreshPath()
+    {
+        filePath = Path.Combine(Application.persistentDataPath, $"{PlayerController.GetPlayer().role.roleId}mails.json");
+    }
+
     public void SaveMail(MailInfo mail)
     {
         List<MailInfo> dataList = LoadMails();

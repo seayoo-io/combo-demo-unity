@@ -12,6 +12,7 @@ public class Game : MonoBehaviour
 {
     public PlayerPanel playerPanel;
     public Button openAnnouncementsBtn;
+    public Image roleImage;
 
     void Start()
     {
@@ -22,7 +23,11 @@ public class Game : MonoBehaviour
             SceneManager.LoadScene("Login");
             return;
         }
-        CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
+        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        Sprite sprite;
+        GameManager.Instance.RoleDic.TryGetValue(role.type, out sprite);
+        roleImage.sprite = sprite;
+        CheckAnnouncements(role.roleId, role.roleLevel);
     }
 
     void OnDestroy()
@@ -60,6 +65,11 @@ public class Game : MonoBehaviour
         UIController.ShowTaskView();
     }
 
+    public void OnRedeemGiftCode()
+    {
+        UIController.ShowRedeemGiftCodeView();
+    }
+
     public void OnPlayerInfo()
     {
         PlayerInfoViewController.ShowPlayerInfoView();
@@ -85,6 +95,15 @@ public class Game : MonoBehaviour
     {
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
+    }
+
+    [EventSystem.BindEvent]
+    void ChangeRole(ChangeRoleEvent evt)
+    {
+        Sprite sprite;
+        GameManager.Instance.RoleDic.TryGetValue(evt.role.type, out sprite);
+        roleImage.sprite = sprite;
+        CheckAnnouncements(evt.role.roleId, evt.role.roleLevel);
     }
 
     private void CheckAnnouncements(string profile = null, int? level = null)

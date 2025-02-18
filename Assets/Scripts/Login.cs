@@ -19,7 +19,6 @@ public class Login : MonoBehaviour
 
     private int loginRetryCount = 0;
     private string lastError = "";
-    private bool isLogin = false;
 
     void Awake()
     {
@@ -34,6 +33,7 @@ public class Login : MonoBehaviour
                 }
                 else
                 {
+                    GameManager.Instance.sdkIsLogin = false;
                     SceneManager.LoadScene("Login");
                 }
             }
@@ -41,6 +41,12 @@ public class Login : MonoBehaviour
     }
     void Start()
     {
+        CheckAnnouncements();
+        if(GameManager.Instance.sdkIsLogin)
+        {
+            ShowEnterGameBtn();
+            return;
+        }
         var buildParams = BuildParams.Load();
 
         if (buildParams.hotUpdate || buildParams.forceUpdate)
@@ -54,8 +60,6 @@ public class Login : MonoBehaviour
         if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
             contactSupportBtn.gameObject.SetActive(false);
         }
-
-        CheckAnnouncements();
     }
 
     void OnDestroy()
@@ -97,8 +101,7 @@ public class Login : MonoBehaviour
 
     public void OnEnterGame()
     {
-        PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
-        SceneManager.LoadScene("Game");
+        ServerView.Instantiate();
     }
 
     public void OnLogout()
@@ -107,16 +110,11 @@ public class Login : MonoBehaviour
         {
             if (result.IsSuccess)
             {
-                isLogin = false;
                 GameClient.Logout();
-                var currentPlayer = PlayerController.GetPlayer();
-                if(currentPlayer != null)
-                {
-                    Destroy(currentPlayer.gameObject);
-                }
                 CheckAnnouncements();
-                Toast.Show($"玩家 {result.Data.comboId} 退出登录");
+                Toast.Show($"用户 {result.Data.comboId} 退出登录");
                 ShowLoginBtn();
+                GameManager.Instance.sdkIsLogin = false;
             }
             else
             {
@@ -182,7 +180,7 @@ public class Login : MonoBehaviour
 
     public void OpenAnnouncement()
     {
-        UIController.ShowAnnouncementParameterView(isLogin);
+        UIController.ShowAnnouncementParameterView(false);
     }
 
     [EventSystem.BindEvent]
@@ -207,24 +205,6 @@ public class Login : MonoBehaviour
                         Toast.Show($"游戏客户端登录成功");
                         Log.I("游戏客户端登录成功");
                         onSuccess.Invoke();
-                        
-                        isLogin = true;
-                        var currentPlayer = PlayerController.GetPlayer();
-                        if(currentPlayer != null)
-                        {
-                            if(currentPlayer.role.roleId == result.loginInfo.comboId)
-                            {
-                                CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
-                                return;
-                            }
-                            else
-                            {
-                                Destroy(currentPlayer.gameObject);
-                            }
-                        }
-                        var newPlayer = PlayerController.SpawnPlayer(result.loginInfo.comboId, "测试角色01", "1");
-                        CheckAnnouncements(PlayerController.GetPlayer().role.roleId, PlayerController.GetPlayer().role.roleLevel);
-                        DontDestroyOnLoad(newPlayer);
                     }
                     else
                     {
@@ -248,6 +228,7 @@ public class Login : MonoBehaviour
                     new Dictionary<string, object>() { { "role_name", "test_player" } }
                 );
                 GameClientLogin(result);
+                GameManager.Instance.sdkIsLogin = true;
             }
             else
             {
