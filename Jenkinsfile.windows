@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['windows', 'lenovo_pc']
+DISTRO_LIST = ['windows', 'lenovo_pc', 'w17173']
 
 SAFE_BRANCH_NAME = env.BRANCH_NAME ?: 'main'
 
