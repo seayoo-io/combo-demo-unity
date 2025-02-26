@@ -192,7 +192,7 @@ public class Login : MonoBehaviour
 
     private void LoginGame(Action onSuccess, Action onFail)
     {
-        UIController.ShowLoading();
+        // UIController.ShowLoading();
 
         void GameClientLogin(LoginResult result) =>
             GameClient.Login(
