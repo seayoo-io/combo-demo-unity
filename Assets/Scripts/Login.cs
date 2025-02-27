@@ -309,44 +309,70 @@ public class Login : MonoBehaviour
 
     public Rect screenPosition;
 
+    private const uint SWP_NOSIZE = 0x0001;//表示此次设置不改变大小
+    private const uint SWP_NOMOVE = 0x0002;//表示此次设置不改变位置
+    private const uint SWP_NOZORDER = 0x0004;//表示此次设置不改变ZOrder
+    
+    private const uint SWP_FRAMECHANGED = 0x0020;
+    private static IntPtr _hWndSelf = new IntPtr(0);//自己的窗口句柄
+    public static IntPtr hWndSelf
+    {
+        get
+        {
+            #if UNITY_EDITOR
+ 
+            #elif UNITY_STANDALONE_WIN
+ 
+            if (_hWndSelf.ToInt32() == 0)
+            {
+                Debug.Log("窗口句柄为0，无法操作窗口。");
+            }
+ 
+            #endif
+            return _hWndSelf;
+        }
+    }
+
     public void SetLarge()
     {
+        SetWindowPos(hWndSelf, new IntPtr(-1), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+        Screen.SetResolution(1920, 1080, FullScreenMode.ExclusiveFullScreen);
         // IntPtr ptr = FindWindow(null, "combo-demo");
         // SetWindowLong(ptr, GWL_STYLE, WS_BORDER);   //窗口全屏
         // SetWindowPos(ptr, (IntPtr)HWND_TOPMOST, (int)screenPosition.x, (int)screenPosition.y, (int)screenPosition.width, (int)screenPosition.height, SWP_SHOWWINDOW);
         // Screen.SetResolution(1920, 1080, true);
-        IntPtr ptr = FindWindow(null, "combo-demo");
-        if (ptr == IntPtr.Zero)
-        {
-            Debug.LogError("找不到窗口：combo-demo");
-            return;
-        }
+        // IntPtr ptr = FindWindow(null, "combo-demo");
+        // if (ptr == IntPtr.Zero)
+        // {
+        //     Debug.LogError("找不到窗口：combo-demo");
+        //     return;
+        // }
 
-        // 恢复窗口样式为普通窗口
-        SetWindowLong(ptr, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+        // // 恢复窗口样式为普通窗口
+        // SetWindowLong(ptr, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 
-        // 恢复窗口显示状态
-        ShowWindow(ptr, SW_RESTORE);
+        // // 恢复窗口显示状态
+        // ShowWindow(ptr, SW_RESTORE);
 
-        // 检查位置是否在屏幕范围内
-        var screenWidth = Screen.currentResolution.width;
-        var screenHeight = Screen.currentResolution.height;
+        // // 检查位置是否在屏幕范围内
+        // var screenWidth = Screen.currentResolution.width;
+        // var screenHeight = Screen.currentResolution.height;
 
-        if (screenPosition.x < 0 || screenPosition.y < 0 ||
-            screenPosition.x > screenWidth || screenPosition.y > screenHeight)
-        {
-            Debug.LogWarning("窗口位置超出屏幕范围，正在重置窗口位置...");
-            screenPosition.x = 0;
-            screenPosition.y = 0;
-        }
+        // if (screenPosition.x < 0 || screenPosition.y < 0 ||
+        //     screenPosition.x > screenWidth || screenPosition.y > screenHeight)
+        // {
+        //     Debug.LogWarning("窗口位置超出屏幕范围，正在重置窗口位置...");
+        //     screenPosition.x = 0;
+        //     screenPosition.y = 0;
+        // }
 
-        // 设置窗口位置和大小
-        SetWindowPos(ptr, (IntPtr)HWND_TOP, 
-            (int)screenPosition.x, 
-            (int)screenPosition.y, 
-            (int)screenPosition.width, 
-            (int)screenPosition.height, 
-            SWP_SHOWWINDOW);
+        // // 设置窗口位置和大小
+        // SetWindowPos(ptr, (IntPtr)HWND_TOP, 
+        //     (int)screenPosition.x, 
+        //     (int)screenPosition.y, 
+        //     (int)screenPosition.width, 
+        //     (int)screenPosition.height, 
+        //     SWP_SHOWWINDOW);
     }
 
     private void ShowLoginBtn()
