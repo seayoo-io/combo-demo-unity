@@ -306,6 +306,7 @@ public class Login : MonoBehaviour
     {
         IntPtr ptr = FindWindow(null, "combosdk-unity-demo");
         SetWindowLong(ptr, GWL_STYLE, WS_BORDER);   //窗口全屏
+        SetWindowPos(ptr, (IntPtr)HWND_TOPMOST, (int)screenPosition.x, (int)screenPosition.y, (int)screenPosition.width, (int)screenPosition.height, SWP_SHOWWINDOW);
         Screen.SetResolution(1920, 1080, true);
     }
 
