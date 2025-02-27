@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Combo;
 using ThinkingData.Analytics;
 using UnityEngine;
@@ -287,8 +288,24 @@ public class Login : MonoBehaviour
         Screen.SetResolution(1280, 720, false);
     }
 
+    [DllImport("user32.dll", EntryPoint = "FindWindow")]
+    private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    [DllImport("user32.dll")]
+    static extern IntPtr SetWindowLong(IntPtr hwnd, int _nIndex, int dwNewLong);
+    [DllImport("user32.dll")]
+    static extern IntPtr SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint wFlags);
+
+    public Rect screenPosition;
+    const uint SWP_SHOWWINDOW = 0x0040;
+    const int HWND_TOP = 0;
+    const int HWND_TOPMOST = -1;
+    const int GWL_STYLE = -16;
+    const int WS_BORDER = 1;
+
     public void SetLarge()
     {
+        IntPtr ptr = FindWindow(null, "combosdk-unity-demo");
+        SetWindowLong(ptr, GWL_STYLE, WS_BORDER);   //窗口全屏
         Screen.SetResolution(1920, 1080, true);
     }
 
