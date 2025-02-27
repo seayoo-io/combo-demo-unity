@@ -287,27 +287,66 @@ public class Login : MonoBehaviour
     {
         Screen.SetResolution(1280, 720, false);
     }
-
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
     private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
     [DllImport("user32.dll")]
-    static extern IntPtr SetWindowLong(IntPtr hwnd, int _nIndex, int dwNewLong);
+    private static extern IntPtr SetWindowLong(IntPtr hwnd, int nIndex, int dwNewLong);
+
     [DllImport("user32.dll")]
-    static extern IntPtr SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint wFlags);
+    private static extern IntPtr SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint wFlags);
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    const int GWL_STYLE = -16;
+    const uint SWP_SHOWWINDOW = 0x0040;
+    const int HWND_TOPMOST = -1;
+    const int HWND_TOP = 0;
+    const int SW_RESTORE = 9;
+    const int SW_SHOW = 5;
+    const int WS_OVERLAPPEDWINDOW = 0x00CF0000;
 
     public Rect screenPosition;
-    const uint SWP_SHOWWINDOW = 0x0040;
-    const int HWND_TOP = 0;
-    const int HWND_TOPMOST = -1;
-    const int GWL_STYLE = -16;
-    const int WS_BORDER = 1;
 
     public void SetLarge()
     {
-        IntPtr ptr = FindWindow(null, "combo-demo");
-        SetWindowLong(ptr, GWL_STYLE, WS_BORDER);   //窗口全屏
-        SetWindowPos(ptr, (IntPtr)HWND_TOPMOST, (int)screenPosition.x, (int)screenPosition.y, (int)screenPosition.width, (int)screenPosition.height, SWP_SHOWWINDOW);
+        // IntPtr ptr = FindWindow(null, "combo-demo");
+        // SetWindowLong(ptr, GWL_STYLE, WS_BORDER);   //窗口全屏
+        // SetWindowPos(ptr, (IntPtr)HWND_TOPMOST, (int)screenPosition.x, (int)screenPosition.y, (int)screenPosition.width, (int)screenPosition.height, SWP_SHOWWINDOW);
         // Screen.SetResolution(1920, 1080, true);
+        IntPtr ptr = FindWindow(null, "combo-demo");
+        if (ptr == IntPtr.Zero)
+        {
+            Debug.LogError("找不到窗口：combo-demo");
+            return;
+        }
+
+        // 恢复窗口样式为普通窗口
+        SetWindowLong(ptr, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+
+        // 恢复窗口显示状态
+        ShowWindow(ptr, SW_RESTORE);
+
+        // 检查位置是否在屏幕范围内
+        var screenWidth = Screen.currentResolution.width;
+        var screenHeight = Screen.currentResolution.height;
+
+        if (screenPosition.x < 0 || screenPosition.y < 0 ||
+            screenPosition.x > screenWidth || screenPosition.y > screenHeight)
+        {
+            Debug.LogWarning("窗口位置超出屏幕范围，正在重置窗口位置...");
+            screenPosition.x = 0;
+            screenPosition.y = 0;
+        }
+
+        // 设置窗口位置和大小
+        SetWindowPos(ptr, (IntPtr)HWND_TOP, 
+            (int)screenPosition.x, 
+            (int)screenPosition.y, 
+            (int)screenPosition.width, 
+            (int)screenPosition.height, 
+            SWP_SHOWWINDOW);
     }
 
     private void ShowLoginBtn()
