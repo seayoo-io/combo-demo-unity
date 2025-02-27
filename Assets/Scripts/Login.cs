@@ -277,6 +277,21 @@ public class Login : MonoBehaviour
         });
     }
 
+    public void SetSmall()
+    {
+        Screen.SetResolution(800, 600, false);
+    }
+
+    public void SetMedium()
+    {
+        Screen.SetResolution(1280, 720, false);
+    }
+
+    public void SetLarge()
+    {
+        Screen.SetResolution(1920, 1080, true);
+    }
+
     private void ShowLoginBtn()
     {
         enterGameBtn.gameObject.SetActive(false);
