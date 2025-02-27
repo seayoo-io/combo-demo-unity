@@ -304,10 +304,10 @@ public class Login : MonoBehaviour
 
     public void SetLarge()
     {
-        IntPtr ptr = FindWindow(null, "combosdk-unity-demo");
+        IntPtr ptr = FindWindow(null, "combo-demo");
         SetWindowLong(ptr, GWL_STYLE, WS_BORDER);   //窗口全屏
         SetWindowPos(ptr, (IntPtr)HWND_TOPMOST, (int)screenPosition.x, (int)screenPosition.y, (int)screenPosition.width, (int)screenPosition.height, SWP_SHOWWINDOW);
-        Screen.SetResolution(1920, 1080, true);
+        // Screen.SetResolution(1920, 1080, true);
     }
 
     private void ShowLoginBtn()
