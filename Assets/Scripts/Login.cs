@@ -192,8 +192,6 @@ public class Login : MonoBehaviour
 
     private void LoginGame(Action onSuccess, Action onFail)
     {
-        // UIController.ShowLoading();
-
         void GameClientLogin(LoginResult result) =>
             GameClient.Login(
                 result.loginInfo.identityToken,
@@ -229,6 +227,7 @@ public class Login : MonoBehaviour
                 );
                 GameClientLogin(result);
                 GameManager.Instance.sdkIsLogin = true;
+                UIController.ShowLoading();
             }
             else
             {
