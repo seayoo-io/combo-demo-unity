@@ -22,9 +22,11 @@ internal class ServerView : View<ServerView>
         EventSystem.Register(this);
         closeBtn.onClick.AddListener(Destroy);
         enterCreateRoleBtn.onClick.AddListener(EnterRoleView);
+        enterCreateRoleBtn.interactable = false;
         GameClient.GetServerList((GameData[] datas) =>
         {
             StartCoroutine(InitializeButtonsAsync(datas));
+            enterCreateRoleBtn.interactable = true;
         }, (error) => {
             enterCreateRoleBtn.interactable = false;
             if(error != "invalid headers") return;

@@ -24,6 +24,8 @@ internal class SelectView : View<SelectView>
     void Start()
     {
         EventSystem.Register(this);
+        deleleButton.interactable = false;
+        enterGameBtn.interactable = false;
         GameManager.Instance.RoleDic.Clear();
         for (int i = 0; i < images.Count; i++)
         {
@@ -59,6 +61,8 @@ internal class SelectView : View<SelectView>
         UIController.Alert(UIAlertType.Singleton, "提示", $"是否删除该账号 {currentRole.roleId}", "取消", "确认删除",
         () => {},
         () =>{
+            deleleButton.interactable = false;
+            enterGameBtn.interactable = false;
             GameClient.DeleteRole(currentRole.roleId, data => {
                 ShowRoleList();
             }, (error) => {
@@ -112,6 +116,8 @@ internal class SelectView : View<SelectView>
     
     private void ShowRoleList()
     {   
+        deleleButton.interactable = false;
+        enterGameBtn.interactable = false;
         foreach (Transform child in parentTransform)
         {
             Destroy(child.gameObject);
@@ -120,13 +126,9 @@ internal class SelectView : View<SelectView>
         GameClient.GetRolesList(GameManager.Instance.ZoneId, GameManager.Instance.ServerId, datas => {
             if(datas == null)
             {
-                deleleButton.interactable = false;
-                enterGameBtn.interactable = false;
                 LoadSlotView(number: 3);
                 return;
             }
-            deleleButton.interactable = true;
-            enterGameBtn.interactable = true;
             foreach(var data in datas)
             {
                 roleInfos[data.roleId] = data;
@@ -140,9 +142,9 @@ internal class SelectView : View<SelectView>
             {
                 LoadSlotView();
             }
+            deleleButton.interactable = true;
+            enterGameBtn.interactable = true;
         }, (error) => {
-            deleleButton.interactable = false;
-            enterGameBtn.interactable = false;
             if(error != "invalid headers") return;
             UIController.Alert(UIAlertType.Singleton, "提示", "登陆状态失效，请重新登陆", "切换账号", () => {
                 Login login = FindObjectOfType<Login>();
