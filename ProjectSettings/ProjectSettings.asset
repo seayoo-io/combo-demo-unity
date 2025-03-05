@@ -71,7 +71,7 @@ PlayerSettings:
   preserveFramebufferAlpha: 0
   disableDepthAndStencilBuffers: 0
   androidStartInFullscreen: 1
-  androidRenderOutsideSafeArea: 0
+  androidRenderOutsideSafeArea: 1
   androidUseSwappy: 0
   androidBlitType: 0
   androidResizableWindow: 0
@@ -798,6 +798,7 @@ PlayerSettings:
   webGLWasmStreaming: 0
   scriptingDefineSymbols:
     1: VUPLEX_STANDALONE
+    7: VUPLEX_STANDALONE
   platformArchitecture:
     iPhone: 1
   scriptingBackend:
