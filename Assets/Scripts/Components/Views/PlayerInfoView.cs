@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ using UnityEngine.UI;
 internal class PlayerInfoView : View<PlayerInfoView>
 {
     public Text playerId;
+    public Text seayooId;
+    public Text Idp;
     public Text accountName;
     public Button copyBtn;
     public Button cancelBtn;
@@ -65,8 +68,14 @@ internal class PlayerInfoView : View<PlayerInfoView>
         playerId.text = id;
     }
 
-    public void SetAccountName(string name) {
-        accountName.text = name;
+    public void SetSeayooId(string seayooId)
+    {
+        this.seayooId.text = seayooId;
+    }
+
+    public void SetIdp(string Idp)
+    {
+        this.Idp.text = Idp;
     }
 
     public void SetRole(Role r)
