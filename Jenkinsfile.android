@@ -105,7 +105,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2019.4.40f1')
+        UNITY_ROOT = getUnityRoot('2021.3.40f1c1')
         ANDROID_ROOT = "build"     
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
     }
