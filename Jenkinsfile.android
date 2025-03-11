@@ -197,18 +197,24 @@ pipeline {
 
                     sh 'chmod +x ./combo'
                     dir(env.ANDROID_ROOT) {
+                        sh 'pwd'
+                        sh 'ls -la build/' // 调试路径
+
+                        // 使用 Gradle 构建
                         withGradle('6.9.4') {
                             def credentialsId = "combo-${params.GAME_ID}.build-key"
                             withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                                 writeComboYaml(COMBOSDK_BUILD_KEY)
                             }
-                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO}"
+
+                            // 调试 combo build
+                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO} --project-path ${env.ANDROID_ROOT}"
                         }
                     }
                 }
             }
         }
-        stage('Archive') {
+                stage('Archive') {
             steps {
                 script {  
                     def  distros = params.DISTRO.split(',')
