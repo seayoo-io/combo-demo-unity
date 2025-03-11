@@ -196,25 +196,28 @@ pipeline {
                     installComboCLI()
 
                     sh 'chmod +x ./combo'
+                    echo "ANDROID_ROOT: ${env.ANDROID_ROOT}"
+
                     dir(env.ANDROID_ROOT) {
                         sh 'pwd'
-                        sh 'ls -la build/' // 调试路径
+                        sh 'ls -la'
 
-                        // 使用 Gradle 构建
-                        withGradle('6.9.4') {
-                            def credentialsId = "combo-${params.GAME_ID}.build-key"
-                            withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
-                                writeComboYaml(COMBOSDK_BUILD_KEY)
+                        if (fileExists('build.gradle')) {
+                            withGradle('6.9.4') {
+                                def credentialsId = "combo-${params.GAME_ID}.build-key"
+                                withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                                    writeComboYaml(COMBOSDK_BUILD_KEY)
+                                }
+                                sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO} --project-path ${env.ANDROID_ROOT}"
                             }
-
-                            // 调试 combo build
-                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO} --project-path ${env.ANDROID_ROOT}"
+                        } else {
+                            error "build.gradle not found in ${env.ANDROID_ROOT}"
                         }
                     }
                 }
             }
         }
-                stage('Archive') {
+        stage('Archive') {
             steps {
                 script {  
                     def  distros = params.DISTRO.split(',')
