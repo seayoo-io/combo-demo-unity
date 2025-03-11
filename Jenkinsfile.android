@@ -196,22 +196,13 @@ pipeline {
                     installComboCLI()
 
                     sh 'chmod +x ./combo'
-                    echo "ANDROID_ROOT: ${env.ANDROID_ROOT}"
-
                     dir(env.ANDROID_ROOT) {
-                        sh 'pwd'
-                        sh 'ls -la'
-
-                        if (fileExists('build.gradle')) {
-                            withGradle('6.9.4') {
-                                def credentialsId = "combo-${params.GAME_ID}.build-key"
-                                withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
-                                    writeComboYaml(COMBOSDK_BUILD_KEY)
-                                }
-                                sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO} --project-path ${env.ANDROID_ROOT}"
+                        withGradle('6.9.4') {
+                            def credentialsId = "combo-${params.GAME_ID}.build-key"
+                            withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                                writeComboYaml(COMBOSDK_BUILD_KEY)
                             }
-                        } else {
-                            error "build.gradle not found in ${env.ANDROID_ROOT}"
+                            sh "${env.WORKSPACE}/combo android build --distros ${params.DISTRO}"
                         }
                     }
                 }
