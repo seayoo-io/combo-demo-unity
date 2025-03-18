@@ -36,7 +36,7 @@ android {
     aaptOptions {
         ignoreAssetsPattern "!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~"
         noCompress = ['.unity3d', '.ress', '.resource', '.obb', '**unityStreamingAssets**']
-    }
-}**PACKAGING_OPTIONS**
+    }**PACKAGING_OPTIONS**
+}
 **REPOSITORIES****SOURCE_BUILD_SETUP**
 **EXTERNAL_SOURCES**
