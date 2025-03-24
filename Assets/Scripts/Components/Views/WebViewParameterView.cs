@@ -31,6 +31,10 @@ internal class WebViewParameterView : View<WebViewParameterView>
         closeBtn.onClick.AddListener(Destroy);
         openAnnouncementBtn.onClick.AddListener(OnConfirm);
         giftInput.onValueChanged.AddListener(ValidateInput);
+
+        // 设置 widthInput 和 heightInput 的默认值为 100
+        widthInput.text = "100";
+        heightInput.text = "100";
     }
 
     void OnDestroy()
