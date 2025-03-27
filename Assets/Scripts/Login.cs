@@ -16,6 +16,7 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Button openShortLinkBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -188,6 +189,10 @@ public class Login : MonoBehaviour
     {
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
+    }
+
+    public void OpenShortLink(){
+        UIController.ShowShortLinkView();
     }
 
     private void LoginGame(Action onSuccess, Action onFail)
