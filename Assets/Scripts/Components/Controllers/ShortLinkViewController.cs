@@ -38,14 +38,8 @@ public class ShortLinkViewController : MonoBehaviour
             Toast.Show("短链接为空，请输入短链接");
             return;
         }
-        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
-        var gameData = new Dictionary<string, string>(){
-            {"server_id", role.serverId.ToString()},
-            {"server_name", role.serverName},
-            {"role_id", role.roleId},
-            {"role_name", role.roleName},
-            {"role_level", role.roleLevel.ToString()},
-        };
+        // 此时还没有到选服，没有角色信息
+        var gameData = new Dictionary<string, string>();
         ComboSDK.OpenShortLink(shortLink, gameData, result =>{
             if(result.IsSuccess)
             {}
