@@ -68,7 +68,7 @@ def environmentParams = [
         'provision': 'MaoTang Dev',
         'developmentTeam': 'G7ZC763G33',
         'exportOptionsPlist': 'combo-catsnsoup.export-options'
-    ]
+    ],
     'jxfs': [
         'bundleId': 'com.seayoo.jxfs', 
         'codeSignId': 'Apple Development: 乐 李 (Z7J3K9MRC6)', 
