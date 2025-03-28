@@ -63,23 +63,23 @@ public static class PlayerInfoViewController
 
     private static void InitView(PlayerInfoView view)
     {
-        string accountName;
         string playerId;
+        string seayooId;
         if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
         {
-            accountName = "世游通行证 ID :";
-            playerId = ComboSDK.SeayooAccount.UserId;
+            playerId = ComboSDK.GetLoginInfo().comboId;
+            seayooId = ComboSDK.SeayooAccount.UserId;
             view.manageAccountBtn.gameObject.SetActive(true);
             view.changePasswordBtn.gameObject.SetActive(true);
             view.deleteAccountBtn.gameObject.SetActive(true);
-            Log.I($"GetUserInfo: ${accountName} = {playerId}");
+            Log.I($"GetUserInfo: 世游通行证 ID : = {seayooId}, Combo ID : = {playerId}");
         }
         else
         {
             var info = ComboSDK.GetLoginInfo();
             playerId = info.comboId;
-            accountName = "Combo ID :";
-            Log.I($"GetUserInfo: ${accountName} = {playerId}," + $"identityToken = {info.identityToken}");
+            seayooId = "无";
+            Log.I($"GetUserInfo: Combo ID : = {playerId}," + $"identityToken = {info.identityToken}");
         }
 
         if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
@@ -88,7 +88,8 @@ public static class PlayerInfoViewController
         }
 
         view.SetPlayerId(playerId);
-        view.SetAccountName(accountName);
+        view.SetSeayooId(seayooId);
+        view.SetIdp($"idp : {ComboSDK.GetLoginInfo().idp}");
         view.SetRole(PlayerController.GetPlayer().role);
         view.SetServer(GameManager.Instance.ZoneName, GameManager.Instance.ServerName);
         
