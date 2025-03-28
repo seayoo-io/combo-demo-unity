@@ -553,7 +553,7 @@ MonoBehaviour:
   openShortLinkBtn: {fileID: 964008702}
   smallBtn: {fileID: 596305239}
   middleBtn: {fileID: 226410258}
-  BugBtn: {fileID: 996606388}
+  bigBtn: {fileID: 996606388}
 --- !u!114 &221702292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1149,7 +1149,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1778, y: -61.000027}
+  m_AnchoredPosition: {x: -1778, y: -61.00003}
   m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &596305239

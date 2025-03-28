@@ -19,7 +19,7 @@ public class Login : MonoBehaviour
     public Button openShortLinkBtn;
     public Button smallBtn;
     public Button middleBtn;
-    public Button BugBtn;
+    public Button bigBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -42,6 +42,13 @@ public class Login : MonoBehaviour
                 }
             }
         });
+
+        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            smallBtn.interactable = false;
+            middleBtn.interactable = false;
+            bigBtn.interactable = false;
+        }
     }
     void Start()
     {
