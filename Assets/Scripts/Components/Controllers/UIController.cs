@@ -87,6 +87,19 @@ public static class UIController
         TaskView.DestroyAll();
     }
 
+    public static void ShowShortLinkView(){
+        ShortLinkView.DestroyAll();
+        var shortLinkView = ShortLinkView.Instantiate();
+        shortLinkView.SetCancelCallback(() => shortLinkView.Destroy());
+        shortLinkView.Show();
+    }
+
+    public static void HideShortLinkView()
+    {
+        ShortLinkView.DestroyAll();
+    }
+
+
     public static void ShowAnnouncementParameterView(bool isLogin)
     {
         WebViewParameterView.DestroyAll();
