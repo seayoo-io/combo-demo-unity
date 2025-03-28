@@ -17,6 +17,9 @@ public class Login : MonoBehaviour
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
     public Button openShortLinkBtn;
+    public Button smallBtn;
+    public Button middleBtn;
+    public Button BugBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -194,6 +197,25 @@ public class Login : MonoBehaviour
     public void OpenShortLink(){
         UIController.ShowShortLinkView();
     }
+
+    public void SmallWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(600, 400, false);
+    }
+
+    public void MiddleWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(1280, 720, false);
+    }
+
+    public void BigWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        Screen.fullScreen = true;
+    }
+
 
     private void LoginGame(Action onSuccess, Action onFail)
     {
