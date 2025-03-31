@@ -16,6 +16,10 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Button openShortLinkBtn;
+    public Button smallBtn;
+    public Button middleBtn;
+    public Button bigBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
@@ -38,6 +42,13 @@ public class Login : MonoBehaviour
                 }
             }
         });
+
+        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            smallBtn.interactable = false;
+            middleBtn.interactable = false;
+            bigBtn.interactable = false;
+        }
     }
     void Start()
     {
@@ -189,6 +200,29 @@ public class Login : MonoBehaviour
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
     }
+
+    public void OpenShortLink(){
+        UIController.ShowShortLinkView();
+    }
+
+    public void SmallWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(600, 400, false);
+    }
+
+    public void MiddleWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(1280, 720, false);
+    }
+
+    public void BigWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        Screen.fullScreen = true;
+    }
+
 
     private void LoginGame(Action onSuccess, Action onFail)
     {
