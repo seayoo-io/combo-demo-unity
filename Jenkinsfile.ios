@@ -68,15 +68,18 @@ def environmentParams = [
         'provision': 'MaoTang Dev',
         'developmentTeam': 'G7ZC763G33',
         'exportOptionsPlist': 'combo-catsnsoup.export-options'
+    ],
+    'jxfs': [
+        'bundleId': 'com.seayoo.jxfs', 
+        'codeSignId': 'Apple Development: 乐 李 (Z7J3K9MRC6)', 
+        'provision': 'Jianxin FS Project Development',
+        'developmentTeam': 'G7ZC763G33',
+        'exportOptionsPlist': 'combo-jxfs.export-options'
     ]
 ]
 
 def installComboCLI() {
-    def key = params.GAME_ID
-    if (params.GAME_ID == 'catsnsoup' && params.TARGET_ENV == 'dev') {
-        key = 'dev-catsnsoup'
-    }
-    def credentialsId = "combo-${key}.build-key"
+    def credentialsId = getComboCredentialsId('build-key')
     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
@@ -84,6 +87,14 @@ def installComboCLI() {
     def comboZip = "combo_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
+}
+
+def getComboCredentialsId(String credentialSuffix) {
+    def key = params.GAME_ID
+    if (params.GAME_ID != 'demo' && params.TARGET_ENV == 'dev') {
+        key = "dev-${params.GAME_ID}"
+    }
+    return "combo-${key}.${credentialSuffix}"
 }
 
 def getEndpoint() {
@@ -114,7 +125,7 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'jxfs'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
         choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
@@ -216,11 +227,7 @@ pipeline {
             }
             steps {
                 script {
-                    def key = params.GAME_ID
-                    if (params.GAME_ID == 'catsnsoup' && params.TARGET_ENV == 'dev') {
-                        key = 'dev-catsnsoup'
-                    }
-                    def credentialsId = "combo-${key}.publishable-key"
+                    def credentialsId = getComboCredentialsId('publishable-key')
                     withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: credentialsId)]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
