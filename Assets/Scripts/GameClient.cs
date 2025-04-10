@@ -492,11 +492,10 @@ public static class GameClient
         {
             { "Authorization", auth }
         };
-        // var endpoint = "https://api.dev.seayoo.com";
         HttpRequest.Get(
             new HttpRequestOptions
             {
-                url = $"{endpoint}/v1/build/distros",
+                url = $"{BuildParams.GetComboSDKEndpoint()}/v1/build/distros",
                 headers = header
             },
             resp =>
