@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 [Serializable]
@@ -10,6 +11,8 @@ public class BuildParams
     public string buildNumber = null;
     public bool forceUpdate = false;
     public bool hotUpdate = false;
+    public string gameId = null;
+    public string buildKey = null;
     private static string filePath = "Assets/Resources/ComboSDKBuildParams.json";
     private static BuildParams instance = null;
 
@@ -22,6 +25,8 @@ public class BuildParams
             buildNumber = Environment.GetEnvironmentVariable("BUILD_NUMBER"),
             forceUpdate = Environment.GetEnvironmentVariable("CHECK_UPDATE") == "FORCE_UPDATE",
             hotUpdate = Environment.GetEnvironmentVariable("CHECK_UPDATE") == "HOT_UPDATE",
+            gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID"),
+            buildKey = Environment.GetEnvironmentVariable("COMBOSDK_BUILD_KEY"),
         };
         var json = JsonUtility.ToJson(paramz);
         File.WriteAllText(filePath, json);
@@ -54,5 +59,23 @@ public class BuildParams
         if (!File.Exists(filePath))
             return;
         File.Delete(filePath);
+    }
+
+    public static string GetGameId()
+    {
+#if UNITY_EDITOR
+        return EditorPrefs.GetString("COMBOSDK_GAME_ID", "");
+#else
+        return BuildParams.Load().gameId;
+#endif
+    }
+
+    public static string GetBuildKey()
+    {
+#if UNITY_EDITOR
+        return EditorPrefs.GetString("BUILD_KEY", "");
+#else
+        return BuildParams.Load().buildKey;
+#endif
     }
 }
