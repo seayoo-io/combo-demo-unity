@@ -87,6 +87,12 @@ public static class PlayerInfoViewController
             view.contactSupportBtn.gameObject.SetActive(false);
         }
 
+        bool createRoleEnabled = GameManager.Instance.config.createRoleEnabled;
+        view.changeRoleBtn.gameObject.SetActive(createRoleEnabled);
+        view.addBtn.gameObject.SetActive(createRoleEnabled);
+        view.subBtn.gameObject.SetActive(createRoleEnabled);
+        view.levelText.interactable = createRoleEnabled;
+
         view.SetPlayerId(playerId);
         view.SetSeayooId(seayooId);
         view.SetIdp($"idp : {ComboSDK.GetLoginInfo().idp}");

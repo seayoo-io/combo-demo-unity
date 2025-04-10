@@ -157,7 +157,7 @@ public class GetRolesListResponse : Serializable
     public int serverId;
     [JsonProperty("created_at")]
     public long roleCreateTime;
-    
+
 }
 
 [Serializable]
@@ -205,6 +205,20 @@ public class ActiveValueReportEvent : ReportEventBase
     public int pointsChanged;
 }
 
+[Serializable]
+public class GameConfig : Serializable
+{
+    [JsonProperty("create_role_enabled")]
+    public bool createRoleEnabled;
+}
+
+[Serializable]
+public class Distro : Serializable
+{
+    public string distro;
+    public List<string> domains;
+}
+
 public static class GameClient
 {
     private static string session = "";
@@ -216,6 +230,7 @@ public static class GameClient
     public static void Setup()
     {
         var demoEndpoint = BuildParams.Load().demoEndpoint ?? "https://combo-demo.dev.seayoo.com";
+        // var demoEndpoint = BuildParams.Load().demoEndpoint ?? "http://10.228.16.168:27247";
 
         GameClient.gameId = Combo.ComboSDK.GetGameId();
         GameClient.endpoint = demoEndpoint;
@@ -418,7 +433,47 @@ public static class GameClient
                 {
                     LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
                     onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
-                } catch (Exception)
+                }
+                catch (Exception)
+                {
+                    LogErrorWithToast(resp.Body.ToText());
+                    onError.Invoke(resp.Body.ToText());
+                }
+            }
+
+        });
+    }
+    // 获取初始化参数
+    public static void GetGameConfig(Action<GameConfig> action, Action<string> onError)
+    {
+        HttpRequest.Get(new HttpRequestOptions
+        {
+            url = $"{endpoint}/{gameId}/config",
+            headers = Headers()
+        }, resp =>
+        {
+            Log.D(resp.ToString());
+            if (resp.IsSuccess)
+            {
+                try
+                {
+                    var data = resp.Body.ToJson<GameConfig>();
+                    action.Invoke(data);
+                }
+                catch (Exception error)
+                {
+                    Log.E(error);
+                    onError.Invoke(error.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                    onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                }
+                catch (Exception)
                 {
                     LogErrorWithToast(resp.Body.ToText());
                     onError.Invoke(resp.Body.ToText());
@@ -426,6 +481,64 @@ public static class GameClient
             }
             
         });
+    }
+
+    public static void GetDomains(string gameId, string buildKey, string distro, Action<List<string>> action, Action<string> onError)
+    {
+        // 生成 Base64 编码的 Authorization Header
+        var authKey = Crypto.Base64Encode($"{gameId}:{buildKey}");
+        var auth = $"Basic {authKey}";
+        var header = new Dictionary<string, string>
+        {
+            { "Authorization", auth }
+        };
+        // var endpoint = "https://api.dev.seayoo.com";
+        HttpRequest.Get(
+            new HttpRequestOptions
+            {
+                url = $"{endpoint}/v1/build/distros",
+                headers = header
+            },
+            resp =>
+            {
+                if (resp.IsSuccess)
+                {
+                    try
+                    {
+                        var data = resp.Body.ToJson<Dictionary<string, List<Distro>>>();
+                        if (data.TryGetValue("distros", out List<Distro> distros))
+                        {
+                            foreach (var d in distros)
+                            {
+                                if (d.distro == distro)
+                                {
+                                    action.Invoke(d.domains);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception error)
+                    {
+                        // 解析失败，回调错误信息
+                        Log.E($"解析参数失败: {error.Message}");
+                        onError.Invoke($"解析参数失败: {error.Message}");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        LogErrorWithToast(resp.Body.ToJson<ErrorResponse>());
+                        onError.Invoke(resp.Body.ToJson<ErrorResponse>().error);
+                    }
+                    catch (Exception)
+                    {
+                        LogErrorWithToast(resp.Body.ToText());
+                        onError.Invoke(resp.Body.ToText());
+                    }
+                }
+            }
+        );
     }
 
     // 创建角色

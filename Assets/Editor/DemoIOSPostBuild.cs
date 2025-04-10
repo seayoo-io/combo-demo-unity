@@ -17,6 +17,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER") ?? "combo_dev_provision";
         public static string DevelopmentTeam => System.Environment.GetEnvironmentVariable("DEVELOPMENT_TEAM") ?? "3PMCL4FRNT";
         public static string Capabilities => System.Environment.GetEnvironmentVariable("CAPABILITIES") ?? "SignInWithApple";
+        public static string GameId => System.Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID") ?? "demo";
     }
 
     public int callbackOrder { get { return 1; } }
@@ -85,6 +86,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         pbxProject.SetBuildProperty(mainTargetGuid, "CODE_SIGN_IDENTITY", BuildArguments.SignIdentity);
         pbxProject.SetBuildProperty(mainTargetGuid, "PROVISIONING_PROFILE_SPECIFIER", BuildArguments.Provision);
         pbxProject.SetBuildProperty(mainTargetGuid, "DEVELOPMENT_TEAM", BuildArguments.DevelopmentTeam);
+        pbxProject.SetBuildProperty(mainTargetGuid, "PRODUCT_BUNDLE_IDENTIFIER", BuildArguments.BundleId);
     }
 
     private void AddAppleSignInCapability(BuildReport report, PBXProject pbxProject, string mainTargetGuid)
@@ -156,6 +158,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         var plist = new PlistDocument();
         plist.ReadFromFile(plistPath);
         plist.root.SetBoolean("UIFileSharingEnabled", true);
+        plist.root.SetString("CFBundleDisplayName", BuildArguments.GameId);
         plist.WriteToFile(plistPath);
     }
 
