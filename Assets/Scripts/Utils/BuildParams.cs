@@ -13,6 +13,7 @@ public class BuildParams
     public bool hotUpdate = false;
     public string gameId = null;
     public string buildKey = null;
+    public string comboEndpoint = null;
     private static string filePath = "Assets/Resources/ComboSDKBuildParams.json";
     private static BuildParams instance = null;
 
@@ -27,6 +28,7 @@ public class BuildParams
             hotUpdate = Environment.GetEnvironmentVariable("CHECK_UPDATE") == "HOT_UPDATE",
             gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID"),
             buildKey = Environment.GetEnvironmentVariable("COMBOSDK_BUILD_KEY"),
+            comboEndpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT"),
         };
         var json = JsonUtility.ToJson(paramz);
         File.WriteAllText(filePath, json);
@@ -79,6 +81,20 @@ public class BuildParams
         if (string.IsNullOrEmpty)
         {
             buildKey = Configuration.instance.buildKey; // Build for jenkins
+        }
+        return buildKey;
+#endif
+    }
+
+    public static string GetComboSDKEndpoint()
+    {
+#if UNITY_EDITOR
+        return EditorPrefs.GetString("COMBOSDK_ENDPOINT", "");
+#else
+        var buildKey = BuildParams.Load().comboEndpoint;
+        if (string.IsNullOrEmpty)
+        {
+            buildKey = Configuration.instance.endpoint;
         }
         return buildKey;
 #endif
