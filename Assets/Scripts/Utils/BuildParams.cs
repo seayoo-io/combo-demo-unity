@@ -73,9 +73,14 @@ public class BuildParams
     public static string GetBuildKey()
     {
 #if UNITY_EDITOR
-        return EditorPrefs.GetString("BUILD_KEY", "");
+        return EditorPrefs.GetString("BUILD_KEY", ""); // Run for editor
 #else
-        return BuildParams.Load().buildKey;
+        var buildKey = BuildParams.Load().buildKey; // Build for editor
+        if (string.IsNullOrEmpty)
+        {
+            buildKey = Configuration.instance.buildKey; // Build for jenkins
+        }
+        return buildKey;
 #endif
     }
 }
