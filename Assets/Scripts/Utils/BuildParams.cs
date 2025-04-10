@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Combo;
 using UnityEditor;
 using UnityEngine;
 
@@ -78,9 +79,9 @@ public class BuildParams
         return EditorPrefs.GetString("BUILD_KEY", ""); // Run for editor
 #else
         var buildKey = BuildParams.Load().buildKey; // Build for editor
-        if (string.IsNullOrEmpty)
+        if (string.IsNullOrEmpty(buildKey))
         {
-            buildKey = Configuration.instance.buildKey; // Build for jenkins
+            buildKey = Combo.Configuration.Instance.BuildKey; // Build for jenkins
         }
         return buildKey;
 #endif
@@ -91,12 +92,12 @@ public class BuildParams
 #if UNITY_EDITOR
         return EditorPrefs.GetString("COMBOSDK_ENDPOINT", "");
 #else
-        var buildKey = BuildParams.Load().comboEndpoint;
-        if (string.IsNullOrEmpty)
+        var endpoint = BuildParams.Load().comboEndpoint;
+        if (string.IsNullOrEmpty(endpoint))
         {
-            buildKey = Configuration.instance.endpoint;
+            endpoint = Combo.Configuration.Instance.Endpoint;
         }
-        return buildKey;
+        return endpoint;
 #endif
     }
 }
