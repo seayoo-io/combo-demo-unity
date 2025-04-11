@@ -78,7 +78,7 @@ pipeline {
     parameters {
         choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
-        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
         extendedChoice(
             name: 'DISTRO',
             type: 'PT_MULTI_SELECT',
