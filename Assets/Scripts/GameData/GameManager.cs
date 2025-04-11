@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
             GameObject gameManagerObject = new GameObject("GameManager");
             Instance = gameManagerObject.AddComponent<GameManager>();
             DontDestroyOnLoad(gameManagerObject); // 保证在切换场景时不会被销毁
-            // Instance.InitializeSDKConfig(); // 初始化SDK配置
+            Instance.InitializeSDKConfig(); // 初始化SDK配置
         }
     }
 
