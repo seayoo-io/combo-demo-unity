@@ -69,7 +69,12 @@ public class BuildParams
 #if UNITY_EDITOR
         return EditorPrefs.GetString("COMBOSDK_GAME_ID", "");
 #else
-        return BuildParams.Load().gameId;
+        var gameId = BuildParams.Load().gameId;
+        if (string.IsNullOrEmpty(gameId))
+        {
+            gameId = Combo.Configuration.Instance.GameId;
+        }
+        return gameId;
 #endif
     }
 
