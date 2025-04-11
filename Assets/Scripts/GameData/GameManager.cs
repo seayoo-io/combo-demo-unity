@@ -45,9 +45,10 @@ public class GameManager : MonoBehaviour
     // 获取游戏初始化配置
     public void GetGameConfig(Action onSuccess, Action onFail)
     {
+        Log.I("初始化 Game 配置");
         GameClient.GetGameConfig((GameConfig cfg) =>
         {
-            Log.I($"获取参数成功: {cfg}");
+            Log.I($"获取参数成功: {cfg.createRoleEnabled}");
             config = cfg;
             onSuccess.Invoke();
         }, (error) =>
@@ -61,6 +62,7 @@ public class GameManager : MonoBehaviour
     // 加载 SDK 配置（用于根据 Domains 控制 Demo 功能可用性）
     private void InitializeSDKConfig()
     {
+        Log.I("初始化 SDK 配置");
         if (BuildParams.GetBuildKey() == null)
         {
             Toast.Show("请先设置 Build Key");
