@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
             GameObject gameManagerObject = new GameObject("GameManager");
             Instance = gameManagerObject.AddComponent<GameManager>();
             DontDestroyOnLoad(gameManagerObject); // 保证在切换场景时不会被销毁
-            Instance.InitializeSDKConfig(); // 初始化SDK配置
+            // Instance.InitializeSDKConfig(); // 初始化SDK配置
         }
     }
 
@@ -45,16 +45,16 @@ public class GameManager : MonoBehaviour
     // 获取游戏初始化配置
     public void GetGameConfig(Action onSuccess, Action onFail)
     {
-        Log.I("初始化 Game 配置");
+        Log.I("Start Get Game Config");
         GameClient.GetGameConfig((GameConfig cfg) =>
         {
-            Log.I($"获取参数成功: {cfg.createRoleEnabled}");
+            Log.I($"Get Game Success, create_role_enabled:{cfg.createRoleEnabled}");
             config = cfg;
             onSuccess.Invoke();
         }, (error) =>
         {
             Toast.Show($"获取参数失败: {error}");
-            Log.E("获取参数失败: " + error);
+            Log.E("Get Game Config Fail: " + error);
             onFail.Invoke();
         });
     }
@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     // 加载 SDK 配置（用于根据 Domains 控制 Demo 功能可用性）
     private void InitializeSDKConfig()
     {
-        Log.I("初始化 SDK 配置");
+        Log.I("Start SDK Config");
         if (BuildParams.GetBuildKey() == null)
         {
             Toast.Show("请先设置 Build Key");
@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
             action: parameters =>
             {
                 sdkConfig = new ComboSDKConfig(parameters);
-                Log.I($"获取参数成功，domains: {string.Join(", ", sdkConfig.domains)}");
+                Log.I($"Get domains success, domains: {string.Join(", ", sdkConfig.domains)}");
             },
             onError: errorMessage =>
             {
