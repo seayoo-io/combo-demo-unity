@@ -228,7 +228,6 @@ pipeline {
             }
             steps {
                 script {
-                    echo "COMBOSDK_GAME_ID: ${COMBOSDK_GAME_ID}"
                     def publishableKeyId = getComboCredentialsId('publishable-key')
                     def buildKeyId = getComboCredentialsId('build-key')
                     withCredentials([
