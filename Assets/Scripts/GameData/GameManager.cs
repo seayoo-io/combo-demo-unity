@@ -68,6 +68,8 @@ public class GameManager : MonoBehaviour
             Toast.Show("请先设置 Build Key");
             return;
         }
+        Log.I("Build key is :" + BuildParams.GetBuildKey());
+        Log.I("SDK Endpoint is" + BuildParams.GetComboSDKEndpoint());
         var distro = ComboSDK.GetDistro();
         GameClient.GetDomains(
             gameId: BuildParams.GetGameId(),
