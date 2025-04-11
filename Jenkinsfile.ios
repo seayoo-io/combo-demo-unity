@@ -164,7 +164,7 @@ pipeline {
         PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provision'].toString()
         DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
         CAPABILITIES = params.CAPABILITIES.toString()
-        COMBOSDK_GAME_ID = params.GAME_ID
+        COMBOSDK_GAME_ID = "${params.GAME_ID}"
     }
     stages {
         stage('Clean and Setup') {
