@@ -127,7 +127,7 @@ pipeline {
     parameters {
         choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'jxfs'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
-        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
         extendedChoice(
