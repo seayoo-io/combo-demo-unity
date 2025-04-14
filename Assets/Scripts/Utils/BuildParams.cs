@@ -69,12 +69,7 @@ public class BuildParams
 #if UNITY_EDITOR
         return EditorPrefs.GetString("COMBOSDK_GAME_ID", "");
 #else
-        var gameId = BuildParams.Load().gameId;
-        if (string.IsNullOrEmpty(gameId))
-        {
-            gameId = Combo.Configuration.Instance.GameId;
-        }
-        return gameId;
+        return Load().gameId;
 #endif
     }
 
@@ -83,12 +78,7 @@ public class BuildParams
 #if UNITY_EDITOR
         return EditorPrefs.GetString("BUILD_KEY", ""); // Run for editor
 #else
-        var buildKey = BuildParams.Load().buildKey; // Build for editor
-        if (string.IsNullOrEmpty(buildKey))
-        {
-            buildKey = Combo.Configuration.Instance.BuildKey; // Build for jenkins
-        }
-        return buildKey;
+        return Load().buildKey;
 #endif
     }
 
@@ -97,12 +87,7 @@ public class BuildParams
 #if UNITY_EDITOR
         return EditorPrefs.GetString("COMBOSDK_ENDPOINT", "");
 #else
-        var endpoint = BuildParams.Load().comboEndpoint;
-        if (string.IsNullOrEmpty(endpoint))
-        {
-            endpoint = Combo.Configuration.Instance.Endpoint;
-        }
-        return endpoint;
+        return Load().comboEndpoint;
 #endif
     }
 }
