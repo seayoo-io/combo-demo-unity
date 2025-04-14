@@ -205,6 +205,8 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
             }
             steps {
                 script {
@@ -230,7 +232,10 @@ pipeline {
                             move /Y ComboSDK.json Assets/Resources
                         """
                         env.EXPORT_PATH = exportPath
-                        callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+                        def credentialsId = "combo-${params.GAME_ID}.build-key"
+                        withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                            callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+                        }
 
                         zip zipFile: zipFileName, dir: exportPath, archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
 

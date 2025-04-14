@@ -245,10 +245,14 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
             }
             steps {
                 script {
-                    callUnity commands: "-executeMethod Builder.BuildIOSDemo"
+                    def buildKeyId = getComboCredentialsId('build-key')
+                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
+                        callUnity commands: "-executeMethod Builder.BuildIOSDemo"
+                    }
                 }
             }
         }
