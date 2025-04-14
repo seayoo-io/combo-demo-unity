@@ -165,7 +165,6 @@ public class Builder : EditorWindow
         var gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
         var publishableKey = Environment.GetEnvironmentVariable("COMBOSDK_PUBLISHABLE_KEY");
         var endpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT");
-        var buildKey = Environment.GetEnvironmentVariable("COMBOSDK_BUILD_KEY");
 #if UNITY_IOS
         var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
         var iosComboSDK = Environment.GetEnvironmentVariable("COMBO_SDK_PATH");
@@ -190,7 +189,6 @@ public class Builder : EditorWindow
         scriptableObject.GameId = gameId;
         scriptableObject.PublishableKey = publishableKey;
         scriptableObject.Endpoint = endpoint;
-        scriptableObject.BuildKey = buildKey;
 #if UNITY_IOS
         scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
         scriptableObject.IOSComboSDK = iosComboSDK;

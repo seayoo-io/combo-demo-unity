@@ -229,10 +229,8 @@ pipeline {
             steps {
                 script {
                     def publishableKeyId = getComboCredentialsId('publishable-key')
-                    def buildKeyId = getComboCredentialsId('build-key')
                     withCredentials([
-                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId),
-                        string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)
+                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId)
                     ]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
