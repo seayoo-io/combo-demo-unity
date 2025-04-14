@@ -123,6 +123,7 @@ public class Login : MonoBehaviour
             Role role = PlayerController.GetDefaultRole();
             GameManager.Instance.SetupDefaultRole(role);
             var newPlayer = PlayerController.SpawnPlayer(role);
+            PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
             DontDestroyOnLoad(newPlayer);
         }
     }
