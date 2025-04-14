@@ -190,7 +190,7 @@ pipeline {
             steps {
                 script {
                     def publishableKeyId = "combo-${params.GAME_ID}.publishable-key"
-                    def buildKeyId = "combo-${params.GAME_ID}.publishable-key"
+                    def buildKeyId = "combo-${params.GAME_ID}.build-key"
                     withCredentials([
                         string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId),
                         string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)
