@@ -95,12 +95,8 @@ public class Builder : EditorWindow
     {
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         
-        var gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
+        var gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID")?? "demo";
         PlayerSettings.productName = $"combo-{gameId}";
-         
-////        PlayerSettings.productName = "combo-" + Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
-//
-//        PlayerSettings.productName = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
 
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         var splitVer = PlayerSettings.bundleVersion.Split(new char[] { '.' }, 2);
