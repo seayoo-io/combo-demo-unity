@@ -89,6 +89,7 @@ public class Builder : EditorWindow
     static void BuildAndroidDemo()
     {
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
+        PlayerSettings.productName = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         var splitVer = PlayerSettings.bundleVersion.Split(new char[] { '.' }, 2);
         if (splitVer.Length > 1)
