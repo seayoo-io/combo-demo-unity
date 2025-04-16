@@ -59,13 +59,20 @@ public class InputFieldWithHistory : MonoBehaviour
     }
 
     private void LoadHistoryRecords()
+{
+    if (PlayerPrefs.HasKey(playerPrefs))
     {
-        if (PlayerPrefs.HasKey(playerPrefs))
+        string historyString = PlayerPrefs.GetString(playerPrefs);
+        if (historyRecords == null || historyRecords.Count == 0)
         {
-            string historyString = PlayerPrefs.GetString(playerPrefs);
             historyRecords = new List<string>(historyString.Split(';'));
         }
+        else
+        {
+            historyRecords.AddRange(historyString.Split(';'));
+        }
     }
+}
 
     private void SaveHistoryRecords()
     {

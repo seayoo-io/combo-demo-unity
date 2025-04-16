@@ -210,6 +210,10 @@ public class GameConfig : Serializable
 {
     [JsonProperty("create_role_enabled")]
     public bool createRoleEnabled;
+    [JsonProperty("placement_ids")]
+    public List<string> placementIds;
+    [JsonProperty("scenario_ids")]
+    public List<string> scenarioIds;
 }
 
 [Serializable]
