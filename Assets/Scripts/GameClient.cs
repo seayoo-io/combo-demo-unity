@@ -234,7 +234,6 @@ public static class GameClient
     public static void Setup()
     {
         var demoEndpoint = BuildParams.Load().demoEndpoint ?? "https://combo-demo.dev.seayoo.com";
-        // var demoEndpoint = BuildParams.Load().demoEndpoint ?? "http://10.228.16.168:27247";
 
         GameClient.gameId = Combo.ComboSDK.GetGameId();
         GameClient.endpoint = demoEndpoint;
