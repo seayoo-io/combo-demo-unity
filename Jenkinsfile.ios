@@ -104,12 +104,6 @@ def loadEnvironmentParams() {
         env.PROVISIONING_PROFILE_SPECIFIER = PROVISION_SECRET
         env.DEVELOPMENT_TEAM = DEVELOPMENT_TEAM_SECRET
     }
-
-    echo "Environment parameters loaded:"
-    echo "Bundle Identifier: ${env.PRODUCT_BUNDLE_IDENTIFIER}"
-    echo "Code Sign Identity: ${env.CODE_SIGN_IDENTITY}"
-    echo "Provisioning Profile: ${env.PROVISIONING_PROFILE_SPECIFIER}"
-    echo "Development Team: ${env.DEVELOPMENT_TEAM}"
 }
 
 def getEndpoint() {
