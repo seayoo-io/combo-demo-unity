@@ -8,6 +8,8 @@ dependencies {
 **DEPS**}
 
 android {
+	namespace "com.unity3d.player"
+	ndkPath "**NDKPATH**"
     compileSdkVersion **APIVERSION**
     buildToolsVersion '**BUILDTOOLS**'
 
@@ -32,7 +34,9 @@ android {
     }
 
     aaptOptions {
-        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~"
+        ignoreAssetsPattern "!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~"
+        noCompress = ['.unity3d', '.ress', '.resource', '.obb', '**unityStreamingAssets**']
     }**PACKAGING_OPTIONS**
-}**REPOSITORIES****SOURCE_BUILD_SETUP**
+}
+**REPOSITORIES****SOURCE_BUILD_SETUP**
 **EXTERNAL_SOURCES**

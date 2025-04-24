@@ -143,7 +143,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2019.4.40f1')
+        UNITY_ROOT = getUnityRoot('2021.3.45f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
         COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
@@ -244,15 +244,20 @@ pipeline {
             steps {
                 script {
                     dir(env.BUILD_DIR) {
+                        sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
+                        
                         updateCodeSigningSettings()
                         keychainUnlock()
+                        
                         sh """xcodebuild clean archive \
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
                             PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
-                            -archivePath ${params.GAME_ID}.xcarchive
+                            -archivePath ${params.GAME_ID}.xcarchive \
+                            EXCLUDED_SOURCE_FILE_NAMES="PrivacyInfo.xcprivacy"
                         """
+
                         def credentialsId = "combo-${params.GAME_ID}.export-options"
                         withCredentials([file(variable: 'EXPORT_OPTIONS_PLIST', credentialsId: credentialsId)]) {
                             sh """xcodebuild -exportArchive \
