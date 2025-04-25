@@ -64,10 +64,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
             // UNITY_USES_REMOTE_NOTIFICATIONS 0 -> 1
             PatchPreprocessor(report.summary.outputPath);
 
-            // PrivacyInfo.xcprivacy
-            var privacyInfoPath = "Assets/Plugins/iOS/PrivacyInfo.xcprivacy";
-            AddPrivacyInfo(report, pbxProject, unityFrameworkTargetGuid, privacyInfoPath);
-
             pbxProject.WriteToFile(projectPath);
 
             // Info.plist
@@ -160,16 +156,6 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         plist.root.SetBoolean("UIFileSharingEnabled", true);
         plist.root.SetString("CFBundleDisplayName", BuildArguments.GameId);
         plist.WriteToFile(plistPath);
-    }
-
-    private void AddPrivacyInfo(BuildReport report, PBXProject pbxProject, string unityFrameworkTargetGuid, string privacyPath)
-    {
-        string destJsonFilePath = Path.Combine(report.summary.outputPath, ComboSDKDirectory, "PrivacyInfo.xcprivacy");
-        Debug.Log($"PrivacyInfo.xcprivacy = {destJsonFilePath}");
-        Builder.CopyFile(privacyPath, destJsonFilePath);
-        string projPathOfFile = $"{ComboSDKDirectory}/PrivacyInfo.xcprivacy";
-        var guid = pbxProject.AddFile(projPathOfFile, projPathOfFile, PBXSourceTree.Source);
-        pbxProject.AddFileToBuild(unityFrameworkTargetGuid, guid);
     }
 
     // UNITY_USES_REMOTE_NOTIFICATIONS 0 -> 1
