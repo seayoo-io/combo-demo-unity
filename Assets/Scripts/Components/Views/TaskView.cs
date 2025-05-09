@@ -13,12 +13,16 @@ internal class TaskView : View<TaskView>
     public Button cancelBtn;
     private Action OnCancel;
     public InputField scenarioIdField; 
+    public InputFieldWithHistory placementHistory;
+    public InputFieldWithHistory scenarioHistory;
 
     void Awake()
     {
         cancelBtn.onClick.AddListener(OnClickCancelBtn);
         ButtonManager.SetButtonEnabledByType(preloadAdBtn, ButtonType.PreloadAdButton);
         ButtonManager.SetButtonEnabledByType(showAdBtn, ButtonType.ShowAdButton);
+        placementHistory.historyRecords = GameManager.Instance.config.placementIds;
+        scenarioHistory.historyRecords = GameManager.Instance.config.scenarioIds;
     }
 
     void OnDestroy()
