@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MiniGameConfig
   m_EditorClassIdentifier: 
   ProjectConf:
-    projectName: 
+    projectName: demo
     Appid: wx8014cff5fe51f6cb
-    CDN: https://10.228.16.173:8001
+    CDN: http://10.228.16.173:8001
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
-    DST: C:\shiyou-workspace\combo-demo-unity\
+    DST: C:/shiyou-workspace/combo-demo-unity/outputs/weixinminigame
     StreamCDN: 
     bundleHashLength: 32
     bundlePathIdentifier: StreamingAssets;
@@ -28,7 +28,7 @@ MonoBehaviour:
     MemorySize: 256
     HideAfterCallMain: 1
     preloadFiles: 
-    Orientation: 0
+    Orientation: 1
     bgImageSrc: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/images/background.jpg
     dataFileSubPrefix: 
     maxStorage: 200

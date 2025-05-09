@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using System.IO;
 using System.Diagnostics;
+using WeChatWASM;
 
 public class Builder : EditorWindow
 {
@@ -13,6 +14,7 @@ public class Builder : EditorWindow
             Android,
             iOS,
             Windows,
+            WeixinMiniGame,
             Linux,
             Mac,
         }
@@ -126,6 +128,14 @@ public class Builder : EditorWindow
         buildPlayerOptions.options = BuildOptions.AcceptExternalModificationsToPlayer; // 这个选项会导出Android工程，而不是构建APK
 #endif
         Build(buildPlayerOptions);
+    }
+
+    static void BuildWeixinDemo()
+    {
+        var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
+        PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
+        CreateDir(exportPath);
+        WXConvertCore.DoExport();
     }
 
     private static void Build(BuildPlayerOptions buildPlayerOptions)
@@ -251,7 +261,7 @@ public class Builder : EditorWindow
         var newSelectedPlatform = (GUIProps.Platform)
             GUILayout.Toolbar(
                 (int)GUIProps.selectedPlatform,
-                new string[] { "Android", "iOS", "Windows" }
+                new string[] { "Android", "iOS", "Windows", "WeixinMiniGame" }
             );
         if (GUIProps.selectedPlatform != newSelectedPlatform)
         {
@@ -325,6 +335,11 @@ public class Builder : EditorWindow
                 case GUIProps.Platform.Windows:
                     {
                         BuildWindowsDemo();
+                        break;
+                    }
+                case GUIProps.Platform.WeixinMiniGame:
+                    {
+                        BuildWeixinDemo();
                         break;
                     }
             }
