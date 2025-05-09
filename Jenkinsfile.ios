@@ -54,29 +54,9 @@ def updateCodeSigningSettings() {
     """
 }
 
-def environmentParams = [
-    'demo': [
-        'bundleId': 'com.seayoo.demo.combo', 
-        'codeSignId': 'Apple Development: Hao Wu (AVMJXXS6SS)', 
-        'provision': 'combo_dev_provision',
-        'developmentTeam': '3PMCL4FRNT',
-        'exportOptionsPlist': 'combo-demo.export-options'
-    ],
-    'catsnsoup': [
-        'bundleId': 'com.mt.zhuoli', 
-        'codeSignId': 'Apple Development: 乐 李 (Z7J3K9MRC6)', 
-        'provision': 'MaoTang Dev',
-        'developmentTeam': 'G7ZC763G33',
-        'exportOptionsPlist': 'combo-catsnsoup.export-options'
-    ]
-]
 
 def installComboCLI() {
-    def key = params.GAME_ID
-    if (params.GAME_ID == 'catsnsoup' && params.TARGET_ENV == 'dev') {
-        key = 'dev-catsnsoup'
-    }
-    def credentialsId = "combo-${key}.build-key"
+    def credentialsId = getComboCredentialsId('build-key')
     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
@@ -84,6 +64,46 @@ def installComboCLI() {
     def comboZip = "combo_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
+}
+
+def getComboCredentialsId(String credentialSuffix) {
+    def key = params.GAME_ID
+    if (params.GAME_ID != 'demo' && params.TARGET_ENV == 'dev') {
+        key = "dev-${params.GAME_ID}"
+    }
+    return "combo-${key}.${credentialSuffix}"
+}
+
+def getCertificate() {
+    if (params.GAME_ID == 'demo') {
+        return [
+            'codesignId': 'combo-demo.codesign-id',
+            'developmentTeam': 'combo-demo.development-team'
+        ]
+    } else {
+        return [
+            'codesignId': 'combo-dev.codesign-id',
+            'developmentTeam': 'combo-dev.development-team'
+        ]
+    }
+}
+
+def loadEnvironmentParams() {
+    def certificates = getCertificate() 
+    def bundleKeyId = getComboCredentialsId('bundle-id')
+    def provisionKeyId = getComboCredentialsId('provision')
+
+    withCredentials([
+        string(variable: 'BUNDLE_ID_SECRET', credentialsId: bundleKeyId),
+        string(variable: 'PROVISION_SECRET', credentialsId: provisionKeyId),
+        string(variable: 'CODE_SIGN_ID_SECRET', credentialsId: certificates.codesignId),
+        string(variable: 'DEVELOPMENT_TEAM_SECRET', credentialsId: certificates.developmentTeam)
+    ]) {
+        env.PRODUCT_BUNDLE_IDENTIFIER = BUNDLE_ID_SECRET
+        env.CODE_SIGN_IDENTITY = CODE_SIGN_ID_SECRET
+        env.PROVISIONING_PROFILE_SPECIFIER = PROVISION_SECRET
+        env.DEVELOPMENT_TEAM = DEVELOPMENT_TEAM_SECRET
+    }
 }
 
 def getEndpoint() {
@@ -114,9 +134,9 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'jxfs'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
-        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
         extendedChoice(
@@ -143,16 +163,13 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2021.3.45f1')
+        UNITY_ROOT = getUnityRoot('2019.4.40f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
         COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        PRODUCT_BUNDLE_IDENTIFIER = environmentParams[params.GAME_ID]['bundleId'].toString()
-        CODE_SIGN_IDENTITY = environmentParams[params.GAME_ID]['codeSignId'].toString()
-        PROVISIONING_PROFILE_SPECIFIER = environmentParams[params.GAME_ID]['provision'].toString()
-        DEVELOPMENT_TEAM = environmentParams[params.GAME_ID]['developmentTeam'].toString()
         CAPABILITIES = params.CAPABILITIES.toString()
+        COMBOSDK_GAME_ID = "${params.GAME_ID}"
     }
     stages {
         stage('Clean and Setup') {
@@ -202,6 +219,7 @@ pipeline {
         stage('Gen') {
             steps {
                 script {
+                    loadEnvironmentParams()
                     installComboCLI()
                     downloadFrameworks()
                     downloadComboSDKJson()
@@ -216,12 +234,10 @@ pipeline {
             }
             steps {
                 script {
-                    def key = params.GAME_ID
-                    if (params.GAME_ID == 'catsnsoup' && params.TARGET_ENV == 'dev') {
-                        key = 'dev-catsnsoup'
-                    }
-                    def credentialsId = "combo-${key}.publishable-key"
-                    withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: credentialsId)]) {
+                    def publishableKeyId = getComboCredentialsId('publishable-key')
+                    withCredentials([
+                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId)
+                    ]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
                 }
@@ -233,10 +249,14 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
             }
             steps {
                 script {
-                    callUnity commands: "-executeMethod Builder.BuildIOSDemo"
+                    def buildKeyId = getComboCredentialsId('build-key')
+                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
+                        callUnity commands: "-executeMethod Builder.BuildIOSDemo"
+                    }
                 }
             }
         }
@@ -245,17 +265,15 @@ pipeline {
                 script {
                     dir(env.BUILD_DIR) {
                         sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
-                        
                         updateCodeSigningSettings()
                         keychainUnlock()
-                        
+
                         sh """xcodebuild clean archive \
                             -project Unity-iPhone.xcodeproj \
                             -scheme Unity-iPhone \
                             -destination generic/platform=iOS \
-                            PROVISIONING_PROFILE_SPECIFIER="${environmentParams[params.GAME_ID]['provision'].toString()}" \
-                            -archivePath ${params.GAME_ID}.xcarchive \
-                            EXCLUDED_SOURCE_FILE_NAMES="PrivacyInfo.xcprivacy"
+                            PROVISIONING_PROFILE_SPECIFIER="${env.PROVISIONING_PROFILE_SPECIFIER}" \
+                            -archivePath ${params.GAME_ID}.xcarchive
                         """
 
                         def credentialsId = "combo-${params.GAME_ID}.export-options"

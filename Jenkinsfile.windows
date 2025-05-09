@@ -112,7 +112,7 @@ pipeline {
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
         choice(name: 'TARGET_ENV',
             choices: ['dev', 'prod'],
-            description: 'Which environment to build.')
+            description: 'Which environment to build.(注意：游戏项目只能在 prod 环境下打包)')
         string(name: 'UNITY_SDK_PROJECT_NAME',
             defaultValue: "SDK/Client/Combo/unity/${SAFE_BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
@@ -189,7 +189,10 @@ pipeline {
             }
             steps {
                 script {
-                    withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: 'combo-demo.publishable-key')]) {
+                    def publishableKeyId = "combo-${params.GAME_ID}.publishable-key"
+                    withCredentials([
+                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId)
+                    ]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
                 }
@@ -200,6 +203,8 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
             }
             steps {
                 script {
@@ -225,7 +230,10 @@ pipeline {
                             move /Y ComboSDK.json Assets/Resources
                         """
                         env.EXPORT_PATH = exportPath
-                        callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+                        def credentialsId = "combo-${params.GAME_ID}.build-key"
+                        withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                            callUnity commands: "-executeMethod Builder.BuildWindowsDemo"
+                        }
 
                         zip zipFile: zipFileName, dir: exportPath, archive: true, overwrite: true, exclude: "*_BackUpThisFolder_ButDontShipItWithYourGame/**"
 
