@@ -59,7 +59,7 @@ def downloadJS() {
     def foundFiles = findFiles(glob: jsZipFilter)
 
     // 检查是否找到 `.zip` 文件
-    if (foundFiles.isEmpty()) {
+    if (!foundFiles) {
         error "No .zip files found in workspace after downloading artifacts. Please check the source project '${params.WEBGL_PROJECT_NAME}'."
     }
 
