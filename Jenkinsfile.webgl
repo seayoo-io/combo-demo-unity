@@ -41,7 +41,7 @@ combo:
 
 def downloadJS() {
     def frameworkZip = "*.zip"
-    copyArtifacts projectName: params.WEBGL_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
+    copyArtifacts projectName: params.WEBGL_PROJECT_NAME, selector: lastSuccessful(), filter: "*.zip"
 
     def files = findFiles glob: frameworkZip
 
