@@ -109,7 +109,8 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2021.3.45f1')    
+        UNITY_ROOT = getUnityRoot('2021.3.45f1')
+        EXPORT_PATH = "${env.WORKSPACE}/output"
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         COMBO_SDK_PATH = "${env.WORKSPACE}/combosdk"
     }
