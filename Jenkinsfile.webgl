@@ -37,7 +37,13 @@ def downloadJS() {
     copyArtifacts projectName: params.WEBGL_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
 
     def files = findFiles glob: frameworkZip
-    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
+
+    def tempDir = "${env.WORKSPACE}/temp-unzip"
+    sh "mkdir -p ${tempDir}"
+    unzip zipFile: files[0].name, dir: tempDir, quiet: true
+
+    sh "mv ${tempDir}/* ${env.WORKSPACE}/output/minigame/combosdk/"
+    sh "rm -rf ${tempDir}"
 }
 
 def installComboCLI() {
@@ -195,7 +201,7 @@ pipeline {
                         writeComboYaml(COMBOSDK_BUILD_KEY)
                     }
 
-                    def comboFilePath = "${env.WORKSPACE}/output/minigame/combo"
+                    def comboFilePath = "${env.WORKSPACE}/combo"
 
                     sh """
                         cd ${env.WORKSPACE}/output/minigame
