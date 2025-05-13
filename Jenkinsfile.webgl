@@ -40,7 +40,6 @@ combo:
 }
 
 def downloadJS() {
-    build job: params.WEBGL_PROJECT_NAME, propagate: true, wait: true
     def jsZip = "*.zip"    
     copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}", selector: lastSuccessful(), filter: jsZip
 
