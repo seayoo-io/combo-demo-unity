@@ -216,7 +216,7 @@ pipeline {
                 script {
                     downloadJS()
 
-                    def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                    def zipName = artifactName(name: "combo-demo", suffix: "-${params.DISTRO}", extension: "zip")
                     def targetZipPath = "${env.WORKSPACE}/${zipName}"
                     
                     sh """
@@ -230,10 +230,10 @@ pipeline {
     post {
         success {
             script {
-                    def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                    def zipName = artifactName(name: "combo-demo", suffix: "-${params.DISTRO}", extension: "zip")
                     def downloadUrl = "${env.BUILD_URL}artifact/${zipName}"
                     def downloads = [
-                        'name': "[${distro}]",
+                        'name': "[${params.DISTRO}]",
                         'url': downloadUrl
                     ]
                 notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
