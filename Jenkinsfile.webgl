@@ -193,7 +193,7 @@ pipeline {
                     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                         writeComboYaml(COMBOSDK_BUILD_KEY)
                     }
-                    sh "${env.WORKSPACE}/combo webgl setup --distros ${params.DISTRO}"
+                    sh "${env.WORKSPACE}/output/minigame/combo webgl setup --distros ${params.DISTRO}"
                 }
             }
         }
