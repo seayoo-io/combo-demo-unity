@@ -233,7 +233,7 @@ pipeline {
             }
         }
         failure {
-            
+            notify withDuration: true, withSummary: true, withChanges: true, withErrors: true
         }
         always {
             script {
