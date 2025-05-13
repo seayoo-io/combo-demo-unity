@@ -44,7 +44,7 @@ def downloadJS() {
 
     copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}",
                   selector: lastSuccessful(),
-                  filter: jsZip,
+                  filter: jsZip
     
     unzip zipFile: jsZip, dir: env.COMBO_SDK_PATH, quiet: true
 }
