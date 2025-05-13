@@ -46,22 +46,31 @@ def downloadJS() {
     // 调试: 显示目标项目名
     echo "Downloading artifacts from project: ${params.WEBGL_PROJECT_NAME}"
 
-    // 复制工件到工作目录
+    // 定义一个临时存放工件的子目录，避免工作目录的文件混淆
+    def artifactsDir = "${workspacePath}/artifacts"
+
+    // 复制工件到临时子目录
     copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}",
                   selector: lastSuccessful(),
-                  filter: jsZipFilter
+                  filter: jsZipFilter,
+                  target: artifactsDir
 
-    // 调试: 工作目录内容
-    echo "Workspace path: ${workspacePath}"
-    sh "ls -l ${workspacePath}"
+    // 调试: 输出临时目录内容
+    echo "Artifacts copied to: ${artifactsDir}"
+    sh "ls -l ${artifactsDir}"
 
-    // 构建 `.zip` 文件的路径
-    def jsZipPath = "${workspacePath}/${jsZipFilter}"
+    // 检查临时目录中是否有 .zip 文件，并获取具体路径
+    def files = findFiles(glob: "${artifactsDir}/${jsZipFilter}")
+    if (files.length == 0) {
+        error "No zip files matched '${jsZipFilter}' in the artifacts directory."
+    }
 
-    echo "Found zip file: ${jsZipPath}, preparing to unzip..."
+    // 输出找到的文件名（这里假设只会有一个 .zip 文件）
+    def jsZipFilePath = files[0].path
+    echo "Found zip file: ${jsZipFilePath}"
 
     // 解压到指定路径
-    unzip zipFile: jsZipPath, dir: env.COMBO_SDK_PATH, quiet: true
+    unzip zipFile: jsZipFilePath, dir: env.COMBO_SDK_PATH, quiet: true
 
     // 调试: 解压后的目录内容
     echo "Unzip completed. Checking extracted files in ${env.COMBO_SDK_PATH}"
