@@ -181,7 +181,6 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
-                CLI_PATH = "${env.WORKSPACE}/output/minigame"
             }
             steps {
                 script {
@@ -199,7 +198,7 @@ pipeline {
                         writeComboYaml(COMBOSDK_BUILD_KEY)
                     }
 
-                    def comboFilePath = "${CLI_PATH}/combo"
+                    def comboFilePath = "$${env.WORKSPACE}/output/minigame/combo"
 
                     sh """
                         chmod +x ${comboFilePath}
