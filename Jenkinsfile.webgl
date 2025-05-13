@@ -41,12 +41,9 @@ def downloadJS() {
 }
 
 def installComboCLI() {
-    def comboZip = "combo_main_darwin_arm64.zip"
+    def comboZip = "combo_main_windows_amd64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
-    
-    unzip zipFile: comboZip, dir: "${env.WORKSPACE}/output/minigame"
-    
-    sh "chmod +x ${env.WORKSPACE}/output/minigame/combo"
+    unzip comboZip
 }
 
 def getTargetDistros() {
@@ -201,8 +198,9 @@ pipeline {
                     def comboFilePath = "${env.WORKSPACE}/output/minigame/combo"
 
                     sh """
+                        cd ${env.WORKSPACE}/output/minigame
                         chmod +x ${comboFilePath}
-                        ${comboFilePath} webgl setup --distro ${params.DISTRO}
+                        ${env.WORKSPACE}/combo webgl setup --distro ${params.DISTRO}
                     """
                 }
             }
