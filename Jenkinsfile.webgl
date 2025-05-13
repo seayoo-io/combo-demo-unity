@@ -198,7 +198,7 @@ pipeline {
                         writeComboYaml(COMBOSDK_BUILD_KEY)
                     }
 
-                    def comboFilePath = "$${env.WORKSPACE}/output/minigame/combo"
+                    def comboFilePath = "${env.WORKSPACE}/output/minigame/combo"
 
                     sh """
                         chmod +x ${comboFilePath}
