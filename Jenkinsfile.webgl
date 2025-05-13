@@ -30,6 +30,13 @@ combo:
   build-key: ${buildKey}
   endpoint: ${endpoint}
 """
+
+    def targetDir = "${env.WORKSPACE}/output/minigame"
+    def targetFile = "${targetDir}/combo.yaml"
+
+    sh "mkdir -p ${targetDir}"
+    
+    writeFile file: targetFile, text: yamlContent
 }
 
 def downloadJS() {
