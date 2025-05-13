@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def DISTRO_LIST = ['minigame_weixin']
+DISTRO_LIST = ['minigame_weixin']
 
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
