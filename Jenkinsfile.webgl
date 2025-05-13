@@ -47,11 +47,6 @@ def downloadJS() {
 }
 
 def installComboCLI() {
-    def credentialsId = getComboCredentialsId('build-key')
-    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
-        writeComboYaml(COMBOSDK_BUILD_KEY)
-    }
-
     def comboZip = "combo_main_windows_amd64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, dir: env.WORKSPACE, quiet: true
@@ -200,6 +195,11 @@ pipeline {
             steps {
                 script {
                     installComboCLI()
+                    
+                    def credentialsId = "combo-${params.GAME_ID}.build-key"
+                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                        writeComboYaml(COMBOSDK_BUILD_KEY)
+                    }
 
                     sh """
                         cd ${env.WORKSPACE}/output/minigame
