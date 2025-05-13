@@ -47,9 +47,9 @@ def downloadJS() {
 }
 
 def installComboCLI() {
-    def comboZip = "combo_main_windows_amd64.zip"
+    def comboZip = "combo_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
-    unzip comboZip
+    unzip zipFile: comboZip, dir: env.WORKSPACE, quiet: true
 }
 
 def getTargetDistros() {
