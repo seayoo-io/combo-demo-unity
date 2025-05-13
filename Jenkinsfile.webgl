@@ -138,6 +138,7 @@ pipeline {
                     sh """
                         rm -rf *.zip
                         rm -rf logs/*
+                        rm -rf ${env.EXPORT_PATH}
                         rm -rf ${env.COMBO_SDK_PATH}
                         rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
                     """
@@ -237,7 +238,7 @@ pipeline {
             script {
                     def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                     def downloadUrl = "${env.BUILD_URL}artifact/${zipName}"
-                    downloads << [
+                    def downloads = [
                         'name': "[${distro}]",
                         'url': downloadUrl
                     ]
