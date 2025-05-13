@@ -24,7 +24,7 @@ def downloadUnitySDK() {
 def writeComboYaml(buildKey) {
     def endpoint = getEndpoint()
     def gameId = params.GAME_ID
-    writeFile file: 'combo.yaml', text: """
+    def yamlContent = """
 combo:
   game-id: ${gameId}
   build-key: ${buildKey}
@@ -212,6 +212,8 @@ pipeline {
                         cd ${env.WORKSPACE}/output/minigame
                         ${env.WORKSPACE}/combo webgl setup --distro ${params.DISTRO}
                     """
+
+                    
                 }
             }
         }
