@@ -46,29 +46,21 @@ def downloadJS() {
     // 调试: 显示目标项目名
     echo "Downloading artifacts from project: ${params.WEBGL_PROJECT_NAME}"
 
-    // 复制工件
+    // 复制工件到工作目录
     copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}",
                   selector: lastSuccessful(),
                   filter: jsZipFilter
-    
+
     // 调试: 工作目录内容
     echo "Workspace path: ${workspacePath}"
     sh "ls -l ${workspacePath}"
 
-    // 查找具体的 `.zip` 文件
-    def foundFiles = findFiles(glob: jsZipFilter)
-
-    // 检查是否找到 `.zip` 文件
-    if (!foundFiles) {
-        error "No .zip files found in workspace after downloading artifacts. Please check the source project '${params.WEBGL_PROJECT_NAME}'."
-    }
-
-    // 如果找到多个 `.zip` 文件，可以选择第一个或其他逻辑
-    def jsZipPath = foundFiles[0].path // 假设选择找到的第一个文件
+    // 构建 `.zip` 文件的路径
+    def jsZipPath = "${workspacePath}/${jsZipFilter}"
 
     echo "Found zip file: ${jsZipPath}, preparing to unzip..."
 
-    // 解压缩到指定目录
+    // 解压到指定路径
     unzip zipFile: jsZipPath, dir: env.COMBO_SDK_PATH, quiet: true
 
     // 调试: 解压后的目录内容
