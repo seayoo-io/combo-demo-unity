@@ -47,7 +47,12 @@ def downloadJS() {
 }
 
 def installComboCLI() {
-    def comboZip = "combo_main_darwin_arm64.zip"
+    def credentialsId = getComboCredentialsId('build-key')
+    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+        writeComboYaml(COMBOSDK_BUILD_KEY)
+    }
+
+    def comboZip = "combo_main_windows_amd64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, dir: env.WORKSPACE, quiet: true
 }
@@ -195,17 +200,9 @@ pipeline {
             steps {
                 script {
                     installComboCLI()
-                    
-                    def credentialsId = "combo-${params.GAME_ID}.build-key"
-                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
-                        writeComboYaml(COMBOSDK_BUILD_KEY)
-                    }
-
-                    def comboFilePath = "${env.WORKSPACE}/combo"
 
                     sh """
                         cd ${env.WORKSPACE}/output/minigame
-                        chmod +x ${comboFilePath}
                         ${env.WORKSPACE}/combo webgl setup --distro ${params.DISTRO}
                     """
                 }
@@ -236,7 +233,7 @@ pipeline {
             }
         }
         failure {
-            notify withDuration: true, withSummary: true, withChanges: true, withErrors: true
+            
         }
         always {
             script {
