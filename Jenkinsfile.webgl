@@ -220,6 +220,14 @@ pipeline {
             steps {
                 script {
                     downloadJS()
+
+                    def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                    def targetZipPath = "${env.WORKSPACE}/${zipName}"
+                    
+                    sh """
+                        cd ${env.WORKSPACE}/output/minigame
+                        zip -r ${targetZipPath} .
+                    """
                 }
             }
         }
@@ -227,16 +235,12 @@ pipeline {
     post {
         success {
             script {
-                def downloads = []
-                def distros = params.DISTRO.split(',')
-                distros.each { distro ->
                     def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                     def downloadUrl = "${env.BUILD_URL}artifact/${zipName}"
                     downloads << [
                         'name': "[${distro}]",
                         'url': downloadUrl
                     ]
-                }
                 notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
             }
         }
