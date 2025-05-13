@@ -40,11 +40,14 @@ combo:
 }
 
 def downloadJS() {
-    def jsZip = "*.zip"    
-    copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}", selector: lastSuccessful(), filter: jsZip
+    def jsZip = "*.zip"
 
-    def files = findFiles glob: jsZip
-    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
+    copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}",
+                  selector: lastSuccessful(),
+                  filter: jsZip,
+                  target: 'downloaded'
+    
+    unzip zipFile: 'downloaded/' + jsZip, dir: env.COMBO_SDK_PATH, quiet: true
 }
 
 def installComboCLI() {
