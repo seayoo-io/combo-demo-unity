@@ -40,17 +40,12 @@ combo:
 }
 
 def downloadJS() {
-    def frameworkZip = "*.zip"
-    copyArtifacts projectName: params.WEBGL_PROJECT_NAME, selector: lastSuccessful(), filter: "*.zip"
+    build job: params.WEBGL_PROJECT_NAME, propagate: true, wait: true
+    def jsZip = "*.zip"    
+    copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}", selector: lastSuccessful(), filter: jsZip
 
-    def files = findFiles glob: frameworkZip
-
-    def tempDir = "${env.WORKSPACE}/temp-unzip"
-    sh "mkdir -p ${tempDir}"
-    unzip zipFile: files[0].name, dir: tempDir, quiet: true
-
-    sh "mv ${tempDir}/* ${env.WORKSPACE}/output/minigame/combosdk/"
-    sh "rm -rf ${tempDir}"
+    def files = findFiles glob: jsZip
+    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
 }
 
 def installComboCLI() {
@@ -126,7 +121,7 @@ pipeline {
         UNITY_ROOT = getUnityRoot('2021.3.45f1')
         EXPORT_PATH = "${env.WORKSPACE}/output"
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        COMBO_SDK_PATH = "${env.WORKSPACE}/combosdk"
+        COMBO_SDK_PATH = "${env.WORKSPACE}/output/minigame/combosdk"
     }
     stages {
         stage('Clean and Setup') {
@@ -139,7 +134,6 @@ pipeline {
                         rm -rf *.zip
                         rm -rf logs/*
                         rm -rf ${env.EXPORT_PATH}
-                        rm -rf ${env.COMBO_SDK_PATH}
                         rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
                     """
                 }
