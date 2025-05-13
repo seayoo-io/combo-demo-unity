@@ -41,13 +41,15 @@ combo:
 
 def downloadJS() {
     def jsZipFilter = "*.zip" // 文件过滤规则
-    def workspacePath = env.WORKSPACE // Jenkins工作空间路径
+    def artifactsDir = "artifacts" // 定义相对路径的临时存放路径
+
+    // 检查参数
+    if (!params.WEBGL_PROJECT_NAME) {
+        error "WEBGL_PROJECT_NAME parameter is missing or empty!"
+    }
 
     // 调试: 显示目标项目名
     echo "Downloading artifacts from project: ${params.WEBGL_PROJECT_NAME}"
-
-    // 定义一个临时存放工件的子目录，避免工作目录的文件混淆
-    def artifactsDir = "${workspacePath}/artifacts"
 
     // 复制工件到临时子目录
     copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}",
@@ -69,7 +71,7 @@ def downloadJS() {
     def jsZipFilePath = files[0].path
     echo "Found zip file: ${jsZipFilePath}"
 
-    // 解压到指定路径
+    // 解压到指定路径（使用环境变量）
     unzip zipFile: jsZipFilePath, dir: env.COMBO_SDK_PATH, quiet: true
 
     // 调试: 解压后的目录内容
