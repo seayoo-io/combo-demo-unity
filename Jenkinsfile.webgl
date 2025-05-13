@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['weixin']
+DISTRO_LIST = ['minigame_weixin']
 
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
@@ -30,6 +30,14 @@ combo:
   build-key: ${buildKey}
   endpoint: ${endpoint}
 """
+}
+
+def downloadJS() {
+    def frameworkZip = "*.zip"
+    copyArtifacts projectName: params.WEBGL_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
+
+    def files = findFiles glob: frameworkZip
+    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
 }
 
 def installComboCLI() {
@@ -87,6 +95,10 @@ pipeline {
         )
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
+        string(name: 'WEBGL_PROJECT_NAME',
+            defaultValue: 'SDK/Client/Combo/webgl/main',
+            description: 'WebGL 工程的 Jenkins Full project name',
+            trim: true)
         string(name: 'UNITY_SDK_PROJECT_NAME',
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
@@ -99,6 +111,7 @@ pipeline {
     environment {
         UNITY_ROOT = getUnityRoot('2021.3.45f1')    
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
+        COMBO_SDK_PATH = "${env.WORKSPACE}/combosdk"
     }
     stages {
         stage('Clean and Setup') {
@@ -110,6 +123,7 @@ pipeline {
                     sh """
                         rm -rf *.zip
                         rm -rf logs/*
+                        rm -rf ${env.COMBO_SDK_PATH}
                         rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
                     """
                 }
@@ -178,6 +192,14 @@ pipeline {
                     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                         writeComboYaml(COMBOSDK_BUILD_KEY)
                     }
+                    sh "${env.WORKSPACE}/combo webgl build --distros ${params.DISTRO}"
+                }
+            }
+        }
+        stage('Archive') {
+            steps {
+                script {
+                    downloadJS()
                 }
             }
         }
@@ -187,17 +209,19 @@ pipeline {
             script {
                 def downloads = []
                 def distros = params.DISTRO.split(',')
-                distros.each { distro -> 
-                    def apkName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "apk")    
-                    downloads += [                       
-                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${apkName}"
+                distros.each { distro ->
+                    def zipName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
+                    def downloadUrl = "${env.BUILD_URL}artifact/${zipName}"
+                    downloads << [
+                        'name': "[${distro}]",
+                        'url': downloadUrl
                     ]
-                }           
-                notify withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
+                }
+                notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
             }
         }
         failure {
-            notify withChanges: true, withErrors: true, what: "**distro: ${params.DISTRO}**"
+            notify withDuration: true, withSummary: true, withChanges: true, withErrors: true
         }
         always {
             script {
@@ -206,5 +230,5 @@ pipeline {
                 zip archive: true, zipFile: 'logs.zip', dir: 'logs'
             }
         }
-    }    
+    }
 }
