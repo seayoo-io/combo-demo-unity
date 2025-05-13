@@ -141,6 +141,8 @@ public class Builder : EditorWindow
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         CreateDir(exportPath);
+        var config = UnityUtil.GetEditorConf();
+        config.ProjectConf.DST = exportPath;
         WXConvertCore.DoExport();
     }
 
