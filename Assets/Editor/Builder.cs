@@ -3,7 +3,9 @@ using System;
 using UnityEngine;
 using System.IO;
 using System.Diagnostics;
+#if UNITY_WEBGL
 using WeChatWASM;
+# endif
 
 public class Builder : EditorWindow
 {
@@ -141,9 +143,12 @@ public class Builder : EditorWindow
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         CreateDir(exportPath);
+#if UNITY_WEBGL
         var config = UnityUtil.GetEditorConf();
         config.ProjectConf.DST = exportPath;
         WXConvertCore.DoExport();
+# endif
+       
     }
 
     private static void Build(BuildPlayerOptions buildPlayerOptions)
