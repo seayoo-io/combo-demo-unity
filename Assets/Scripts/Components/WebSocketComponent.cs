@@ -1,3 +1,5 @@
+
+#if !UNITY_WEBGL
 using System;
 using Combo;
 using Newtonsoft.Json.Linq;
@@ -94,3 +96,4 @@ public class WebSocketComponent : MonoBehaviour
         return mailInfo;
     }
 }
+#endif
