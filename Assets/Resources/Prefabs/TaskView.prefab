@@ -409,7 +409,9 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options: []
+    m_Options:
+    - m_Text: asaa
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1571,7 +1573,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: asaa
 --- !u!1 &4523538240939980999
 GameObject:
   m_ObjectHideFlags: 0
@@ -1916,6 +1918,8 @@ MonoBehaviour:
   showAdBtn: {fileID: 6227930596979754276}
   cancelBtn: {fileID: 6227930597758602111}
   scenarioIdField: {fileID: 6227930598879150373}
+  placementHistory: {fileID: 7617740061637218531}
+  scenarioHistory: {fileID: 6667731708691716280}
 --- !u!1 &6227930596979754298
 GameObject:
   m_ObjectHideFlags: 0

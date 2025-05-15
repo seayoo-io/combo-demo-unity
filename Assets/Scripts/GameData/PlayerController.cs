@@ -41,4 +41,18 @@ public class PlayerController
     {
         player.ClearInfo();
     }
+    public static Role GetDefaultRole()
+    {
+        Role role = new Role();
+        role.gender = 0;
+        role.roleCreateTime = 0;
+        role.roleId = "default";
+        role.roleLevel = 1;
+        role.roleName = "default";
+        role.serverId = 1;
+        role.serverName = "default";
+        role.type = 0;
+        role.zoneId = 1;
+        return role;
+    }
 }

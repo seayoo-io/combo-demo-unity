@@ -60,6 +60,11 @@ public class Builder : EditorWindow
             set => EditorPrefs.SetString("COMBO_SDK_PATH", value);
         }
 
+        public static string BuildKey {
+            get => EditorPrefs.GetString("BUILD_KEY", "");
+            set => EditorPrefs.SetString("BUILD_KEY", value);
+        }
+
         public static string exportPath = "outputs/android";
         public static string bundleVersion = "1.0.0";
     }
@@ -90,6 +95,7 @@ public class Builder : EditorWindow
     {
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
+        PlayerSettings.productName = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID")?? "demo";
         var splitVer = PlayerSettings.bundleVersion.Split(new char[] { '.' }, 2);
         if (splitVer.Length > 1)
             PlayerSettings.Android.bundleVersionCode = int.Parse(splitVer[0]);
@@ -160,7 +166,6 @@ public class Builder : EditorWindow
         var gameId = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID");
         var publishableKey = Environment.GetEnvironmentVariable("COMBOSDK_PUBLISHABLE_KEY");
         var endpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT");
-
 #if UNITY_IOS
         var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
         var iosComboSDK = Environment.GetEnvironmentVariable("COMBO_SDK_PATH");
@@ -185,7 +190,6 @@ public class Builder : EditorWindow
         scriptableObject.GameId = gameId;
         scriptableObject.PublishableKey = publishableKey;
         scriptableObject.Endpoint = endpoint;
-        
 #if UNITY_IOS
         scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
         scriptableObject.IOSComboSDK = iosComboSDK;
@@ -234,6 +238,7 @@ public class Builder : EditorWindow
             "PublishableKey",
             GlobalProps.PublishableKey
         );
+        GlobalProps.BuildKey = EditorGUILayout.TextField("BuildKey", GlobalProps.BuildKey);
         GlobalProps.Endpoint = EditorGUILayout.TextField("Endpoint", GlobalProps.Endpoint);
         GlobalProps.DemoEndpoint = EditorGUILayout.TextField(
             "DemoEndpoint",
@@ -308,6 +313,7 @@ public class Builder : EditorWindow
 
             Environment.SetEnvironmentVariable("EXPORT_PATH", GlobalProps.exportPath);
             Environment.SetEnvironmentVariable("COMBO_SDK_PATH", GlobalProps.IOSComboSDK);
+            Environment.SetEnvironmentVariable("COMBOSDK_BUILD_KEY", GlobalProps.BuildKey);
             UpdateComboSDKSettings();
 
             switch (GUIProps.selectedPlatform)
