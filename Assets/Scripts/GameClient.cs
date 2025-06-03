@@ -201,7 +201,7 @@ public class RoundEndReportEvent : ReportEventBase
 {
     [JsonProperty("role_name")]
     public string roleName;
-    [JsonProperty("account_id")]
+    [JsonProperty("#account_id")]
     public string accountId;
     public string os;
     public string distro;
