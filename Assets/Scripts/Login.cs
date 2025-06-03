@@ -112,7 +112,20 @@ public class Login : MonoBehaviour
 
     public void OnEnterGame()
     {
-        ServerView.Instantiate();
+        if (GameManager.Instance.config.createRoleEnabled)
+        {
+            ServerView.Instantiate();
+        }
+        else
+        {
+            Log.I("ServerList is not show");
+            SceneManager.LoadScene("Game");
+            Role role = PlayerController.GetDefaultRole();
+            GameManager.Instance.SetupDefaultRole(role);
+            var newPlayer = PlayerController.SpawnPlayer(role);
+            PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
+            DontDestroyOnLoad(newPlayer);
+        }
     }
 
     public void OnLogout()
@@ -321,10 +334,23 @@ public class Login : MonoBehaviour
 
     private void ShowEnterGameBtn()
     {
-        enterGameBtn.gameObject.SetActive(true);
-        loginBtn.gameObject.SetActive(false);
-        logoutBtn.gameObject.SetActive(true);
-        switchAccountBtn.gameObject.SetActive(true);
+        GameManager.Instance.GetGameConfig(() =>
+        {
+            var btnText = enterGameBtn.GetComponentInChildren<Text>();
+            btnText.text = GameManager.Instance.config.createRoleEnabled ? "选择服务器" : "进入游戏";
+            enterGameBtn.interactable = true;
+            enterGameBtn.gameObject.SetActive(true);
+            loginBtn.gameObject.SetActive(false);
+            logoutBtn.gameObject.SetActive(true);
+            switchAccountBtn.gameObject.SetActive(true);
+        }, () =>
+        {
+            enterGameBtn.interactable = false;
+            enterGameBtn.gameObject.SetActive(false);
+            loginBtn.gameObject.SetActive(true);
+            logoutBtn.gameObject.SetActive(false);
+            switchAccountBtn.gameObject.SetActive(false);
+        });
     }
 
     [EventSystem.BindEvent]

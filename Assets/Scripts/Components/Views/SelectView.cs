@@ -85,6 +85,7 @@ internal class SelectView : View<SelectView>
         var newPlayer = PlayerController.SpawnPlayer(currentRole);
         DontDestroyOnLoad(newPlayer);
         PlayerController.UpdateRole(PlayerController.GetPlayer(), currentRole);
+        PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
         MailListManager.Instance.RefreshPath();
     }
 

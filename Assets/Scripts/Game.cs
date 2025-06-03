@@ -13,6 +13,8 @@ public class Game : MonoBehaviour
     public PlayerPanel playerPanel;
     public Button openAnnouncementsBtn;
     public Image roleImage;
+    public Transform leftControlPanel;
+    public Transform rightControlPanel;
 
     void Start()
     {
@@ -28,6 +30,7 @@ public class Game : MonoBehaviour
         GameManager.Instance.RoleDic.TryGetValue(role.type, out sprite);
         roleImage.sprite = sprite;
         CheckAnnouncements(role.roleId, role.roleLevel);
+        SetupBtnStatus();
     }
 
     void OnDestroy()
@@ -149,5 +152,19 @@ public class Game : MonoBehaviour
             }
         }
         return null;
+    }
+
+    private void SetupBtnStatus()
+    {
+        Button shareBtn = leftControlPanel.Find("share_btn")?.GetComponent<Button>();
+        if (shareBtn != null)
+        {
+            shareBtn.gameObject.SetActive(GameManager.Instance.sdkConfig.supportShare);
+        }
+        Button taskBtn = rightControlPanel.Find("task_btn")?.GetComponent<Button>();
+        if (taskBtn != null)
+        {
+            taskBtn.gameObject.SetActive(GameManager.Instance.sdkConfig.supportAds);
+        }
     }
 }

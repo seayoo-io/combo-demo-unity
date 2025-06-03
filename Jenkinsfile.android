@@ -76,9 +76,9 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'zero', 'jxfs', 'jxrf', 'ggd'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
-        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
         extendedChoice(
             name: 'DISTRO',
             type: 'PT_MULTI_SELECT',
@@ -163,8 +163,10 @@ pipeline {
             }
             steps {
                 script {
-                    def credentialsId = "combo-${params.GAME_ID}.publishable-key"
-                    withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: credentialsId)]) {
+                    def publishableKeyId = "combo-${params.GAME_ID}.publishable-key"
+                    withCredentials([
+                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId)
+                    ]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
                 }
@@ -176,12 +178,17 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
             }
             steps {
                 script {
                     withAndroidSdk("r30.0.2") {
                         withAndroidNdk("r16b") {
-                            callUnity commands: "-executeMethod Builder.BuildAndroidDemo"
+                            def buildKeyId = "combo-${params.GAME_ID}.build-key"
+                            withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
+                                callUnity commands: "-executeMethod Builder.BuildAndroidDemo"
+                            }
                         }
                     }
                 }
