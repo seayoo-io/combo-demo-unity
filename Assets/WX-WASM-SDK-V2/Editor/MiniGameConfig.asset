@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProjectConf:
     projectName: demo
-    Appid: wx8014cff5fe51f6cb
+    Appid: wxd6d9be885354383a
     CDN: https://s3.shiyou.kingsoft.com/apps/demo/
     assetLoadType: 0
     compressDataPackage: 0
