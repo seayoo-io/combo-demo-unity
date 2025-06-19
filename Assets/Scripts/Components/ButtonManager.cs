@@ -22,7 +22,7 @@ public enum ButtonType {
 
 public static class ButtonManager
 {
-    #if UNITY_STANDALONE
+    #if UNITY_STANDALONE || UNITY_WEBGL
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, true}, 
