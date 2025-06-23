@@ -225,11 +225,14 @@ pipeline {
 
                     def zipName = artifactName(name: "combo-demo", suffix: "-${params.DISTRO}", extension: "zip")
                     def targetZipPath = "${env.WORKSPACE}/${zipName}"
+                    def exportPath = "${env.WORKSPACE}/output"
                     
                     sh """
                         cd ${env.WORKSPACE}/output/minigame
                         zip -r ${targetZipPath} .
                     """
+
+                    zip zipFile: zipName, dir: exportPath, archive: true, overwrite: true
                 }
             }
         }
