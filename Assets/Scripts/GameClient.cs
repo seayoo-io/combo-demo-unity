@@ -303,6 +303,8 @@ public static class GameClient
                 platform = "android",
 #elif UNITY_IOS
                 platform = "ios",
+#elif UNITY_WEBGL
+                platform = "webgl",
 #endif
             },
             headers = Headers()
