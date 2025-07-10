@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Combo;
 using UnityEngine;
 
@@ -6,7 +7,8 @@ public enum ReportType
 {
     PromoPseudoPurchase,
     Login,
-    ActiveValue
+    ActiveValue,
+    RoundEnd
 }
 
 public class ReportDataManager : MonoBehaviour
@@ -14,6 +16,7 @@ public class ReportDataManager : MonoBehaviour
     private string time;
     private LoginReportEvent loginReport;
     private ActiveValueReportEvent activeValueReport;
+    private RoundEndReportEvent roundEndReport;
     private ReportType currentReport;
     void Start()
     {
@@ -91,6 +94,33 @@ public class ReportDataManager : MonoBehaviour
     }
 
     [EventSystem.BindEvent]
+    void HandleRoundEndEvent(RoundEndEvent evt)
+    {
+        currentReport = ReportType.RoundEnd;
+        ChangeTimeView.Instantiate();
+        var roleInfo = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        roundEndReport = new RoundEndReportEvent
+        {
+            type = "round_end",
+            comboId = ComboSDK.GetLoginInfo().comboId,
+            serverId = roleInfo.serverId,
+            roleId = roleInfo.roleId,
+            roleLevel = roleInfo.roleLevel,
+            roleName = roleInfo.roleName,
+            accountId = ComboSDK.GetLoginInfo().comboId,
+            os = SystemInfo.operatingSystem,
+            distro = ComboSDK.GetDistro(),
+            variant = ComboSDK.GetVariant(),
+            serverName = roleInfo.serverName,
+            rankScore = UnityEngine.Random.Range(0, 100),
+            roundUniqueId = Guid.NewGuid().ToString(),
+            roomHostComboId = evt.roomHostId,
+            matchType = evt.matchType,
+            queuRoleIdList = evt.queueRoleIdList
+        };
+    }
+
+    [EventSystem.BindEvent]
     public void ChangeTime(ChangeTimeEvent evt)
     {
         time = ConvertUnixTimeToIso8601(evt.unixTime);
@@ -98,11 +128,15 @@ public class ReportDataManager : MonoBehaviour
         {
             case ReportType.Login:
                 loginReport.time = time;
-                GameClient.ReportEvent(loginReport, (error)=>{});
+                GameClient.ReportEvent(loginReport, (error) => { });
                 break;
             case ReportType.ActiveValue:
                 activeValueReport.time = time;
-                GameClient.ReportEvent(activeValueReport, (error)=>{});
+                GameClient.ReportEvent(activeValueReport, (error) => { });
+                break;
+            case ReportType.RoundEnd:
+                roundEndReport.time = time;
+                GameClient.ReportEvent(roundEndReport, (error)=>{});
                 break;
         }
     }
