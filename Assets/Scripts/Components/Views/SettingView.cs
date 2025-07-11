@@ -13,6 +13,9 @@ internal class SettingView : View<SettingView>
     public InputField roomHostId;
     public InputField matchType;
     public InputField queueRoleIdList;
+    public InputField stageIdText;
+    public Dropdown stageTypeDropDown;
+    public Dropdown battleResultDropDown;
     public Button logoutBtn;
     public Button clearBtn;
     public Button cancelBtn;
@@ -152,6 +155,42 @@ internal class SettingView : View<SettingView>
             roomHostId = roomHostId.text,
             matchType = matchType.text,
             queueRoleIdList = roleIdList
+        });
+    }
+
+    private Dictionary<int, string> stageType = new Dictionary<int, string>
+    {
+        { 0, "1" },
+        { 1, "2" },
+        { 2, "3" },
+        { 3, "5" },
+        { 4, "63" },
+        { 5, "65" },
+        { 6, "11" }
+    };
+
+    private Dictionary<int, string> battleResult = new Dictionary<int, string>
+    {
+        { 0, "BATTLE_WIN" },
+        { 1, "BATTLE_FAIL" },
+        { 2, "1" }
+    };
+
+    public void OnBattleEndReport()
+    {
+        if (string.IsNullOrEmpty(stageIdText.text))
+        {
+            Toast.Show("关卡 id 不可为空");
+            return;
+        }
+        
+        var stageTypeVaule = stageType[stageTypeDropDown.value];
+        var battleResultVaule = battleResult[battleResultDropDown.value];
+        BattleEndEvent.Invoke(new BattleEndEvent
+        {
+            stageId = stageIdText.text,
+            stageType = stageTypeVaule,
+            battleType = battleResultVaule
         });
     }
 

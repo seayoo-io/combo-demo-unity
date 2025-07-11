@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public int ServerId { get; set; }
     public string ServerName { get; set; }
     public string ZoneName { get; set; }
+    public int gold { get; set; }
     public Dictionary<int, Sprite> RoleDic = new Dictionary<int, Sprite>();
     public GameConfig config; // 游戏初始化配置
     public ComboSDKConfig sdkConfig { get; private set; } // ComboSDK 配置（domains）

@@ -226,6 +226,31 @@ public class RoundEndReportEvent : ReportEventBase
 }
 
 [Serializable]
+public class BattleResultReportEvent : ReportEventBase
+{
+
+    public string distro;
+    public string variant;
+    [JsonProperty("alliance_id")]
+    public string allianceId;
+    [JsonProperty("role_name")]
+    public string roleName;
+    public int diamond;
+    public int gold;
+    public double pay;
+    [JsonProperty("current_stage_id")]
+    public string currentStageId;
+    [JsonProperty("unique_request_id")]
+    public string uniqueRequestId;
+    [JsonProperty("stage_id")]
+    public string stageId;
+    [JsonProperty("stage_type")]
+    public string stageType;
+    [JsonProperty("battle_result")]
+    public string battleResult;
+}
+
+[Serializable]
 public class GuildGroup : Serializable
 {
     [JsonProperty("guild_id")]
@@ -774,7 +799,7 @@ public static class GameClient
                 pointsChanged = activeValue.pointsChanged
             };
         }
-        else
+        else if (reportEventBase is RoundEndReportEvent)
         {
             var roundEndValue = (RoundEndReportEvent)reportEventBase;
             body = new RoundEndReportEvent
@@ -798,6 +823,30 @@ public static class GameClient
                 roomHostComboId = roundEndValue.roomHostComboId,
                 matchType = roundEndValue.matchType,
                 queuRoleIdList = roundEndValue.queuRoleIdList
+            };
+        }
+        else if (reportEventBase is BattleResultReportEvent)
+        {
+            var battleResult = (BattleResultReportEvent)reportEventBase;
+            body = new BattleResultReportEvent
+            {
+                time = battleResult.time,
+                type = battleResult.type,
+                comboId = battleResult.comboId,
+                serverId = battleResult.serverId,
+                roleId = battleResult.roleId,
+                roleName = battleResult.roleName,
+                distro = battleResult.distro,
+                variant = battleResult.variant,
+                allianceId = battleResult.allianceId,
+                diamond = battleResult.diamond,
+                gold = battleResult.gold,
+                pay = battleResult.pay,
+                currentStageId = battleResult.currentStageId,
+                uniqueRequestId = battleResult.currentStageId,
+                stageId = battleResult.stageId,
+                stageType = battleResult.stageType,
+                battleResult = battleResult.battleResult
             };
         }
         HttpRequest.Post(new HttpRequestOptions

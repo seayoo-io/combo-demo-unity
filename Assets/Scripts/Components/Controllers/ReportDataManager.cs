@@ -8,7 +8,8 @@ public enum ReportType
     PromoPseudoPurchase,
     Login,
     ActiveValue,
-    RoundEnd
+    RoundEnd,
+    BattleResult
 }
 
 public class ReportDataManager : MonoBehaviour
@@ -17,6 +18,7 @@ public class ReportDataManager : MonoBehaviour
     private LoginReportEvent loginReport;
     private ActiveValueReportEvent activeValueReport;
     private RoundEndReportEvent roundEndReport;
+    private BattleResultReportEvent battleREsultReport;
     private ReportType currentReport;
     void Start()
     {
@@ -121,6 +123,34 @@ public class ReportDataManager : MonoBehaviour
     }
 
     [EventSystem.BindEvent]
+    void HandleRoundEndEvent(BattleEndEvent evt)
+    {
+        currentReport = ReportType.BattleResult;
+        ChangeTimeView.Instantiate();
+        var roleInfo = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        var gold = GameManager.Instance.gold;
+        battleREsultReport = new BattleResultReportEvent
+        {
+            type = "battle_result",
+            comboId = ComboSDK.GetLoginInfo().comboId,
+            serverId = roleInfo.serverId,
+            roleId = roleInfo.roleId,
+            roleName = roleInfo.roleName,
+            distro = ComboSDK.GetDistro(),
+            variant = ComboSDK.GetVariant(),
+            allianceId = "12345",
+            diamond = 0,
+            gold = gold,
+            pay = (double)gold / 100,
+            currentStageId = evt.stageId,
+            uniqueRequestId = Guid.NewGuid().ToString(),
+            stageId = evt.stageId,
+            stageType = evt.stageType,
+            battleResult = evt.battleType
+        };
+    }
+
+    [EventSystem.BindEvent]
     public void ChangeTime(ChangeTimeEvent evt)
     {
         time = ConvertUnixTimeToIso8601(evt.unixTime);
@@ -136,7 +166,11 @@ public class ReportDataManager : MonoBehaviour
                 break;
             case ReportType.RoundEnd:
                 roundEndReport.time = time;
-                GameClient.ReportEvent(roundEndReport, (error)=>{});
+                GameClient.ReportEvent(roundEndReport, (error) => { });
+                break;
+            case ReportType.BattleResult:
+                battleREsultReport.time = time;
+                GameClient.ReportEvent(battleREsultReport, (error) => { });
                 break;
         }
     }

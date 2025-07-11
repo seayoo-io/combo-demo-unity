@@ -16,3 +16,10 @@ public class RoundEndEvent : Event<RoundEndEvent>
     public string matchType;
     public List<string> queueRoleIdList;
 }
+
+public class BattleEndEvent : Event<BattleEndEvent>
+{
+    public string stageId;
+    public string stageType;
+    public string battleType;
+}
