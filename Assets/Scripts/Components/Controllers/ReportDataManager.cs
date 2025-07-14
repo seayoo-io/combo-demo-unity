@@ -132,6 +132,8 @@ public class ReportDataManager : MonoBehaviour
         battleREsultReport = new BattleResultReportEvent
         {
             type = "battle_result",
+            eventName = "battle_end",
+            accountId = ComboSDK.GetLoginInfo().comboId,
             comboId = ComboSDK.GetLoginInfo().comboId,
             serverId = roleInfo.serverId,
             roleId = roleInfo.roleId,
@@ -142,7 +144,7 @@ public class ReportDataManager : MonoBehaviour
             diamond = 0,
             gold = gold,
             pay = (double)gold / 100,
-            currentStageId = evt.stageId,
+            currentStageId = evt.stageId.ToString(),
             uniqueRequestId = Guid.NewGuid().ToString(),
             stageId = evt.stageId,
             stageType = evt.stageType,

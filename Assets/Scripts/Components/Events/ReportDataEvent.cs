@@ -19,7 +19,7 @@ public class RoundEndEvent : Event<RoundEndEvent>
 
 public class BattleEndEvent : Event<BattleEndEvent>
 {
-    public string stageId;
-    public string stageType;
+    public int stageId;
+    public int stageType;
     public string battleType;
 }

@@ -231,6 +231,10 @@ public class BattleResultReportEvent : ReportEventBase
 
     public string distro;
     public string variant;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    [JsonProperty("#event_name")]
+    public string eventName;
     [JsonProperty("alliance_id")]
     public string allianceId;
     [JsonProperty("role_name")]
@@ -243,9 +247,9 @@ public class BattleResultReportEvent : ReportEventBase
     [JsonProperty("unique_request_id")]
     public string uniqueRequestId;
     [JsonProperty("stage_id")]
-    public string stageId;
+    public int stageId;
     [JsonProperty("stage_type")]
-    public string stageType;
+    public int stageType;
     [JsonProperty("battle_result")]
     public string battleResult;
 }
@@ -832,6 +836,8 @@ public static class GameClient
             {
                 time = battleResult.time,
                 type = battleResult.type,
+                eventName = battleResult.eventName,
+                accountId= battleResult.accountId,
                 comboId = battleResult.comboId,
                 serverId = battleResult.serverId,
                 roleId = battleResult.roleId,

@@ -158,15 +158,15 @@ internal class SettingView : View<SettingView>
         });
     }
 
-    private Dictionary<int, string> stageType = new Dictionary<int, string>
+    private Dictionary<int, int> stageType = new Dictionary<int, int>
     {
-        { 0, "1" },
-        { 1, "2" },
-        { 2, "3" },
-        { 3, "5" },
-        { 4, "63" },
-        { 5, "65" },
-        { 6, "11" }
+        { 0, 1 },
+        { 1, 2 },
+        { 2, 3 },
+        { 3, 4 },
+        { 4, 63 },
+        { 5, 65 },
+        { 6, 11 }
     };
 
     private Dictionary<int, string> battleResult = new Dictionary<int, string>
@@ -188,7 +188,7 @@ internal class SettingView : View<SettingView>
         var battleResultVaule = battleResult[battleResultDropDown.value];
         BattleEndEvent.Invoke(new BattleEndEvent
         {
-            stageId = stageIdText.text,
+            stageId = int.Parse(stageIdText.text),
             stageType = stageTypeVaule,
             battleType = battleResultVaule
         });
