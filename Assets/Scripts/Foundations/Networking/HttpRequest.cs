@@ -63,7 +63,7 @@ namespace Networking
         {
             var bodyStr = options.body.ToJson();
             byte[] postData = System.Text.Encoding.UTF8.GetBytes(bodyStr);
-            using (UnityWebRequest webRequest = UnityWebRequest.Post(options.url, "POST"))
+            using (UnityWebRequest webRequest = UnityWebRequest.PostWwwForm(options.url, "POST"))
             {
                 options.headers["Content-Type"] = "application/json";
                 options.headers["Accept"] = "application/json";
