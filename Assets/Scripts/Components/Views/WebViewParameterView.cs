@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public enum WebViewType
 {
     ANNOUNCEMENT,
-    GIFT
 }
 
 [ViewPrefab("Prefabs/WebViewParameterView")]
@@ -53,9 +52,6 @@ internal class WebViewParameterView : View<WebViewParameterView>
             case WebViewType.ANNOUNCEMENT:
                 OpenAnnouncement();
                 break;
-            case WebViewType.GIFT:
-                RedeemGiftCode();
-                break;
         }
     }
 
@@ -93,47 +89,6 @@ internal class WebViewParameterView : View<WebViewParameterView>
             else
             {
                 Toast.Show($"公告打开失败：{result.Error.Message}");
-            }
-        });
-    }
-
-    public void RedeemGiftCode()
-    {
-        var currentPlayer = PlayerController.GetPlayer();
-        RedeemGiftCodeOptions opts = new RedeemGiftCodeOptions();
-        if(giftInput.text == "")
-        {
-            opts = new RedeemGiftCodeOptions()
-            {
-                ServerId = currentPlayer.role.serverId,
-                RoleId = currentPlayer.role.roleId,
-                RoleName = currentPlayer.role.roleName,
-                Width = GetInputValue(widthInput),
-                Height = GetInputValue(heightInput)
-            };
-        }
-        else
-        {
-            opts = new RedeemGiftCodeOptions()
-            {
-                GiftCode = giftInput.text,
-                ServerId = currentPlayer.role.serverId,
-                RoleId = currentPlayer.role.roleId,
-                RoleName = currentPlayer.role.roleName,
-                Width = GetInputValue(widthInput),
-                Height = GetInputValue(heightInput)
-            };
-        }
-        
-        ComboSDK.RedeemGiftCode(opts, result => {
-            if(result.IsSuccess)
-            {
-                Destroy();
-                Log.I("礼包码兑换流程结束");
-            }
-            else
-            {
-                Toast.Show($"礼包码兑换失败：{result.Error.Message}");
             }
         });
     }
