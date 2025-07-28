@@ -97,7 +97,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getTuanjie('1.6.0')
+        UNITY_ROOT = getTuanjie('2022.3.61t1')
         HARMONYOS_ROOT = "build"     
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
     }
