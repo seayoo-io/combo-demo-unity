@@ -18,8 +18,10 @@ public class GameUtils
         return "Android";
 #elif UNITY_IOS
         return "iOS";
+#elif UNITY_OPENHARMONY
+        return "harmonyos";
 #else
         return $"{Application.platform}";
 #endif
-    }
+        }
 }
