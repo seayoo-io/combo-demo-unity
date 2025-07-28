@@ -416,6 +416,8 @@ public static class GameClient
                 platform = "ios",
 #elif UNITY_WEBGL
                 platform = "webgl",
+#elif UNITY_OPENHARMONY
+                platform = "harmonyos",
 #endif
             },
             headers = Headers()
