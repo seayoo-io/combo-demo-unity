@@ -1,0 +1,240 @@
+#!/usr/bin/env groovy
+
+DISTRO_LIST = ['harmonyos']
+
+def callUnity(Map map = [:]) {
+    def project = map.get('project', '.')
+    def commands = map.get('commands', '')
+
+    def defaultLogFile = env.STAGE_NAME.replaceAll("\\s", "-").toLowerCase()
+    def logFile = map.get('logFile', "logs/${defaultLogFile}.log")
+
+    sh "${env.UNITY_ROOT} -projectPath ${project} -quit -batchmode ${commands} -logFile ${logFile}"
+}
+
+def downloadUnitySDK() {
+    build job: params.UNITY_SDK_PROJECT_NAME, propagate: true, wait: true
+    def unitySDKZip = "*.zip"    
+    copyArtifacts projectName: "${params.UNITY_SDK_PROJECT_NAME}", selector: lastSuccessful(), filter: unitySDKZip
+
+    def files = findFiles glob: unitySDKZip
+    unzip zipFile: files[0].name, dir: env.UNITY_SDK_PATH, quiet: true
+}
+
+def writeComboYaml(buildKey) {
+    def endpoint = getEndpoint()
+    def gameId = params.GAME_ID
+    writeFile file: 'combo.yaml', text: """
+combo:
+  game-id: ${gameId}
+  build-key: ${buildKey}
+  endpoint: ${endpoint}
+"""
+}
+
+def installComboCLI() {
+    def comboZip = "combo_main_darwin_arm64.zip"
+    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
+    unzip comboZip
+}
+
+def getTargetDistros() {
+    return DISTRO_LIST.join(',')
+}
+
+def setVisibleItemCount() {
+    return DISTRO_LIST.size()   
+}
+
+def getEndpoint() {
+    return (params.TARGET_ENV == "dev") ? "https://api.dev.seayoo.com" : "https://api.seayoo.com"
+}
+
+def getDemoEndpoint() {
+    return (params.TARGET_ENV == "dev") ? "https://combo-demo.dev.seayoo.com" : "https://combo-demo.seayoo.com"
+}
+
+pipeline {
+    agent {
+        node {
+            label 'combo-demo:harmonyos'
+        }
+    }
+    options {
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(
+            daysToKeepStr: '15',
+            artifactNumToKeepStr: '20'
+        ))
+        ansiColor('xterm')
+        timestamps()
+    }
+    parameters {
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'zero', 'jxfs', 'jxrf', 'ggd'], description: 'GAME_ID')
+        choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
+        extendedChoice(
+            name: 'DISTRO',
+            type: 'PT_MULTI_SELECT',
+            description: '选择发布的模块， 支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)',
+            value: getTargetDistros(),
+            defaultValue: 'android',
+            multiSelectDelimiter: ',',
+            quoteValue: false,
+            saveJSONParameterToFile: false,
+            visibleItemCount: setVisibleItemCount()
+        )
+        string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
+        choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
+        string(name: 'UNITY_SDK_PROJECT_NAME',
+            defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
+            description: 'Unity SDK 工程的 Jenkins Full project name',
+            trim: true)
+        choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
+        booleanParam(name: 'CLEAN_WS',
+            defaultValue: false,
+            description: 'When checked, will clean workspace.')
+    }
+    environment {
+        UNITY_ROOT = getUnityRoot('1.6.0')
+        HARMONYOS_ROOT = "build"     
+        UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
+    }
+    stages {
+        stage('Clean and Setup') {
+            steps {
+                script {
+                    if (params.CLEAN_WS) {
+                        cleanWs()
+                    }
+                    sh """
+                        rm -rf ${env.HARMONYOS_ROOT}/APKs
+                        rm -rf *.zip
+                        rm -rf *.apk
+                        rm -rf logs/*
+                        rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
+                    """
+                }
+            }
+        }
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout scm
+                    // For Unity Build
+                    sh 'mkdir -p logs'
+                }
+            }
+        }
+        stage('Integrate UnitySDK') {
+            steps {
+                script {
+                    downloadUnitySDK()
+                }
+            }
+        }
+        stage('Switch Platform') {
+            steps {
+                script {
+                    def platformFile = 'platform.txt'
+                    if (fileExists(platformFile)) {
+                        echo 'Current platform was already OpenHarmony, skip switch.'
+                    } else {
+                        callUnity  commands: '-buildTarget OpenHarmony'
+                        writeFile file: platformFile, text: 'OpenHarmony'
+                    }
+                }
+            }
+        }
+        stage('Update Settings') {
+            environment {
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
+                COMBOSDK_ENDPOINT = getEndpoint()
+            }
+            steps {
+                script {
+                    def publishableKeyId = "combo-${params.GAME_ID}.publishable-key"
+                    withCredentials([
+                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId)
+                    ]) {
+                        callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
+                    }
+                }
+            }
+        }
+        stage('Export Project') {
+            environment {
+                EXPORT_PATH = "${env.WORKSPACE}/build"
+                DEMO_ENDPOINT = getDemoEndpoint()
+                BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
+                CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
+            }
+            steps {
+                script {
+                    def buildKeyId = "combo-${params.GAME_ID}.build-key"
+                    withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
+                        callUnity commands: "-executeMethod Builder.BuildOpenHarmonyDemo"
+                    }
+
+                }
+            }
+        }
+        stage('Build APKs') {
+            steps {
+                script {
+                    installComboCLI()
+
+                    sh 'chmod +x ./combo'
+                    dir(env.HARMONYOS_ROOT) {
+                        def credentialsId = "combo-${params.GAME_ID}.build-key"
+                        withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
+                            writeComboYaml(COMBOSDK_BUILD_KEY)
+                        }
+                        sh "${env.WORKSPACE}/combo harmonyos build --distros ${params.DISTRO}"
+                    }
+                }
+            }
+        }
+        stage('Archive') {
+            steps {
+                script {  
+                    def  distros = params.DISTRO.split(',')
+                    distros.each { distro ->
+                        def appName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "app")
+
+                        sh "find ${env.HARMONYOS_ROOT}/APPs -name '${distro}*.app' -exec mv {} ${env.WORKSPACE}/${appName} \\;"
+                    }                                    
+                    archiveArtifacts artifacts: '*.app', onlyIfSuccessful: true
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                def downloads = []
+                def distros = params.DISTRO.split(',')
+                distros.each { distro -> 
+                    def appName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "apk")    
+                    downloads += [                       
+                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${appName}"
+                    ]
+                }           
+                notify withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
+            }
+        }
+        failure {
+            notify withChanges: true, withErrors: true, what: "**distro: ${params.DISTRO}**"
+        }
+        always {
+            script {
+                currentBuild.displayName = "${BUILD_DISPLAY_NAME} ${params.GAME_ID} ${params.TARGET_ENV}"
+                currentBuild.description = "distro: ${params.DISTRO}"
+                zip archive: true, zipFile: 'logs.zip', dir: 'logs'
+            }
+        }
+    }    
+}

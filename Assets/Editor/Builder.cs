@@ -13,6 +13,7 @@ public class Builder : EditorWindow
             Android,
             iOS,
             Windows,
+            OpenHarmony,
             Linux,
             Mac,
         }
@@ -152,6 +153,19 @@ public class Builder : EditorWindow
         Build(buildPlayerOptions);
     }
 
+    static void BuildOpenHarmonyDemo()
+    {
+        var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
+        PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
+        CreateDir(exportPath);
+        BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+        buildPlayerOptions.scenes = new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Game.unity" };
+        buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
+        buildPlayerOptions.target = BuildTarget.OpenHarmony;
+        buildPlayerOptions.options = BuildOptions.None;
+        Build(buildPlayerOptions);
+    }
+
     private static void Build(BuildPlayerOptions buildPlayerOptions)
     {
         BuildParams.Save();
@@ -274,7 +288,7 @@ public class Builder : EditorWindow
         var newSelectedPlatform = (GUIProps.Platform)
             GUILayout.Toolbar(
                 (int)GUIProps.selectedPlatform,
-                new string[] { "Android", "iOS", "Windows" }
+                new string[] { "Android", "iOS", "Windows", "OpenHarmony" }
             );
         if (GUIProps.selectedPlatform != newSelectedPlatform)
         {
@@ -349,6 +363,11 @@ public class Builder : EditorWindow
                 case GUIProps.Platform.Windows:
                     {
                         BuildWindowsDemo();
+                        break;
+                    }
+                case GUIProps.Platform.OpenHarmony:
+                    {
+                        BuildOpenHarmonyDemo();
                         break;
                     }
             }
