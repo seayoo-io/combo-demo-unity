@@ -109,9 +109,9 @@ pipeline {
                         cleanWs()
                     }
                     sh """
-                        rm -rf ${env.HARMONYOS_ROOT}/APKs
+                        rm -rf ${env.HARMONYOS_ROOT}/APPs
                         rm -rf *.zip
-                        rm -rf *.apk
+                        rm -rf *.app
                         rm -rf logs/*
                         rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
                     """
@@ -165,7 +165,7 @@ pipeline {
         }
         stage('Export Project') {
             environment {
-                EXPORT_PATH = "build"
+                EXPORT_PATH = "${env.WORKSPACE}/build"
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
@@ -178,7 +178,6 @@ pipeline {
                     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
                         callUnity commands: "-executeMethod Builder.BuildOpenHarmonyDemo"
                     }
-
                 }
             }
         }
@@ -227,7 +226,7 @@ pipeline {
                 def downloads = []
                 def distros = params.DISTRO.split(',')
                 distros.each { distro -> 
-                    def appName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "apk")    
+                    def appName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "app")    
                     downloads += [                       
                         'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${appName}"
                     ]
