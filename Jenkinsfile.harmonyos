@@ -79,7 +79,7 @@ pipeline {
             type: 'PT_MULTI_SELECT',
             description: '选择发布的模块， 支持多选 (按住 Ctrl 键并单击每一个选项；或者按住 Shift 键并单击要选的第一个选项和要选的最后一个选项以圈定范围)',
             value: getTargetDistros(),
-            defaultValue: 'android',
+            defaultValue: 'huawei_harmonyos',
             multiSelectDelimiter: ',',
             quoteValue: false,
             saveJSONParameterToFile: false,
