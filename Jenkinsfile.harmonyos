@@ -193,7 +193,16 @@ pipeline {
                         withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                             writeComboYaml(COMBOSDK_BUILD_KEY)
                         }
-                        sh "${env.WORKSPACE}/combo harmonyos build --distros ${params.DISTRO}"
+                        def p12 = "seayoo.debug.p12"
+                        def p12Id = "seayoo.debug.password"
+                        withCredentials([
+                            file(variable: 'P12_FILE', credentialsId: p12),
+                            string(variable: 'P12_PASSWORD', credentialsId: p12Id)
+                        ]) {
+                            sh """
+                                ${env.WORKSPACE}/combo harmonyos build --distros ${params.DISTRO} --p12-file ${P12_FILE} --p12-pass ${P12_PASSWORD} --package-format hap --build-mode debug --signing-key debug
+                            """
+                        }                 
                     }
                 }
             }
