@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['harmonyos']
+DISTRO_LIST = ['huawei_harmonyos']
 
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
