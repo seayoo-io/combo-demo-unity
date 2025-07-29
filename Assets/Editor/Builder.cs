@@ -139,13 +139,17 @@ public class Builder : EditorWindow
     {
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
+        var splitVer = PlayerSettings.bundleVersion.Split(new char[] { '.' }, 2);
+        if (splitVer.Length > 1)
+            PlayerSettings.OpenHarmony.bundleVersionCode = int.Parse(splitVer[0]);
         CreateDir(exportPath);
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
         buildPlayerOptions.scenes = new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Game.unity" };
         buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
-        UnityEngine.Debug.Log("EXPORT_PATH = " + exportPath);
         buildPlayerOptions.target = BuildTarget.OpenHarmony;
-        buildPlayerOptions.options = BuildOptions.None;
+        buildPlayerOptions.options = BuildOptions.AcceptExternalModificationsToPlayer;
+        EditorUserBuildSettings.exportAsOpenHarmonyProject = true;
+        EditorUserBuildSettings.exportProjectType = ExportProjectType.UseAsALibrary;
         Build(buildPlayerOptions);
     }
 
