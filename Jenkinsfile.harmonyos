@@ -109,9 +109,9 @@ pipeline {
                         cleanWs()
                     }
                     sh """
-                        rm -rf ${env.HARMONYOS_ROOT}/APPs
+                        rm -rf ${env.HARMONYOS_ROOT}/Haps
                         rm -rf *.zip
-                        rm -rf *.app
+                        rm -rf *.hap
                         rm -rf logs/*
                         rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
                     """
@@ -181,7 +181,7 @@ pipeline {
                 }
             }
         }
-        stage('Build APPs') {
+        stage('Build Haps') {
             steps {
                 script {
                     installComboCLI()
@@ -214,11 +214,11 @@ pipeline {
                 script {  
                     def  distros = params.DISTRO.split(',')
                     distros.each { distro ->
-                        def appName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "app")
+                        def hapName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "hap")
 
-                        sh "find ${env.HARMONYOS_ROOT}/build/hap/debug -name '${distro}*.app' -exec mv {} ${env.WORKSPACE}/${appName} \\;"
+                        sh "find ${env.HARMONYOS_ROOT}/build/hap/debug -name '*.hap' -exec mv {} ${env.WORKSPACE}/${hapName} \\;"
                     }                                    
-                    archiveArtifacts artifacts: '*.app', onlyIfSuccessful: true
+                    archiveArtifacts artifacts: '*.hap', onlyIfSuccessful: true
                 }
             }
         }
@@ -229,9 +229,9 @@ pipeline {
                 def downloads = []
                 def distros = params.DISTRO.split(',')
                 distros.each { distro -> 
-                    def appName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "app")    
+                    def hapName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "hap")    
                     downloads += [                       
-                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${appName}"
+                        'name': "[${distro}]", 'url': "${env.BUILD_URL}artifact/${hapName}"
                     ]
                 }           
                 notify withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
