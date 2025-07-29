@@ -200,7 +200,7 @@ pipeline {
                             string(variable: 'P12_PASSWORD', credentialsId: p12Id)
                         ]) {
                             sh """
-                                ${env.WORKSPACE}/combo harmonyos build --distros ${params.DISTRO} --p12-file ${P12_FILE} --p12-pass ${P12_PASSWORD} --package-format hap --build-mode debug --signing-key debug
+                                ${env.WORKSPACE}/combo harmonyos build --distro ${params.DISTRO} --p12-file ${P12_FILE} --p12-pass ${P12_PASSWORD} --package-format hap --build-mode debug --signing-key debug
                             """
                         }                 
                     }
