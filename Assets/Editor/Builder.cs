@@ -143,6 +143,7 @@ public class Builder : EditorWindow
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
         buildPlayerOptions.scenes = new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Game.unity" };
         buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
+        UnityEngine.Debug.Log("EXPORT_PATH = " + exportPath);
         buildPlayerOptions.target = BuildTarget.OpenHarmony;
         buildPlayerOptions.options = BuildOptions.None;
         Build(buildPlayerOptions);
