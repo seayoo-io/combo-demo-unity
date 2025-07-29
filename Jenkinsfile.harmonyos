@@ -165,7 +165,7 @@ pipeline {
         }
         stage('Export Project') {
             environment {
-                EXPORT_PATH = "${env.WORKSPACE}/build"
+                EXPORT_PATH = "build"
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
@@ -182,7 +182,7 @@ pipeline {
                 }
             }
         }
-        stage('Build APKs') {
+        stage('Build APPs') {
             steps {
                 script {
                     installComboCLI()
