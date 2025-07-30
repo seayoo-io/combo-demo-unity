@@ -49,11 +49,11 @@ public class Login : MonoBehaviour
         });
     }
 
-    void Awake()
+void Awake()
     {
         EventSystem.Register(this);
 
-        if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+        if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.OpenHarmony)
         {
             smallBtn.interactable = false;
             middleBtn.interactable = false;
