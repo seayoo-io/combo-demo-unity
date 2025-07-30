@@ -43,7 +43,7 @@ public class Login : MonoBehaviour
             }
         });
 
-        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.OpenHarmony)
         {
             smallBtn.interactable = false;
             middleBtn.interactable = false;
