@@ -1189,7 +1189,7 @@ PlayerSettings:
   customShaderCachePath: 
   openHarmonySplashScreen: {fileID: 0}
   openHarmonySplashScreenScale: 0
-  OpenHarmonyTargetArchitectures: 6
+  OpenHarmonyTargetArchitectures: 2
   openHarmonyClientID: 
   openHarmonyAppID: 
   openHarmonyDeviceTypes: 7
