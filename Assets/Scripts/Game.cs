@@ -25,6 +25,7 @@ public class Game : MonoBehaviour
         var info = ComboSDK.GetLoginInfo();
         if (info == null || string.IsNullOrEmpty(info.comboId))
         {
+            Log.E("Enter Game Failed: loginInfo = null");
             SceneManager.LoadScene("Login");
             return;
         }
