@@ -126,7 +126,7 @@ pipeline {
             trim: true)
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2021.3.45f1')
+        UNITY_ROOT = getTuanjie('2022.3.61t1')
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         UNITY_VUPLEX_PATH = "${env.WORKSPACE}/Assets"
     }
