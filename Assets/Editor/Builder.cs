@@ -110,7 +110,7 @@ public class Builder : EditorWindow
         buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
         buildPlayerOptions.target = BuildTarget.Android;
 #if UNITY_2019_1_OR_NEWER
-        buildPlayerOptions.options = BuildOptions.AllowDebugging;
+        buildPlayerOptions.options = BuildOptions.Development | BuildOptions.AllowDebugging;
 #else
         buildPlayerOptions.options = BuildOptions.AcceptExternalModificationsToPlayer; // 这个选项会导出Android工程，而不是构建APK
 #endif
