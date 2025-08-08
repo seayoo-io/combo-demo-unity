@@ -37,6 +37,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         if (report.summary.platform == BuildTarget.iOS)
         {
             string projectPath = report.summary.outputPath + "/Unity-iPhone.xcodeproj/project.pbxproj";
+#if TUANJIE_1
+            projectPath = report.summary.outputPath + "/Tuanjie-iPhone.xcodeproj/project.pbxproj";
+#endif
             PBXProject pbxProject = new PBXProject();
             pbxProject.ReadFromFile(projectPath);
 
@@ -89,6 +92,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
     {
         Debug.Log("[Demo] Start to AddAppleSignInCapability");
         var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
+#if TUANJIE_1
+        entitlementsPath = $"{report.summary.outputPath}/Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
+#endif
         var entitlements = new PlistDocument();
 
         if (File.Exists(entitlementsPath))
@@ -117,6 +123,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
 
         File.WriteAllText(entitlementsPath, entitlements.WriteToString());
         var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+#if TUANJIE_1
+        relativeEntitlementsPath = "Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
+#endif
         pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
         pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
     }
@@ -125,6 +134,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
     {
         Debug.Log("[Demo] Start to PushNotifications");
         var entitlementsPath = $"{report.summary.outputPath}/Unity-iPhone/Unity-iPhone.entitlements";
+#if TUANJIE_1
+        entitlementsPath = $"{report.summary.outputPath}/Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
+#endif
         var entitlements = new PlistDocument();
         
         if (File.Exists(entitlementsPath))
@@ -143,7 +155,10 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         }
 
         File.WriteAllText(entitlementsPath, entitlements.WriteToString());
-        var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+        var relativeEntitlementsPath = "Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
+#if TUANJIE_1
+        relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+#endif
         pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
         pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
     }

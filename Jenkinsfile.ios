@@ -54,7 +54,7 @@ def updateCodeSigningSettings() {
     sh """
         export LC_ALL=en_US.UTF-8
         export LANG=en_US.UTF-8
-        fastlane run update_code_signing_settings path:"${BUILD_DIR}/Unity-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"Unity-iPhone"
+        fastlane run update_code_signing_settings path:"${BUILD_DIR}/${ENGINE}-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"${ENGINE}-iPhone"
     """
 }
 
@@ -122,6 +122,10 @@ def getDemoEndpoint() {
     return (params.TARGET_ENV == "dev") ? "https://combo-demo.dev.seayoo.com" : "https://combo-demo.seayoo.com"
 }
 
+def getEngine() {
+    return (parames.ENGINE == "unity") ? "Unity" : "Tuanjie"
+}
+
 pipeline {
     agent {
         node {
@@ -180,6 +184,7 @@ pipeline {
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         CAPABILITIES = params.CAPABILITIES.toString()
         COMBOSDK_GAME_ID = "${params.GAME_ID}"
+        ENGINE = getEngine()
     }
     stages {
         stage('Clean and Setup') {
@@ -287,8 +292,8 @@ pipeline {
                         keychainUnlock()
 
                         sh """xcodebuild clean archive \
-                            -project Unity-iPhone.xcodeproj \
-                            -scheme Unity-iPhone \
+                            -project ${ENGINE}-iPhone.xcodeproj \
+                            -scheme ${ENGINE}-iPhone \
                             -destination generic/platform=iOS \
                             PROVISIONING_PROFILE_SPECIFIER="${env.PROVISIONING_PROFILE_SPECIFIER}" \
                             -archivePath ${params.GAME_ID}.xcarchive
