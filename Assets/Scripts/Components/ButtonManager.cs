@@ -22,7 +22,7 @@ public enum ButtonType {
 
 public static class ButtonManager
 {
-    #if UNITY_STANDALONE || UNITY_OPENHARMONY
+    #if UNITY_STANDALONE
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, true}, 
@@ -35,7 +35,7 @@ public static class ButtonManager
             {ButtonType.PreloadAdButton, false},
             {ButtonType.ShowAdButton, false},
             {ButtonType.PurchaseButton, true}};
-    #elif UNITY_ANDROID
+    #elif UNITY_ANDROID || UNITY_OPENHARMONY
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, false}, 
