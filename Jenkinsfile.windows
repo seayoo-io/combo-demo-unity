@@ -11,7 +11,7 @@ def callUnity(Map map = [:]) {
     def commands = map.get('commands', '')
 
     def defaultLogFile = env.STAGE_NAME.replaceAll("\\s", "-").toLowerCase()
-    def logFile = map.get('logFile', "logs\\${defaultLogFile}.log")
+    def logFile = map.get('logFile', "logs/${defaultLogFile}.log")
 
     sh "${env.UNITY_ROOT} -projectPath ${project} -quit -batchmode ${commands} -logFile ${logFile}"
 }
@@ -220,15 +220,15 @@ pipeline {
                     def downloads = []
                     
                     distros.each { distro ->
-                        def exportPath = "${env.WORKSPACE}\\Build\\${distro}"
+                        def exportPath = "${env.WORKSPACE}/build/${distro}"
                         def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
-                        def zipFilePath = "${exportPath}\\${zipFileName}"
-                        sh 'chmod +x ./combo'
+                        def zipFilePath = "${exportPath}/${zipFileName}"
 
                         sh """
+                            chmod +x ./combo
                             mkdir -p "${exportPath}" || exit 0
                             ${env.WORKSPACE}/combo windows setup --distro ${distro}
-                            mv -f ComboSDK.json Assets/Resources
+                            mv -f ${env.WORKSPACE}/ComboSDK.json ${env.WORKSPACE}/Assets/Resources
                         """
                         env.EXPORT_PATH = exportPath
                         def credentialsId = "combo-${params.GAME_ID}.build-key"
@@ -249,9 +249,9 @@ pipeline {
                                     --org sentry \
                                     --project combo-demo \
                                     --auth-token ${SENTRY_TOKEN} \
-                                    --wait ${exportPath}\\combosdk-unity-demo_Data\\Plugins\\x86_64\\sentry.dll \
-                                    ${exportPath}\\GameAssembly.dll \
-                                    ${exportPath}\\UnityPlayer.dll """
+                                    --wait ${exportPath}/combosdk-unity-demo_Data/Plugins/x86_64/sentry.dll \
+                                    ${exportPath}/GameAssembly.dll \
+                                    ${exportPath}/UnityPlayer.dll """
                             }
                         }
                     }
