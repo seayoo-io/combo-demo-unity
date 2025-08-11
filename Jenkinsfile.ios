@@ -50,7 +50,7 @@ def updateCodeSigningSettings() {
     sh """
         export LC_ALL=en_US.UTF-8
         export LANG=en_US.UTF-8
-        fastlane run update_code_signing_settings path:"${BUILD_DIR}/Tuanjie-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"Tuanjie-iPhone"
+        fastlane run update_code_signing_settings path:"${BUILD_DIR}/${env.ENGINE}-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"${env.ENGINE}-iPhone"
     """
 }
 
@@ -157,6 +157,7 @@ pipeline {
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
+        choice(name: 'ENGINE', choices: ['Unity', 'Tuanjie'], description: '引擎：Unity/Tuanjie')
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
@@ -170,6 +171,7 @@ pipeline {
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         CAPABILITIES = params.CAPABILITIES.toString()
         COMBOSDK_GAME_ID = "${params.GAME_ID}"
+        ENGINE = "${params.ENGINE}"
     }
     stages {
         stage('Clean and Setup') {
@@ -269,8 +271,8 @@ pipeline {
                         keychainUnlock()
 
                         sh """xcodebuild clean archive \
-                            -project Tuanjie-iPhone.xcodeproj \
-                            -scheme Tuanjie-iPhone \
+                            -project ${env.ENGINE}-iPhone.xcodeproj \
+                            -scheme ${env.ENGINE}-iPhone \
                             -destination generic/platform=iOS \
                             PROVISIONING_PROFILE_SPECIFIER="${env.PROVISIONING_PROFILE_SPECIFIER}" \
                             -archivePath ${params.GAME_ID}.xcarchive
