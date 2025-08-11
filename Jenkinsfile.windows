@@ -82,7 +82,7 @@ def installComboCLI() {
 pipeline {
     agent {
         node {
-            label 'omnisdk-unity:windows'
+            label 'mac-9 (M1 Max)'
         }
     }
     options {
