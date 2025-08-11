@@ -50,7 +50,7 @@ def updateCodeSigningSettings() {
     sh """
         export LC_ALL=en_US.UTF-8
         export LANG=en_US.UTF-8
-        fastlane run update_code_signing_settings path:"${BUILD_DIR}/${ENGINE}-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"${ENGINE}-iPhone"
+        fastlane run update_code_signing_settings path:"${BUILD_DIR}/Tuanjie-iPhone.xcodeproj" code_sign_identity:"${env.CODE_SIGN_IDENTITY}" targets:"Tuanjie-iPhone"
     """
 }
 
@@ -117,10 +117,6 @@ def getDemoEndpoint() {
     return (params.TARGET_ENV == "dev") ? "https://combo-demo.dev.seayoo.com" : "https://combo-demo.seayoo.com"
 }
 
-def getEngine() {
-    return (parames.ENGINE == "unity") ? "Unity" : "Tuanjie"
-}
-
 pipeline {
     agent {
         node {
@@ -161,7 +157,6 @@ pipeline {
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
-        choice(name: 'ENGINE', choices: ['unity', 'tuanjie'], description: '引擎：Unity/Tuanjie')
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
@@ -175,7 +170,6 @@ pipeline {
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         CAPABILITIES = params.CAPABILITIES.toString()
         COMBOSDK_GAME_ID = "${params.GAME_ID}"
-        ENGINE = getEngine()
     }
     stages {
         stage('Clean and Setup') {
@@ -275,8 +269,8 @@ pipeline {
                         keychainUnlock()
 
                         sh """xcodebuild clean archive \
-                            -project ${ENGINE}-iPhone.xcodeproj \
-                            -scheme ${ENGINE}-iPhone \
+                            -project Tuanjie-iPhone.xcodeproj \
+                            -scheme Tuanjie-iPhone \
                             -destination generic/platform=iOS \
                             PROVISIONING_PROFILE_SPECIFIER="${env.PROVISIONING_PROFILE_SPECIFIER}" \
                             -archivePath ${params.GAME_ID}.xcarchive
