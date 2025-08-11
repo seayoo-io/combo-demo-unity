@@ -74,7 +74,7 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo_main_windows_amd64.zip"
+    def comboZip = "combo_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip comboZip
 }
@@ -223,10 +223,11 @@ pipeline {
                         def exportPath = "${env.WORKSPACE}\\Build\\${distro}"
                         def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                         def zipFilePath = "${exportPath}\\${zipFileName}"
-                        
+                        sh 'chmod +x ./combo'
+
                         sh """
                             mkdir -p "${exportPath}" || exit 0
-                            combo windows setup --distro ${distro}
+                            ${env.WORKSPACE}/combo windows setup --distro ${distro}
                             mv -f ComboSDK.json Assets/Resources
                         """
                         env.EXPORT_PATH = exportPath
@@ -244,7 +245,7 @@ pipeline {
 
                         withSentryCLI() {
                             withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
-                                sh """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
+                                sh """sentry-cli-Darwin-universal --url=https://sentry.seayoo.com upload-dif \
                                     --org sentry \
                                     --project combo-demo \
                                     --auth-token ${SENTRY_TOKEN} \
