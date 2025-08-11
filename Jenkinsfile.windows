@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['windows', 'lenovo_pc', 'w17173', 'taptap_pc']
+DISTRO_LIST = ['windows', 'lenovo_pc', 'w17173']
 
 SAFE_BRANCH_NAME = env.BRANCH_NAME ?: 'main'
 
@@ -74,8 +74,8 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo-cli_${CLI_NAME}_windows_amd64.zip"
-    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
+    def comboZip = "combo_main_darwin_arm64.zip"
+    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip comboZip
 }
 
@@ -116,10 +116,6 @@ pipeline {
         string(name: 'UNITY_SDK_PROJECT_NAME',
             defaultValue: "SDK/Client/Combo/unity/${SAFE_BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
-            trim: true)
-        string(name: 'CLI_NAME',
-            defaultValue: "main",
-            description: 'cli branch name',
             trim: true)
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
@@ -227,10 +223,11 @@ pipeline {
                         def exportPath = "${env.WORKSPACE}\\Build\\${distro}"
                         def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                         def zipFilePath = "${exportPath}\\${zipFileName}"
-                        
+                        sh 'chmod +x ./combo'
+
                         sh """
                             mkdir -p "${exportPath}" || exit 0
-                            combo windows setup --distro ${distro}
+                            ${env.WORKSPACE}/combo windows setup --distro ${distro}
                             mv -f ComboSDK.json Assets/Resources
                         """
                         env.EXPORT_PATH = exportPath
@@ -248,7 +245,7 @@ pipeline {
 
                         withSentryCLI() {
                             withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
-                                sh """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
+                                sh """sentry-cli-Darwin-universal --url=https://sentry.seayoo.com upload-dif \
                                     --org sentry \
                                     --project combo-demo \
                                     --auth-token ${SENTRY_TOKEN} \
@@ -258,6 +255,8 @@ pipeline {
                             }
                         }
                     }
+
+                    notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
                 }
             }
         }
