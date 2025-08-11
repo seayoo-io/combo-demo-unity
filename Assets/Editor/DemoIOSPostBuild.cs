@@ -5,13 +5,12 @@ using UnityEditor;
 using System.IO;
 using System.Linq;
 using UnityEditor.iOS.Xcode;
-using UnityEditor.iOS.Xcode.Extensions;
 using UnityEditor.Build.Reporting;
-using System.Collections.Generic;
 
 public class DemoIOSPostBuild : IPostprocessBuildWithReport
 {
-    public static class BuildArguments {
+    public static class BuildArguments
+    {
         public static string BundleId => System.Environment.GetEnvironmentVariable("PRODUCT_BUNDLE_IDENTIFIER") ?? "com.seayoo.demo.combo";
         public static string SignIdentity => System.Environment.GetEnvironmentVariable("CODE_SIGN_IDENTITY") ?? "Apple Development: Hao Wu (AVMJXXS6SS)";
         public static string Provision => System.Environment.GetEnvironmentVariable("PROVISIONING_PROFILE_SPECIFIER") ?? "combo_dev_provision";
@@ -138,7 +137,7 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         entitlementsPath = $"{report.summary.outputPath}/Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
 #endif
         var entitlements = new PlistDocument();
-        
+
         if (File.Exists(entitlementsPath))
         {
             entitlements.ReadFromFile(entitlementsPath);
@@ -155,9 +154,9 @@ public class DemoIOSPostBuild : IPostprocessBuildWithReport
         }
 
         File.WriteAllText(entitlementsPath, entitlements.WriteToString());
-        var relativeEntitlementsPath = "Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
+        var relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
 #if TUANJIE_1
-        relativeEntitlementsPath = "Unity-iPhone/Unity-iPhone.entitlements";
+        relativeEntitlementsPath = "Tuanjie-iPhone/Tuanjie-iPhone.entitlements";
 #endif
         pbxProject.AddFile(entitlementsPath, relativeEntitlementsPath);
         pbxProject.AddCapability(mainTargetGuid, PBXCapabilityType.SignInWithApple, relativeEntitlementsPath);
