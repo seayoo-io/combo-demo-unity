@@ -13,7 +13,7 @@ def callUnity(Map map = [:]) {
     def defaultLogFile = env.STAGE_NAME.replaceAll("\\s", "-").toLowerCase()
     def logFile = map.get('logFile', "logs\\${defaultLogFile}.log")
 
-    bat "${env.UNITY_ROOT}\\Editor\\Unity.exe -projectPath ${project} -quit -batchmode ${commands} -logFile ${logFile}"
+    sh "${env.UNITY_ROOT} -projectPath ${project} -quit -batchmode ${commands} -logFile ${logFile}"
 }
 
 def downloadUnitySDK() {
@@ -38,7 +38,7 @@ def downloadVuplex() {
 
     def vuplexZip = "Vuplex.zip"
 
-    bat "curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"
+    sh """curl -o ${vuplexZip} ${params.UNITY_VUPLEX_URL}"""
     def newPackageJson = [
         "vuplex-url": "${params.UNITY_VUPLEX_URL}"
     ]
@@ -137,11 +137,11 @@ pipeline {
                     if (params.CLEAN_WS) {
                         cleanWs()
                     }
-                    bat """
-                        IF EXIST *.zip del /F /Q *.zip
-                        IF EXIST logs rd /S /Q logs
-                        IF EXIST Build rd /S /Q Build
-                        IF EXIST Build rd /S /Q ${env.UNITY_SDK_PATH}/com.seayoo.sdk
+                    sh """
+                        rm -rf *.zip
+                        rm -rf logs/*
+                        rm -rf Build/*
+                        rm -rf ${env.UNITY_SDK_PATH}/com.seayoo.sdk
                     """
                 }
             }
@@ -151,7 +151,7 @@ pipeline {
                 script {
                     checkout scm
                     // For Unity Build
-                    bat 'IF NOT EXIST logs mkdir logs'
+                    sh 'mkdir -p logs'
                 }
             }
         }
@@ -224,10 +224,10 @@ pipeline {
                         def zipFileName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "zip")
                         def zipFilePath = "${exportPath}\\${zipFileName}"
                         
-                        bat """
-                            mkdir "${exportPath}" || exit /b 0
+                        sh """
+                            mkdir -p "${exportPath}" || exit 0
                             combo windows setup --distro ${distro}
-                            move /Y ComboSDK.json Assets/Resources
+                            mv -f ComboSDK.json Assets/Resources
                         """
                         env.EXPORT_PATH = exportPath
                         def credentialsId = "combo-${params.GAME_ID}.build-key"
@@ -244,7 +244,7 @@ pipeline {
 
                         withSentryCLI() {
                             withCredentials([string(variable: 'SENTRY_TOKEN', credentialsId: 'sentry-token.seayoo-cn')]) {
-                                bat """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
+                                sh """sentry-cli-Windows-x86_64.exe --url=https://sentry.seayoo.com upload-dif \
                                     --org sentry \
                                     --project combo-demo \
                                     --auth-token ${SENTRY_TOKEN} \
