@@ -1,5 +1,4 @@
-
-#if !UNITY_WEBGL
+#if !UNITY_WEIXINMINIGAME
 using System;
 using Combo;
 using Newtonsoft.Json.Linq;

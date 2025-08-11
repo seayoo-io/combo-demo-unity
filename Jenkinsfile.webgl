@@ -81,7 +81,7 @@ def getDemoEndpoint() {
 pipeline {
     agent {
         node {
-            label 'combo-demo:webgl'
+            label 'mac-9 (M1 Max)'
         }
     }
     options {
@@ -125,7 +125,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2021.3.45f1')
+        UNITY_ROOT = getTuanjie('2022.3.61t1')
         EXPORT_PATH = "${env.WORKSPACE}/output"
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         COMBO_SDK_PATH = "${env.WORKSPACE}/output/minigame/combosdk"
@@ -169,8 +169,8 @@ pipeline {
                     if (fileExists(platformFile)) {
                         echo 'Current platform was already WebGL, skip switch.'
                     } else {
-                        callUnity  commands: '-buildTarget WebGL'
-                        writeFile file: platformFile, text: 'WebGL'
+                        callUnity  commands: '-buildTarget MiniGame'
+                        writeFile file: platformFile, text: 'MiniGame'
                     }
                 }
             }

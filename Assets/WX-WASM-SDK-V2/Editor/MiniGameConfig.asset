@@ -1,5 +1,5 @@
 %YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
+%TAG !u! tag:yousandi.cn,2023:
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MiniGameConfig
   m_EditorClassIdentifier: 
   ProjectConf:
-    projectName: demo
-    Appid: wxd6d9be885354383a
-    CDN: https://s3.shiyou.kingsoft.com/apps/demo/
+    projectName: 
+    Appid: 
+    CDN: 
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
-    DST: C:/shiyou-workspace/combo-demo-unity/outputs/weixinminigame
+    DST: outputs/weixinminigame
     StreamCDN: 
     bundleHashLength: 32
     bundlePathIdentifier: StreamingAssets;
@@ -28,7 +28,7 @@ MonoBehaviour:
     MemorySize: 256
     HideAfterCallMain: 1
     preloadFiles: 
-    Orientation: 1
+    Orientation: 0
     bgImageSrc: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/images/background.jpg
     dataFileSubPrefix: 
     maxStorage: 200

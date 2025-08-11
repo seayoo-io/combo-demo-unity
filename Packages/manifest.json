@@ -1,6 +1,11 @@
 {
   "dependencies": {
+    "cn.tuanjie.minihost": "1.0.7",
+    "cn.tuanjie.wx-uploader": "0.1.4",
+    "com.bytedance.starksdk": "file:../Assets/../LocalPackages/com.bytedance.starksdk@6.4.5",
+    "com.kuaishou.minigame": "https://github.com/ksminigame/minigame-tuanjie-transform-sdk.git",
     "com.psygames.unitywebsocket": "https://github.com/psygames/UnityWebSocket.git#upm",
+    "com.qq.weixin.minigame": "https://gitee.com/wechat-minigame/minigame-tuanjie-transform-sdk.git#v0.1.27",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ide.visualstudio": "2.0.22",
     "com.unity.test-framework": "1.1.33",
