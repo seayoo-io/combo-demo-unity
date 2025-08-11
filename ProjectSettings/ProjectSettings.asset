@@ -46,7 +46,7 @@ PlayerSettings:
   - logo: {fileID: 21300000, guid: b77dd3ec182037c469e28146489b97c7, type: 3}
     duration: 2
   m_VirtualRealitySplashScreen: {fileID: 0}
-  expectedBundleIdentifier: combo.demo
+  expectedBundleIdentifier: com.seayoo.combo-demo
   integrityHash: 
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1024
@@ -1079,7 +1079,7 @@ PlayerSettings:
   scriptingBackend:
     Android: 1
     OpenHarmony: 1
-    Standalone: 1
+    Standalone: 0
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
   managedStrippingLevel:
