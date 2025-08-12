@@ -1101,6 +1101,7 @@ PlayerSettings:
     Stadia: 1
     Standalone: 1
     WebGL: 1
+    WeixinMiniGame: 4
     Windows Store Apps: 1
     XboxOne: 1
     iPhone: 1
