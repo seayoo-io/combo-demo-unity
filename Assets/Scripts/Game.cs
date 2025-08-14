@@ -31,7 +31,7 @@ public class Game : MonoBehaviour
         GameManager.Instance.RoleDic.TryGetValue(role.type, out sprite);
         roleImage.sprite = sprite;
         CheckAnnouncements(role.roleId, role.roleLevel);
-        SetupBtnStatus();
+        // SetupBtnStatus();
     }
 
     void OnDestroy()
