@@ -39,6 +39,7 @@ public class PlayerPanel : MonoBehaviour
                 newCount += item.itemCount;
             }
             newCount += extraCount;
+            GameManager.Instance.gold = newCount;
             SetCoin(newCount, firstLaunch);
             CoinUpdatedEvent.Invoke(new CoinUpdatedEvent{ coin = newCount });
         }); 
