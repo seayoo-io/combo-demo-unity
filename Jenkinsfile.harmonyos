@@ -216,7 +216,7 @@ pipeline {
                     distros.each { distro ->
                         def hapName = artifactName(name: "combo-demo", suffix: "-${distro}", extension: "hap")
 
-                        sh "find ${env.HARMONYOS_ROOT}/build/hap/debug -name '*.hap' -exec mv {} ${env.WORKSPACE}/${hapName} \\;"
+                        sh "find ${env.HARMONYOS_ROOT}/combo-build/hap/debug -name '*.hap' -exec mv {} ${env.WORKSPACE}/${hapName} \\;"
                     }                                    
                     archiveArtifacts artifacts: '*.hap', onlyIfSuccessful: true
                 }
