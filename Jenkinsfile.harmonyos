@@ -92,6 +92,7 @@ pipeline {
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
+        choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: 'Demo 横屏幕方向')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
@@ -171,6 +172,7 @@ pipeline {
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
                 COMBOSDK_ENDPOINT = getEndpoint()
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
+                SCREEN_ORIENTATION = "${params.SCREEN_ORIENTATION}"
             }
             steps {
                 script {
