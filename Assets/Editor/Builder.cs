@@ -137,6 +137,15 @@ public class Builder : EditorWindow
 
     static void BuildOpenHarmonyDemo()
     {
+        switch (Environment.GetEnvironmentVariable("SCREEN_ORIENTATION"))
+        {
+            case "Landscape":
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
+                break;
+            case "Portrait":
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+                break;
+        }
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         var splitVer = PlayerSettings.bundleVersion.Split(new char[] { '.' }, 2);
