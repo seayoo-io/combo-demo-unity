@@ -15,10 +15,11 @@ MonoBehaviour:
   ProjectConf:
     projectName: demo
     Appid: wxd6d9be885354383a
-    CDN: https://s3.shiyou.kingsoft.com/apps/demo/
+    CDN: http://10.211.130.4:8001
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
+    relativeDST: C:/shiyou-workspace/combo-demo-unity/outputs/weixinminigame
     DST: C:/shiyou-workspace/combo-demo-unity/outputs/weixinminigame
     StreamCDN: 
     bundleHashLength: 32
@@ -65,6 +66,7 @@ MonoBehaviour:
     enablePerfAnalysis: 0
     iOSAutoGCInterval: 10000
     enableIOSPerformancePlus: 0
+    enableiOSMetal: 0
     brotliMT: 1
     enableWasm2023: 0
   CompressTexture:
