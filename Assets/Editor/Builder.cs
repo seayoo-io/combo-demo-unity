@@ -97,6 +97,15 @@ public class Builder : EditorWindow
 
     static void BuildAndroidDemo()
     {
+        switch (Environment.GetEnvironmentVariable("SCREEN_ORIENTATION"))
+        {
+            case "Landscape":
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
+                break;
+            case "Portrait":
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+                break;
+        }
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         PlayerSettings.productName = Environment.GetEnvironmentVariable("COMBOSDK_GAME_ID")?? "demo";
@@ -123,6 +132,15 @@ public class Builder : EditorWindow
 
     static void BuildIOSDemo()
     {
+        switch (Environment.GetEnvironmentVariable("SCREEN_ORIENTATION"))
+        {
+            case "Landscape":
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
+                break;
+            case "Portrait":
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+                break;
+        }
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
         CreateDir(exportPath);

@@ -197,6 +197,77 @@ public class LoginReportEvent : ReportEventBase
 }
 
 [Serializable]
+public class RoundEndReportEvent : ReportEventBase
+{
+    [JsonProperty("role_name")]
+    public string roleName;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    public string os;
+    public string distro;
+    public string variant;
+    [JsonProperty("server_name")]
+    public string serverName;
+    [JsonProperty("role_level")]
+    public int roleLevel;
+    [JsonProperty("rank_score")]
+    public int rankScore;
+    [JsonProperty("game_gender")]
+    public string gameGender;
+    public GuildGroup guildGroup;
+    [JsonProperty("round_unique_id")]
+    public string roundUniqueId;
+    [JsonProperty("room_host_combo_id")]
+    public string roomHostComboId;
+    [JsonProperty("match_type")]
+    public string matchType;
+    [JsonProperty("queue_role_id_list")]
+    public List<string> queuRoleIdList;
+}
+
+[Serializable]
+public class BattleResultReportEvent : ReportEventBase
+{
+
+    public string distro;
+    public string variant;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    [JsonProperty("#event_name")]
+    public string eventName;
+    [JsonProperty("alliance_id")]
+    public string allianceId;
+    [JsonProperty("role_name")]
+    public string roleName;
+    public int diamond;
+    public int gold;
+    public double pay;
+    [JsonProperty("current_stage_id")]
+    public string currentStageId;
+    [JsonProperty("unique_request_id")]
+    public string uniqueRequestId;
+    [JsonProperty("stage_id")]
+    public int stageId;
+    [JsonProperty("stage_type")]
+    public int stageType;
+    [JsonProperty("battle_result")]
+    public string battleResult;
+}
+
+[Serializable]
+public class GuildGroup : Serializable
+{
+    [JsonProperty("guild_id")]
+    public string guildId;
+    [JsonProperty("guild_name")]
+    public string guildName;
+    [JsonProperty("guild_member_cnt")]
+    public int guildMemberCnt;
+    [JsonProperty("guild_position")]
+    public string guildPosition;
+}
+
+[Serializable]
 public class ActiveValueReportEvent : ReportEventBase
 {
     [JsonProperty("activity_points")]
@@ -705,7 +776,7 @@ public static class GameClient
     public static void ReportEvent(ReportEventBase reportEventBase, Action<string> onError)
     {
         Serializable body = new ReportEventBase();
-        if(reportEventBase is LoginReportEvent)
+        if (reportEventBase is LoginReportEvent)
         {
             var loginReport = (LoginReportEvent)reportEventBase;
             body = new LoginReportEvent
@@ -718,7 +789,7 @@ public static class GameClient
                 roleLevel = loginReport.roleLevel
             };
         }
-        else
+        else if (reportEventBase is ActiveValueReportEvent)
         {
             var activeValue = (ActiveValueReportEvent)reportEventBase;
             body = new ActiveValueReportEvent
@@ -730,6 +801,58 @@ public static class GameClient
                 roleId = activeValue.roleId,
                 activityPoints = activeValue.activityPoints,
                 pointsChanged = activeValue.pointsChanged
+            };
+        }
+        else if (reportEventBase is RoundEndReportEvent)
+        {
+            var roundEndValue = (RoundEndReportEvent)reportEventBase;
+            body = new RoundEndReportEvent
+            {
+                time = roundEndValue.time,
+                type = roundEndValue.type,
+                comboId = roundEndValue.comboId,
+                serverId = roundEndValue.serverId,
+                roleId = roundEndValue.roleId,
+                roleName = roundEndValue.roleName,
+                accountId = roundEndValue.accountId,
+                os = roundEndValue.os,
+                distro = roundEndValue.distro,
+                variant = roundEndValue.variant,
+                serverName = roundEndValue.serverName,
+                roleLevel = roundEndValue.roleLevel,
+                rankScore = roundEndValue.rankScore,
+                gameGender = roundEndValue.gameGender,
+                guildGroup = roundEndValue.guildGroup,
+                roundUniqueId = roundEndValue.roundUniqueId,
+                roomHostComboId = roundEndValue.roomHostComboId,
+                matchType = roundEndValue.matchType,
+                queuRoleIdList = roundEndValue.queuRoleIdList
+            };
+        }
+        else if (reportEventBase is BattleResultReportEvent)
+        {
+            var battleResult = (BattleResultReportEvent)reportEventBase;
+            body = new BattleResultReportEvent
+            {
+                time = battleResult.time,
+                type = battleResult.type,
+                eventName = battleResult.eventName,
+                accountId= battleResult.accountId,
+                comboId = battleResult.comboId,
+                serverId = battleResult.serverId,
+                roleId = battleResult.roleId,
+                roleName = battleResult.roleName,
+                distro = battleResult.distro,
+                variant = battleResult.variant,
+                allianceId = battleResult.allianceId,
+                diamond = battleResult.diamond,
+                gold = battleResult.gold,
+                pay = battleResult.pay,
+                currentStageId = battleResult.currentStageId,
+                uniqueRequestId = battleResult.currentStageId,
+                stageId = battleResult.stageId,
+                stageType = battleResult.stageType,
+                battleResult = battleResult.battleResult
             };
         }
         HttpRequest.Post(new HttpRequestOptions

@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['windows', 'lenovo_pc', 'w17173']
+DISTRO_LIST = ['windows', 'lenovo_pc', 'w17173', 'taptap_pc']
 
 SAFE_BRANCH_NAME = env.BRANCH_NAME ?: 'main'
 
@@ -74,7 +74,7 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo_main_windows_amd64.zip"
+    def comboZip = "combo-cli_main_windows_amd64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip comboZip
 }

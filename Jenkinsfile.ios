@@ -61,7 +61,7 @@ def installComboCLI() {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
-    def comboZip = "combo_main_darwin_arm64.zip"
+    def comboZip = "combo-cli_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
 }
@@ -158,6 +158,7 @@ pipeline {
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
+        choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
@@ -250,6 +251,7 @@ pipeline {
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
                 COMBOSDK_ENDPOINT = getEndpoint()
+                SCREEN_ORIENTATION = "${params.SCREEN_ORIENTATION}"
             }
             steps {
                 script {
