@@ -230,6 +230,7 @@ pipeline {
                         cd ${env.WORKSPACE}/output/minigame
                         zip -r ${targetZipPath} .
                     """
+                    archiveArtifacts artifacts: 'combo-demo*.zip', onlyIfSuccessful: true
                 }
             }
         }
