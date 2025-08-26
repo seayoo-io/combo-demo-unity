@@ -227,7 +227,7 @@ pipeline {
                     def targetZipPath = "${env.WORKSPACE}/${zipName}"
                     
                     sh """
-                        cd ${env.WORKSPACE}/output/minigame
+                        cd ${env.WORKSPACE}/output
                         zip -r ${targetZipPath} .
                     """
                     archiveArtifacts artifacts: 'combo-demo*.zip', onlyIfSuccessful: true
