@@ -15,7 +15,7 @@ MonoBehaviour:
   ProjectConf:
     projectName: demo
     Appid: wxd6d9be885354383a
-    CDN: http://10.211.130.4:8001
+    CDN: https://s3.shiyou.kingsoft.com/apps/demo/
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
