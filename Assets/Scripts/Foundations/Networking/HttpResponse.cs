@@ -14,7 +14,7 @@ namespace Networking
             return texture;
         }
         public byte[] ToRaw() => requestHandler.downloadHandler.data;
-        public string ToText() => requestHandler.isNetworkError ? requestHandler.error : requestHandler.downloadHandler.text;
+        public string ToText() => requestHandler.result == UnityWebRequest.Result.ConnectionError ? requestHandler.error : requestHandler.downloadHandler.text;
         public T ToJson<T>() {
             var text = requestHandler.downloadHandler.text;
             return JsonConvert.DeserializeObject<T>(text);
@@ -28,8 +28,8 @@ namespace Networking
         public int StatusCode => (int)requestHandler.responseCode;
         public Dictionary<string, string> Headers => requestHandler.GetResponseHeaders();
         public Dictionary<string, string> RequestHeaders { get; private set; }
-        public bool IsNetworkError => requestHandler.isNetworkError;
-        public bool IsHttpError => requestHandler.isHttpError;
+        public bool IsNetworkError => requestHandler.result == UnityWebRequest.Result.ConnectionError;
+        public bool IsHttpError => requestHandler.result == UnityWebRequest.Result.ProtocolError;
         public bool IsSuccess => !IsNetworkError && !IsHttpError;
         public HttpResponseBody Body { get; private set; }
         private UnityWebRequest requestHandler;
@@ -64,7 +64,7 @@ RESPONSE
 --headers:
 {resHeaderString}
 --body:
-{(requestHandler.isNetworkError ? requestHandler.error: requestHandler.downloadHandler?.text)}
+{(requestHandler.result == UnityWebRequest.Result.ConnectionError ? requestHandler.error: requestHandler.downloadHandler?.text)}
 ";
         }
     }
