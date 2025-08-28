@@ -236,6 +236,11 @@ public class Login : MonoBehaviour
         Screen.fullScreen = true;
     }
 
+    public void HorizonWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(640, 960, false);
+    }
 
     private void LoginGame(Action onSuccess, Action onFail)
     {
