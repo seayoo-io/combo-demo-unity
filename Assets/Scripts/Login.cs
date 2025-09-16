@@ -64,6 +64,9 @@ void Awake()
     }
     void Start()
     {
+        TDAnalytics.Track(
+            "login_start"
+        );
         CheckAnnouncements();
         if (GameManager.Instance.sdkIsLogin)
         {
