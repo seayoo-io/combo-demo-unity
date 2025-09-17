@@ -17,6 +17,7 @@ def downloadUnitySDK() {
 
     def files = findFiles glob: unitySDKZip
     unzip zipFile: files[0].name, dir: env.UNITY_SDK_PATH, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def writeComboYaml(buildKey) {
@@ -36,6 +37,7 @@ def downloadFrameworks() {
 
     def files = findFiles glob: frameworkZip
     unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def downloadComboSDKJson() {
@@ -64,6 +66,7 @@ def installComboCLI() {
     def comboZip = "combo-cli_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def getComboCredentialsId(String credentialSuffix) {
