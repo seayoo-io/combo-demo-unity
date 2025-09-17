@@ -66,6 +66,7 @@ def installComboCLI() {
     def comboZip = "combo-cli_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
+    sh "rm -f ${comboZip}"
 }
 
 def getComboCredentialsId(String credentialSuffix) {
