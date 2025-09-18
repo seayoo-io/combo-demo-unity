@@ -9,7 +9,8 @@ public enum ReportType
     Login,
     ActiveValue,
     RoundEnd,
-    BattleResult
+    BattleResult,
+    CardDraw
 }
 
 public class ReportDataManager : MonoBehaviour
@@ -18,7 +19,8 @@ public class ReportDataManager : MonoBehaviour
     private LoginReportEvent loginReport;
     private ActiveValueReportEvent activeValueReport;
     private RoundEndReportEvent roundEndReport;
-    private BattleResultReportEvent battleREsultReport;
+    private BattleResultReportEvent battleResultReport;
+    private CardDrawReportEvent cardDrawReport;
     private ReportType currentReport;
     void Start()
     {
@@ -118,7 +120,8 @@ public class ReportDataManager : MonoBehaviour
             roundUniqueId = Guid.NewGuid().ToString(),
             roomHostComboId = evt.roomHostId,
             matchType = evt.matchType,
-            queuRoleIdList = evt.queueRoleIdList
+            queuRoleIdList = evt.queueRoleIdList,
+            roundResult = evt.roundResult
         };
     }
 
@@ -129,7 +132,7 @@ public class ReportDataManager : MonoBehaviour
         ChangeTimeView.Instantiate();
         var roleInfo = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
         var gold = GameManager.Instance.gold;
-        battleREsultReport = new BattleResultReportEvent
+        battleResultReport = new BattleResultReportEvent
         {
             type = "battle_result",
             eventName = "battle_end",
@@ -153,6 +156,28 @@ public class ReportDataManager : MonoBehaviour
     }
 
     [EventSystem.BindEvent]
+    void HandleCardDraw(CardDrawEvent evt)
+    {
+        currentReport = ReportType.CardDraw;
+        ChangeTimeView.Instantiate();
+        var roleInfo = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        cardDrawReport = new CardDrawReportEvent
+        {
+            roleName = roleInfo.roleName,
+            accountId = ComboSDK.GetLoginInfo().comboId,
+            os = SystemInfo.operatingSystem,
+            distro = ComboSDK.GetDistro(),
+            variant = ComboSDK.GetVariant(),
+            serverName = roleInfo.serverName,
+            eventName = "card_draw",
+            comboId = ComboSDK.GetLoginInfo().comboId,
+            serverId = roleInfo.serverId,
+            roleId = roleInfo.roleId,
+            heroCnt = evt.heroCnt
+        };
+    }
+
+    [EventSystem.BindEvent]
     public void ChangeTime(ChangeTimeEvent evt)
     {
         time = ConvertUnixTimeToIso8601(evt.unixTime);
@@ -171,8 +196,12 @@ public class ReportDataManager : MonoBehaviour
                 GameClient.ReportEvent(roundEndReport, (error) => { });
                 break;
             case ReportType.BattleResult:
-                battleREsultReport.time = time;
-                GameClient.ReportEvent(battleREsultReport, (error) => { });
+                battleResultReport.time = time;
+                GameClient.ReportEvent(battleResultReport, (error) => { });
+                break;
+            case ReportType.CardDraw:
+                cardDrawReport.time = time;
+                GameClient.ReportEvent(cardDrawReport, (error) => { });
                 break;
         }
     }
