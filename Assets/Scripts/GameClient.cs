@@ -274,6 +274,27 @@ public class CardDrawReportEvent : ReportEventBase
 }
 
 [Serializable]
+public class DrawCardReportEvent : ReportEventBase
+{
+    public string distro;
+    public string variant;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    [JsonProperty("event_name")]
+    public string eventName;
+    public string os;
+    [JsonProperty("server_name")]
+    public string serverName;
+    [JsonProperty("role_name")]
+    public string roleName;
+    [JsonProperty("card_pool_id")]
+    public string cardPoolId;
+    [JsonProperty("card_cnt")]
+    public int cardCnt;
+}
+
+
+[Serializable]
 public class GuildGroup : Serializable
 {
     [JsonProperty("guild_id")]
@@ -892,6 +913,26 @@ public static class GameClient
                 serverId = cardDrawResule.serverId,
                 roleId = cardDrawResule.roleId,
                 heroCnt = cardDrawResule.heroCnt
+            };
+        }
+        else if (reportEventBase is DrawCardReportEvent)
+        {
+            var cardDrawResule = (DrawCardReportEvent)reportEventBase;
+            body = new DrawCardReportEvent
+            {
+                roleName = cardDrawResule.roleName,
+                accountId = cardDrawResule.accountId,
+                os = cardDrawResule.os,
+                distro = cardDrawResule.distro,
+                variant = cardDrawResule.variant,
+                serverName = cardDrawResule.serverName,
+                time = cardDrawResule.time,
+                eventName = cardDrawResule.eventName,
+                comboId = cardDrawResule.comboId,
+                serverId = cardDrawResule.serverId,
+                roleId = cardDrawResule.roleId,
+                cardPoolId = cardDrawResule.cardPoolId,
+                cardCnt = cardDrawResule.cardCnt
             };
         }
         HttpRequest.Post(new HttpRequestOptions
