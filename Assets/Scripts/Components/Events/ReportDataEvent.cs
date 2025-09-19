@@ -29,3 +29,9 @@ public class CardDrawEvent : Event<CardDrawEvent>
 {
     public int heroCnt;
 }
+
+public class DrawCardvent : Event<DrawCardvent>
+{
+    public string cardPoolId;
+    public int cardCnt;
+}

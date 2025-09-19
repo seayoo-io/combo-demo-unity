@@ -15,6 +15,8 @@ internal class SettingView : View<SettingView>
     public InputField queueRoleIdList;
     public InputField stageIdText;
     public InputField heroCntText;
+    public InputField cardPoolIdText;
+    public InputField cardCntText;
     public Dropdown roundResultDropdown;
     public Dropdown stageTypeDropDown;
     public Dropdown battleResultDropDown;
@@ -162,24 +164,6 @@ internal class SettingView : View<SettingView>
         });
     }
 
-    public void OnCardDrawReport()
-    {
-        if (string.IsNullOrEmpty(heroCntText.text))
-        {
-            Toast.Show("Hero Cnt 不可为空");
-            return;
-        }
-        if (int.Parse(heroCntText.text) == 0)
-        {
-            Toast.Show("Hero Cnt 不可为 0");
-            return;
-        }
-        CardDrawEvent.Invoke(new CardDrawEvent
-        {
-            heroCnt = int.Parse(heroCntText.text)
-        });
-    }
-
     private Dictionary<int, int> stageType = new Dictionary<int, int>
     {
         { 0, 1 },
@@ -213,6 +197,48 @@ internal class SettingView : View<SettingView>
             stageId = int.Parse(stageIdText.text),
             stageType = stageTypeVaule,
             battleType = battleResultVaule
+        });
+    }
+
+    public void OnCardDrawReport()
+    {
+        if (string.IsNullOrEmpty(heroCntText.text))
+        {
+            Toast.Show("Hero Cnt 不可为空");
+            return;
+        }
+        if (int.Parse(heroCntText.text) == 0)
+        {
+            Toast.Show("Hero Cnt 不可为 0");
+            return;
+        }
+        CardDrawEvent.Invoke(new CardDrawEvent
+        {
+            heroCnt = int.Parse(heroCntText.text)
+        });
+    }
+
+    public void OnDrawCardReport()
+    {
+        if (string.IsNullOrEmpty(cardPoolIdText.text))
+        {
+            Toast.Show("抽奖卡池不可为空");
+            return;
+        }
+        if (string.IsNullOrEmpty(cardCntText.text))
+        {
+            Toast.Show("Card Cnt 不可为空");
+            return;
+        }
+        if (int.Parse(cardCntText.text) == 0)
+        {
+            Toast.Show("Card Cnt 不可为 0");
+            return;
+        }
+        DrawCardvent.Invoke(new DrawCardvent
+        {
+            cardPoolId = cardPoolIdText.text,
+            cardCnt = int.Parse(cardCntText.text)
         });
     }
 

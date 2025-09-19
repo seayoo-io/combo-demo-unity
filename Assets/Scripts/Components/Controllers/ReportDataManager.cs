@@ -10,7 +10,8 @@ public enum ReportType
     ActiveValue,
     RoundEnd,
     BattleResult,
-    CardDraw
+    CardDraw,
+    DrawCard
 }
 
 public class ReportDataManager : MonoBehaviour
@@ -21,6 +22,7 @@ public class ReportDataManager : MonoBehaviour
     private RoundEndReportEvent roundEndReport;
     private BattleResultReportEvent battleResultReport;
     private CardDrawReportEvent cardDrawReport;
+    private DrawCardReportEvent drawCardReport;
     private ReportType currentReport;
     void Start()
     {
@@ -178,6 +180,29 @@ public class ReportDataManager : MonoBehaviour
     }
 
     [EventSystem.BindEvent]
+    void HandleDrawCard(DrawCardvent evt)
+    {
+        currentReport = ReportType.DrawCard;
+        ChangeTimeView.Instantiate();
+        var roleInfo = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        drawCardReport = new DrawCardReportEvent
+        {
+            roleName = roleInfo.roleName,
+            accountId = ComboSDK.GetLoginInfo().comboId,
+            os = SystemInfo.operatingSystem,
+            distro = ComboSDK.GetDistro(),
+            variant = ComboSDK.GetVariant(),
+            serverName = roleInfo.serverName,
+            eventName = "draw_card",
+            comboId = ComboSDK.GetLoginInfo().comboId,
+            serverId = roleInfo.serverId,
+            roleId = roleInfo.roleId,
+            cardPoolId = evt.cardPoolId,
+            cardCnt= evt.cardCnt
+        };
+    }
+
+    [EventSystem.BindEvent]
     public void ChangeTime(ChangeTimeEvent evt)
     {
         time = ConvertUnixTimeToIso8601(evt.unixTime);
@@ -202,6 +227,10 @@ public class ReportDataManager : MonoBehaviour
             case ReportType.CardDraw:
                 cardDrawReport.time = time;
                 GameClient.ReportEvent(cardDrawReport, (error) => { });
+                break;
+            case ReportType.DrawCard:
+                drawCardReport.time = time;
+                GameClient.ReportEvent(drawCardReport, (error) => { });
                 break;
         }
     }
