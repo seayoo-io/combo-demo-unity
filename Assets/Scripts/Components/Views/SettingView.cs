@@ -13,6 +13,13 @@ internal class SettingView : View<SettingView>
     public InputField roomHostId;
     public InputField matchType;
     public InputField queueRoleIdList;
+    public InputField stageIdText;
+    public InputField heroCntText;
+    public InputField cardPoolIdText;
+    public InputField cardCntText;
+    public Dropdown roundResultDropdown;
+    public Dropdown stageTypeDropDown;
+    public Dropdown battleResultDropDown;
     public Button logoutBtn;
     public Button clearBtn;
     public Button cancelBtn;
@@ -147,11 +154,91 @@ internal class SettingView : View<SettingView>
             Toast.Show("队列成员 id 列表格式不正确，请使用分号分隔");
             return;
         }
+        var roundResult = roundResultDropdown.options[roundResultDropdown.value].text;
         RoundEndEvent.Invoke(new RoundEndEvent
         {
             roomHostId = roomHostId.text,
             matchType = matchType.text,
-            queueRoleIdList = roleIdList
+            queueRoleIdList = roleIdList,
+            roundResult = roundResult
+        });
+    }
+
+    private Dictionary<int, int> stageType = new Dictionary<int, int>
+    {
+        { 0, 1 },
+        { 1, 2 },
+        { 2, 3 },
+        { 3, 4 },
+        { 4, 63 },
+        { 5, 65 },
+        { 6, 11 }
+    };
+
+    private Dictionary<int, string> battleResult = new Dictionary<int, string>
+    {
+        { 0, "BATTLE_WIN" },
+        { 1, "BATTLE_FAIL" },
+        { 2, "1" }
+    };
+
+    public void OnBattleEndReport()
+    {
+        if (string.IsNullOrEmpty(stageIdText.text))
+        {
+            Toast.Show("关卡 id 不可为空");
+            return;
+        }
+
+        var stageTypeVaule = stageType[stageTypeDropDown.value];
+        var battleResultVaule = battleResult[battleResultDropDown.value];
+        BattleEndEvent.Invoke(new BattleEndEvent
+        {
+            stageId = int.Parse(stageIdText.text),
+            stageType = stageTypeVaule,
+            battleType = battleResultVaule
+        });
+    }
+
+    public void OnCardDrawReport()
+    {
+        if (string.IsNullOrEmpty(heroCntText.text))
+        {
+            Toast.Show("Hero Cnt 不可为空");
+            return;
+        }
+        if (int.Parse(heroCntText.text) == 0)
+        {
+            Toast.Show("Hero Cnt 不可为 0");
+            return;
+        }
+        CardDrawEvent.Invoke(new CardDrawEvent
+        {
+            heroCnt = int.Parse(heroCntText.text)
+        });
+    }
+
+    public void OnDrawCardReport()
+    {
+        if (string.IsNullOrEmpty(cardPoolIdText.text))
+        {
+            Toast.Show("抽奖卡池不可为空");
+            return;
+        }
+        if (string.IsNullOrEmpty(cardCntText.text))
+        {
+            Toast.Show("Card Cnt 不可为空");
+            return;
+        }
+        if (int.Parse(cardCntText.text) == 0)
+        {
+            Toast.Show("Card Cnt 不可为 0");
+            return;
+        }
+        DrawCardvent.Invoke(new DrawCardvent
+        {
+            cardPoolId = cardPoolIdText.text,
+            cardCnt = int.Parse(cardCntText.text)
         });
     }
 

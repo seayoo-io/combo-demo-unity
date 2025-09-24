@@ -17,6 +17,7 @@ def downloadUnitySDK() {
 
     def files = findFiles glob: unitySDKZip
     unzip zipFile: files[0].name, dir: env.UNITY_SDK_PATH, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def writeComboYaml(buildKey) {
@@ -36,6 +37,7 @@ def downloadFrameworks() {
 
     def files = findFiles glob: frameworkZip
     unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def downloadComboSDKJson() {
@@ -64,6 +66,7 @@ def installComboCLI() {
     def comboZip = "combo-cli_main_darwin_arm64.zip"
     copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
+    sh "rm -f ${comboZip}"
 }
 
 def getComboCredentialsId(String credentialSuffix) {
@@ -159,6 +162,7 @@ pipeline {
             trim: true)
         choice(name: 'ENGINE', choices: ['Unity', 'Tuanjie'], description: '引擎：Unity/Tuanjie')
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
+        choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
@@ -252,6 +256,7 @@ pipeline {
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
                 COMBOSDK_ENDPOINT = getEndpoint()
+                SCREEN_ORIENTATION = "${params.SCREEN_ORIENTATION}"
             }
             steps {
                 script {

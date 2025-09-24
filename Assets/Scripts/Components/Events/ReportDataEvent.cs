@@ -15,4 +15,23 @@ public class RoundEndEvent : Event<RoundEndEvent>
     public string roomHostId;
     public string matchType;
     public List<string> queueRoleIdList;
+    public string roundResult;
+}
+
+public class BattleEndEvent : Event<BattleEndEvent>
+{
+    public int stageId;
+    public int stageType;
+    public string battleType;
+}
+
+public class CardDrawEvent : Event<CardDrawEvent>
+{
+    public int heroCnt;
+}
+
+public class DrawCardvent : Event<DrawCardvent>
+{
+    public string cardPoolId;
+    public int cardCnt;
 }

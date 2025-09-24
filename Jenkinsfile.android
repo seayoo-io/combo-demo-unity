@@ -100,6 +100,7 @@ pipeline {
         booleanParam(name: 'ENABLE_KEEP_RENDERING_ON_PAUSE',
             defaultValue: false,
             description: 'When checked, will open EnableKeepRenderingOnPause.')
+        choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
@@ -180,6 +181,7 @@ pipeline {
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
                 COMBOSDK_ENDPOINT = getEndpoint()
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
+                SCREEN_ORIENTATION = "${params.SCREEN_ORIENTATION}"
             }
             steps {
                 script {

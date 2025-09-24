@@ -223,7 +223,76 @@ public class RoundEndReportEvent : ReportEventBase
     public string matchType;
     [JsonProperty("queue_role_id_list")]
     public List<string> queuRoleIdList;
+    [JsonProperty("round_result")]
+    public string roundResult;
 }
+
+[Serializable]
+public class BattleResultReportEvent : ReportEventBase
+{
+    public string distro;
+    public string variant;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    [JsonProperty("#event_name")]
+    public string eventName;
+    [JsonProperty("alliance_id")]
+    public string allianceId;
+    [JsonProperty("role_name")]
+    public string roleName;
+    public int diamond;
+    public int gold;
+    public double pay;
+    [JsonProperty("current_stage_id")]
+    public string currentStageId;
+    [JsonProperty("unique_request_id")]
+    public string uniqueRequestId;
+    [JsonProperty("stage_id")]
+    public int stageId;
+    [JsonProperty("stage_type")]
+    public int stageType;
+    [JsonProperty("battle_result")]
+    public string battleResult;
+}
+
+[Serializable]
+public class CardDrawReportEvent : ReportEventBase
+{
+    public string distro;
+    public string variant;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    [JsonProperty("event_name")]
+    public string eventName;
+    public string os;
+    [JsonProperty("server_name")]
+    public string serverName;
+    [JsonProperty("role_name")]
+    public string roleName;
+    [JsonProperty("hero_cnt")]
+    public int heroCnt;
+}
+
+[Serializable]
+public class DrawCardReportEvent : ReportEventBase
+{
+    public string distro;
+    public string variant;
+    [JsonProperty("#account_id")]
+    public string accountId;
+    [JsonProperty("event_name")]
+    public string eventName;
+    public string os;
+    [JsonProperty("server_name")]
+    public string serverName;
+    [JsonProperty("role_name")]
+    public string roleName;
+    [JsonProperty("card_pool_id")]
+    public string cardPoolId;
+    [JsonProperty("card_cnt")]
+    public int cardCnt;
+}
+
 
 [Serializable]
 public class GuildGroup : Serializable
@@ -776,7 +845,7 @@ public static class GameClient
                 pointsChanged = activeValue.pointsChanged
             };
         }
-        else
+        else if (reportEventBase is RoundEndReportEvent)
         {
             var roundEndValue = (RoundEndReportEvent)reportEventBase;
             body = new RoundEndReportEvent
@@ -799,7 +868,73 @@ public static class GameClient
                 roundUniqueId = roundEndValue.roundUniqueId,
                 roomHostComboId = roundEndValue.roomHostComboId,
                 matchType = roundEndValue.matchType,
-                queuRoleIdList = roundEndValue.queuRoleIdList
+                queuRoleIdList = roundEndValue.queuRoleIdList,
+                roundResult = roundEndValue.roundResult
+            };
+        }
+        else if (reportEventBase is BattleResultReportEvent)
+        {
+            var battleResult = (BattleResultReportEvent)reportEventBase;
+            body = new BattleResultReportEvent
+            {
+                time = battleResult.time,
+                type = battleResult.type,
+                eventName = battleResult.eventName,
+                accountId = battleResult.accountId,
+                comboId = battleResult.comboId,
+                serverId = battleResult.serverId,
+                roleId = battleResult.roleId,
+                roleName = battleResult.roleName,
+                distro = battleResult.distro,
+                variant = battleResult.variant,
+                allianceId = battleResult.allianceId,
+                diamond = battleResult.diamond,
+                gold = battleResult.gold,
+                pay = battleResult.pay,
+                currentStageId = battleResult.currentStageId,
+                uniqueRequestId = battleResult.currentStageId,
+                stageId = battleResult.stageId,
+                stageType = battleResult.stageType,
+                battleResult = battleResult.battleResult
+            };
+        }
+        else if (reportEventBase is CardDrawReportEvent)
+        {
+            var cardDrawResule = (CardDrawReportEvent)reportEventBase;
+            body = new CardDrawReportEvent
+            {
+                roleName = cardDrawResule.roleName,
+                accountId = cardDrawResule.accountId,
+                os = cardDrawResule.os,
+                distro = cardDrawResule.distro,
+                variant = cardDrawResule.variant,
+                serverName = cardDrawResule.serverName,
+                time = cardDrawResule.time,
+                eventName = cardDrawResule.eventName,
+                comboId = cardDrawResule.comboId,
+                serverId = cardDrawResule.serverId,
+                roleId = cardDrawResule.roleId,
+                heroCnt = cardDrawResule.heroCnt
+            };
+        }
+        else if (reportEventBase is DrawCardReportEvent)
+        {
+            var cardDrawResule = (DrawCardReportEvent)reportEventBase;
+            body = new DrawCardReportEvent
+            {
+                roleName = cardDrawResule.roleName,
+                accountId = cardDrawResule.accountId,
+                os = cardDrawResule.os,
+                distro = cardDrawResule.distro,
+                variant = cardDrawResule.variant,
+                serverName = cardDrawResule.serverName,
+                time = cardDrawResule.time,
+                eventName = cardDrawResule.eventName,
+                comboId = cardDrawResule.comboId,
+                serverId = cardDrawResule.serverId,
+                roleId = cardDrawResule.roleId,
+                cardPoolId = cardDrawResule.cardPoolId,
+                cardCnt = cardDrawResule.cardCnt
             };
         }
         HttpRequest.Post(new HttpRequestOptions
