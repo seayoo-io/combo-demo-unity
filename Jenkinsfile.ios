@@ -269,6 +269,9 @@ pipeline {
         stage('Assemble SDK') {
             steps {
                 script {
+                    // 清理 Derived Data 目录
+                    sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
+
                     sh "./combo ios setup --xcode-autoconf --xcode-project ${env.BUILD_DIR}"
                 }
             }
@@ -277,7 +280,6 @@ pipeline {
             steps {
                 script {
                     dir(env.BUILD_DIR) {
-                        sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
                         updateCodeSigningSettings()
                         keychainUnlock()
 
