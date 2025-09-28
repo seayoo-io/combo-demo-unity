@@ -152,6 +152,7 @@ public class RankManager : MonoBehaviour
             ServerId = evt.serverId,
             RoleId = evt.roleId,
             RoleName = evt.roleName,
+            Context = evt.context,
             Width = evt.width,
             Height = evt.height
         };
