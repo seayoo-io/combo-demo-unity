@@ -64,8 +64,8 @@ def installComboCLI() {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
-    def comboZip = "combo-cli_assemble1_darwin_arm64.zip"
-    copyArtifacts projectName: 'SDK/Client/Combo/cli/assemble1', filter: comboZip
+    def comboZip = "combo-cli_main_darwin_arm64.zip"
+    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip zipFile: comboZip, quiet: true
     sh "rm -f ${comboZip}"
 }
