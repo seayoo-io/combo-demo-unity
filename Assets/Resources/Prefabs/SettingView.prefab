@@ -11057,8 +11057,7 @@ MonoBehaviour:
   dropdown: {fileID: 204679823363799929}
   playerPrefs: Gamer
   historyRecords:
-  - wjx_test_2
-  - event_test_close
+  - demo.webview
 --- !u!1 &6488125290681798611
 GameObject:
   m_ObjectHideFlags: 0
