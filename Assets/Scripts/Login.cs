@@ -24,9 +24,9 @@ public class Login : MonoBehaviour
     private int loginRetryCount = 0;
     private string lastError = "";
 
-    void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+    public static void SetupByAfterAssembliesLoaded()
     {
-        EventSystem.Register(this);
         ComboSDK.OnKickOut(result =>
         {
             if (result.IsSuccess)
@@ -41,7 +41,17 @@ public class Login : MonoBehaviour
                     SceneManager.LoadScene("Login");
                 }
             }
+            else
+            {
+                Log.E(result.Error.DetailMessage);
+                Application.Quit();
+            }
         });
+    }
+
+    void Awake()
+    {
+        EventSystem.Register(this);
 
         if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
         {
