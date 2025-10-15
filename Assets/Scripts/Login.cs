@@ -59,6 +59,8 @@ public class Login : MonoBehaviour
             middleBtn.interactable = false;
             bigBtn.interactable = false;
         }
+
+
     }
     void Start()
     {
@@ -391,6 +393,31 @@ public class Login : MonoBehaviour
             {
                 var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
                 image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+
+                if (!res.Data.newAnnouncementsAvailable)
+                {
+                    return;
+                }
+
+                var opts = new OpenAnnouncementsOptions()
+                {
+                    Width = 100,
+                    Height = 100,
+                };
+                Log.I($"OpenAnnouncementsOptions: 未登录状态");
+
+                ComboSDK.OpenAnnouncements(opts, result =>
+                {
+                    if (result.IsSuccess)
+                    {
+                        OpenAnnouncementsEvent.Invoke();
+                        Log.I("公告打开成功");
+                    }
+                    else
+                    {
+                        Toast.Show($"公告打开失败：{result.Error.Message}");
+                    }
+                });
             }
             else
             {
