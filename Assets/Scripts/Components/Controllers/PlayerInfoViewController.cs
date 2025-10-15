@@ -11,6 +11,7 @@ public static class PlayerInfoViewController
         var playerInfoView = PlayerInfoView.Instantiate();
         InitView(playerInfoView);
         playerInfoView.SetCopyCallback(() => OnCopy());
+        playerInfoView.SetCopyComboIdCallback(() => OnCopyComboId());
         playerInfoView.SetManageAccountCallback(() => OnManageAccount());
         playerInfoView.SetChangePasswordCallback(() => OnChangePassword());
         playerInfoView.SetDeleteAccountCallback(() => OnDeleteAccount());
@@ -28,14 +29,16 @@ public static class PlayerInfoViewController
     public static void OnCopy()
     {
         string playerId;
-         if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
-        {
-            playerId = ComboSDK.SeayooAccount.UserId;
-        }
-        else
-        {
-            playerId = ComboSDK.GetLoginInfo().comboId;
-        }
+        playerId = ComboSDK.SeayooAccount.UserId;
+
+        UnityEngine.GUIUtility.systemCopyBuffer = playerId;
+        Toast.Show("复制成功");
+    }
+    
+    public static void OnCopyComboId()
+    {
+        string playerId;
+        playerId = ComboSDK.GetLoginInfo().comboId;
 
         UnityEngine.GUIUtility.systemCopyBuffer = playerId;
         Toast.Show("复制成功");
@@ -79,6 +82,7 @@ public static class PlayerInfoViewController
             var info = ComboSDK.GetLoginInfo();
             playerId = info.comboId;
             seayooId = "无";
+            view.copyBtn.gameObject.SetActive(false);
             Log.I($"GetUserInfo: Combo ID : = {playerId}," + $"identityToken = {info.identityToken}");
         }
 

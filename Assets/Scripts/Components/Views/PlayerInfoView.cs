@@ -13,6 +13,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Text Idp;
     public Text accountName;
     public Button copyBtn;
+    public Button copyComboIdBtn;
     public Button cancelBtn;
     public Button changeRoleBtn;
     public Button manageAccountBtn;
@@ -29,6 +30,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public Text roleName;
     public Text createTime;
     private Action OnCopy;
+    private Action OnCopyComboId;
     private Action OnCancel;
     private Action OnManageAccount;
     private Action OnChangePassword;
@@ -39,6 +41,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     void Awake()
     {
         copyBtn.onClick.AddListener(OnCopyConfigBtn);
+        copyComboIdBtn.onClick.AddListener(OnCopyComboIdConfigBtn);
         cancelBtn.onClick.AddListener(OnCancelConfigBtn);
         manageAccountBtn.onClick.AddListener(OnManageAccountConfigBtn);
         changePasswordBtn.onClick.AddListener(OnChangePasswordConfigBtn);
@@ -56,6 +59,7 @@ internal class PlayerInfoView : View<PlayerInfoView>
     void OnDestroy()
     {
         copyBtn.onClick.RemoveListener(OnCopyConfigBtn);
+        copyComboIdBtn.onClick.RemoveListener(OnCopyComboIdConfigBtn);
         cancelBtn.onClick.RemoveListener(OnCancelConfigBtn);
         manageAccountBtn.onClick.RemoveListener(OnManageAccountConfigBtn);
         changePasswordBtn.onClick.RemoveListener(OnChangePasswordConfigBtn);
@@ -175,6 +179,10 @@ internal class PlayerInfoView : View<PlayerInfoView>
     {
         OnCopy.Invoke();
     }
+    void OnCopyComboIdConfigBtn()
+    {
+        OnCopyComboId.Invoke();
+    }
     void OnCancelConfigBtn()
     {
         OnCancel.Invoke();
@@ -198,6 +206,10 @@ internal class PlayerInfoView : View<PlayerInfoView>
     public void SetCopyCallback(Action OnCopy)
     {
         this.OnCopy = OnCopy;
+    }
+    public void SetCopyComboIdCallback(Action OnCopyComboId)
+    {
+        this.OnCopyComboId = OnCopyComboId;
     }
     public void SetCancelCallback(Action OnCancel)
     {
