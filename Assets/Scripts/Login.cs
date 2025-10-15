@@ -399,14 +399,14 @@ public class Login : MonoBehaviour
                     return;
                 }
 
-                var opts = new OpenAnnouncementsOptions()
+                var announcementOpts = new OpenAnnouncementsOptions()
                 {
                     Width = 100,
                     Height = 100,
                 };
                 Log.I($"OpenAnnouncementsOptions: 未登录状态");
 
-                ComboSDK.OpenAnnouncements(opts, result =>
+                ComboSDK.OpenAnnouncements(announcementOpts, result =>
                 {
                     if (result.IsSuccess)
                     {
