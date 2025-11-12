@@ -108,11 +108,14 @@ public class Builder : EditorWindow
         buildPlayerOptions.scenes = new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Game.unity" };
         buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
         buildPlayerOptions.target = BuildTarget.Android;
-#if UNITY_2019_1_OR_NEWER
+    #if UNITY_6000_0_OR_NEWER
+        // Unity 6 系列：建议使用开发+调试，并连接 Profiler
+        buildPlayerOptions.options = BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler;
+    #elif UNITY_2019_1_OR_NEWER
         buildPlayerOptions.options = BuildOptions.AllowDebugging;
-#else
+    #else
         buildPlayerOptions.options = BuildOptions.AcceptExternalModificationsToPlayer; // 这个选项会导出Android工程，而不是构建APK
-#endif
+    #endif
 
         Build(buildPlayerOptions);
     }
