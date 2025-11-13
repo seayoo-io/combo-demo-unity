@@ -2,7 +2,7 @@
 
 DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu', 'huya', 'hykb']
 
-def JDK_VERSION = 'amazon-corretto-11.0.21.9.1'
+def JDK_VERSION = 'amazon-corretto-17.0.15.6.1'
 
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
@@ -106,7 +106,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2021.3.45f1')
+        UNITY_ROOT = getUnityRoot('6000.0.62f1')
         ANDROID_ROOT = "build"     
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
     }
@@ -206,7 +206,7 @@ pipeline {
 
                     sh 'chmod +x ./combo'
                     dir(env.ANDROID_ROOT) {
-                        withGradle('6.9.4') {
+                        withGradle('8.11.1') {
                             def credentialsId = "combo-${params.GAME_ID}.build-key"
                             withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: credentialsId)]) {
                                 writeComboYaml(COMBOSDK_BUILD_KEY)
