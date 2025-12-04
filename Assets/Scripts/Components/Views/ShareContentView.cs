@@ -99,8 +99,8 @@ internal class ShareContentView : View<ShareContentView>
             OnLinkSelectPlatform?.Invoke(new LinkShareOptionViewModel {
                 title = linkTitle.text,
                 contents = linkContent.text,
-                linkUrl = "https://catsnsoup.seayoo.com/",
-                linkCoverUrl = coverUrl
+                linkUrl = "https://ggd.seayoo.com/app?roomId=70000560&type=invite",
+                linkCoverUrl = null
             });
         });
     }
