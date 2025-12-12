@@ -33,8 +33,8 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo-cli_test_darwin_arm64.zip"
-    copyArtifacts projectName: 'SDK/Client/Combo/cli/test', filter: comboZip
+    def comboZip = "combo-cli_main_darwin_arm64.zip"
+    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
     unzip comboZip
 }
 
