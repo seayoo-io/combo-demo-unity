@@ -209,7 +209,7 @@ public class Builder : EditorWindow
         scriptableObject.PublishableKey = publishableKey;
         scriptableObject.Endpoint = endpoint;
 #if UNITY_IOS
-        scriptableObject.EnableIOSPostBuild = bool.Parse(enableIOSPostBuild);
+        scriptableObject.EnableIOSPostBuild = false;
         scriptableObject.IOSComboSDK = iosComboSDK;
 #elif UNITY_ANDROID
         scriptableObject.EnableKeepRenderingOnPause = bool.Parse(keepRenderingOnPause);
