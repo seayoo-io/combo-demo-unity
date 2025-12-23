@@ -28,6 +28,7 @@ combo:
   game-id: ${gameId}
   build-key: ${buildKey}
   endpoint: ${endpoint}
+  sdk-release-url: https://sdk.seayoo.com/debug
 """
 }
 
@@ -43,7 +44,7 @@ def downloadFrameworks() {
 def downloadComboSDKJson() {
     sh '''
         chmod +x ./combo
-        ./combo ios setup
+        ./combo ios setup --xcode-autoconf
         mv *.json ComboSDK/
     '''
 }
