@@ -235,7 +235,7 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
-                ENABLE_IOS_POST_BUILD = "true"
+                ENABLE_IOS_POST_BUILD = "false"
             }
             steps {
                 script {
