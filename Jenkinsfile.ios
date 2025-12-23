@@ -226,7 +226,7 @@ pipeline {
                     loadEnvironmentParams()
                     installComboCLI()
                     // downloadFrameworks()
-                    downloadComboSDKJson()
+                    // downloadComboSDKJson()
                 }
             }
         }
