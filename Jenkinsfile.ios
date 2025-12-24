@@ -44,7 +44,7 @@ combo:
 def assembleXcodeProject() {
     sh '''
         chmod +x ./combo
-        ./combo ios setup --xcode-autoconf --xcode-project ${env.BUILD_DIR}
+        ./combo ios setup --xcode-autoconf --xcode-project ${BUILD_DIR}
     '''
 }
 
