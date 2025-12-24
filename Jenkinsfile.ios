@@ -43,6 +43,12 @@ combo:
 
 def assembleXcodeProject() {
     sh '''
+        // 清理 Derived Data 目录
+        sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
+
+        // 清理 SDK 产物缓存
+        sh "rm -rf ~/.combo/sdk"
+        
         chmod +x ./combo
         ./combo ios setup --xcode-autoconf --xcode-project ${BUILD_DIR}
     '''
