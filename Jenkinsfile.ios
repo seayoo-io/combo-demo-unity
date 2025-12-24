@@ -169,7 +169,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2019.4.40f1')
+        UNITY_ROOT = getUnityRoot('2021.3.45f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
         COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
