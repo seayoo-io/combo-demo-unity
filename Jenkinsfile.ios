@@ -28,23 +28,25 @@ combo:
   game-id: ${gameId}
   build-key: ${buildKey}
   endpoint: ${endpoint}
+  sdk-release-url: https://sdk.seayoo.com/debug
 """
 }
 
-def downloadFrameworks() {
-    def frameworkZip = "*.zip"
-    copyArtifacts projectName: params.IOS_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
+// def downloadFrameworks() {
+//     def frameworkZip = "*.zip"
+//     copyArtifacts projectName: params.IOS_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
 
-    def files = findFiles glob: frameworkZip
-    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
-    sh "rm -f ${files[0].name}"
-}
+//     def files = findFiles glob: frameworkZip
+//     unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
+//     sh "rm -f ${files[0].name}"
+// }
 
-def downloadComboSDKJson() {
+def assembleXcodeProject() {
     sh '''
+        rm -rf ~/Library/Developer/Xcode/DerivedData
+        rm -rf ~/.combo/sdk
         chmod +x ./combo
-        ./combo ios setup
-        mv *.json ComboSDK/
+        ./combo ios setup --xcode-autoconf --xcode-project ${BUILD_DIR}
     '''
 }
 
@@ -167,7 +169,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2019.4.40f1')
+        UNITY_ROOT = getUnityRoot('2021.3.45f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
         COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
@@ -225,8 +227,8 @@ pipeline {
                 script {
                     loadEnvironmentParams()
                     installComboCLI()
-                    downloadFrameworks()
-                    downloadComboSDKJson()
+                    // downloadFrameworks()
+                    // downloadComboSDKJson()
                 }
             }
         }
@@ -234,7 +236,7 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
-                ENABLE_IOS_POST_BUILD = "true"
+                ENABLE_IOS_POST_BUILD = "false"
             }
             steps {
                 script {
@@ -262,6 +264,13 @@ pipeline {
                     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
                         callUnity commands: "-executeMethod Builder.BuildIOSDemo"
                     }
+                }
+            }
+        }
+        stage('Assemble Xcode') {
+            steps {
+                script {
+                    assembleXcodeProject()
                 }
             }
         }
