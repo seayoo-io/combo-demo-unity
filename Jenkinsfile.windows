@@ -258,8 +258,6 @@ pipeline {
                             }
                         }
                     }
-
-                    notify withDuration: true, withSummary: true, withChanges: true, downloads: downloads, what: "**distro: ${params.DISTRO}**"
                 }
             }
         }
