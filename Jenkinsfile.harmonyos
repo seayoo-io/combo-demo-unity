@@ -92,7 +92,7 @@ pipeline {
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         string(name: 'CLI_NAME',
-            defaultValue: "SDK/Client/Combo/cli/main",
+            defaultValue: "main",
             description: 'Cli 工程的 Jenkins Full project name',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
