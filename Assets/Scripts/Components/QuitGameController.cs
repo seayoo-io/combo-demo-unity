@@ -13,6 +13,7 @@ public class QuitGameController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape))
         {
+            Log.I("KeyCode.Escape called");
             // 连续两次按返回键/滑动返回手势
             if (Time.time - lastPressTime < doublePressInterval)
             {
@@ -32,6 +33,7 @@ public class QuitGameController : MonoBehaviour
     // 调用 QuitGame 退出游戏
     void QuitGame()
     {
+        Log.I("QuitGame API called");
         if (ComboSDK.IsFeatureAvailable(Feature.QUIT))
         {
             Log.I("Game Exiting");
@@ -49,6 +51,7 @@ public class QuitGameController : MonoBehaviour
         }
         else
         {
+            Log.I("show quitGame alert");
             UIController.Alert(UIAlertType.Singleton, "退出游戏", "确认退出游戏吗？", "确定", "取消", () => Application.Quit(), () => {});
         }
     }
