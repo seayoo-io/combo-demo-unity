@@ -10,6 +10,16 @@ internal class SettingView : View<SettingView>
     public InputField shortLink;
     public InputField promoPseudoPurchaseAmount;
     public InputField activeValue;
+    public InputField roomHostId;
+    public InputField matchType;
+    public InputField queueRoleIdList;
+    public InputField stageIdText;
+    public InputField heroCntText;
+    public InputField cardPoolIdText;
+    public InputField cardCntText;
+    public Dropdown roundResultDropdown;
+    public Dropdown stageTypeDropDown;
+    public Dropdown battleResultDropDown;
     public Button logoutBtn;
     public Button clearBtn;
     public Button cancelBtn;
@@ -84,6 +94,152 @@ internal class SettingView : View<SettingView>
     public void OnLoginReport()
     {
         LoginEvent.Invoke(new LoginEvent {});
+    }
+
+    public void OnRoundEndReport()
+    {
+        if (string.IsNullOrEmpty(roomHostId.text))
+        {
+            Toast.Show("房主 comboId 不可为空");
+            return;
+        }
+        if (string.IsNullOrEmpty(matchType.text))
+        {
+            Toast.Show("匹配类型不可为空");
+            return;
+        }
+        if (string.IsNullOrEmpty(queueRoleIdList.text))
+        {
+            Toast.Show("队列成员 id 列表不可为空");
+            return;
+        }
+        if (matchType.text != "0" && matchType.text != "1")
+        {
+            Toast.Show("匹配类型只能为 0 或 1");
+            return;
+        }
+        List<string> roleIdList;
+        try
+        {
+            // 使用正则表达式验证字符串
+            string input = queueRoleIdList.text;
+            System.Text.RegularExpressions.Regex validPattern = new System.Text.RegularExpressions.Regex(@"^[0-9;]+$"); // 匹配只能包含数字和分号
+            if (!validPattern.IsMatch(input))
+            {
+                Toast.Show("队列成员 id 列表格式不正确，只能包含数字和分号");
+                return;
+            }
+
+            // 转换为 List<string>，分号分隔
+            roleIdList = new List<string>(input.Split(';'));
+
+            if (roleIdList.Count == 0)
+            {
+                Toast.Show("队列成员 id 列表不可为空");
+                return;
+            }
+
+            // 如果需要进一步验证每个 ID 是否为合法数字，可以在这里处理
+            foreach (var roleId in roleIdList)
+            {
+                if (string.IsNullOrEmpty(roleId))
+                {
+                    Toast.Show("队列成员 id 列表存在空的 ID");
+                    return;
+                }
+            }
+        }
+        catch
+        {
+            Toast.Show("队列成员 id 列表格式不正确，请使用分号分隔");
+            return;
+        }
+        var roundResult = roundResultDropdown.options[roundResultDropdown.value].text;
+        RoundEndEvent.Invoke(new RoundEndEvent
+        {
+            roomHostId = roomHostId.text,
+            matchType = matchType.text,
+            queueRoleIdList = roleIdList,
+            roundResult = roundResult
+        });
+    }
+
+    private Dictionary<int, int> stageType = new Dictionary<int, int>
+    {
+        { 0, 1 },
+        { 1, 2 },
+        { 2, 3 },
+        { 3, 4 },
+        { 4, 63 },
+        { 5, 65 },
+        { 6, 11 }
+    };
+
+    private Dictionary<int, string> battleResult = new Dictionary<int, string>
+    {
+        { 0, "BATTLE_WIN" },
+        { 1, "BATTLE_FAIL" },
+        { 2, "1" }
+    };
+
+    public void OnBattleEndReport()
+    {
+        if (string.IsNullOrEmpty(stageIdText.text))
+        {
+            Toast.Show("关卡 id 不可为空");
+            return;
+        }
+
+        var stageTypeVaule = stageType[stageTypeDropDown.value];
+        var battleResultVaule = battleResult[battleResultDropDown.value];
+        BattleEndEvent.Invoke(new BattleEndEvent
+        {
+            stageId = int.Parse(stageIdText.text),
+            stageType = stageTypeVaule,
+            battleType = battleResultVaule
+        });
+    }
+
+    public void OnCardDrawReport()
+    {
+        if (string.IsNullOrEmpty(heroCntText.text))
+        {
+            Toast.Show("Hero Cnt 不可为空");
+            return;
+        }
+        if (int.Parse(heroCntText.text) == 0)
+        {
+            Toast.Show("Hero Cnt 不可为 0");
+            return;
+        }
+        CardDrawEvent.Invoke(new CardDrawEvent
+        {
+            heroCnt = int.Parse(heroCntText.text)
+        });
+    }
+
+    public void OnDrawCardReport()
+    {
+        if (string.IsNullOrEmpty(cardPoolIdText.text))
+        {
+            Toast.Show("抽奖卡池不可为空");
+            return;
+        }
+        if (string.IsNullOrEmpty(cardCntText.text))
+        {
+            Toast.Show("Card Cnt 不可为空");
+            return;
+        }
+        if (int.Parse(cardCntText.text) == 0)
+        {
+            Toast.Show("Card Cnt 不可为 0");
+            return;
+        }
+        DrawCardvent.Invoke(new DrawCardvent
+        {
+            cardPoolId = cardPoolIdText.text,
+            cardCnt = int.Parse(cardCntText.text)
+        });
     }
 
     public void OpenLanguageView()

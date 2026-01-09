@@ -18,6 +18,7 @@ internal class ComplainView : View<ComplainView>
     public Text zongmenLevel;
     public Text zongmenNumber;
     public Text zongmenPatriarch;
+    public InputField contextInputField;
     public Button complainBtn;
     public Button cancelBtn;
     private Action OnComplain;
@@ -109,6 +110,7 @@ internal class ComplainView : View<ComplainView>
             serverId = role.serverId.ToString(),
             roleId = GetRoleId() ,
             roleName = role.roleName,
+            context = contextInputField.text,
             width = 100,
             height = 100
         });

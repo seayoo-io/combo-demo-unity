@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng']
+DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm233', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu', 'huya', 'hykb', 'douyin_cloud']
 
 def JDK_VERSION = 'amazon-corretto-11.0.21.9.1'
 
@@ -35,8 +35,8 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo_main_darwin_arm64.zip"
-    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
+    def comboZip = "combo-cli_${CLI_NAME}_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
     unzip comboZip
 }
 
@@ -76,9 +76,9 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'zero', 'jxfs', 'jxrf', 'ggd'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
-        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
         extendedChoice(
             name: 'DISTRO',
             type: 'PT_MULTI_SELECT',
@@ -96,10 +96,15 @@ pipeline {
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
+        string(name: 'CLI_NAME',
+            defaultValue: "main",
+            description: 'cli branch name',
+            trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
         booleanParam(name: 'ENABLE_KEEP_RENDERING_ON_PAUSE',
             defaultValue: false,
             description: 'When checked, will open EnableKeepRenderingOnPause.')
+        choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,
             description: 'When checked, will clean workspace.')
@@ -163,8 +168,10 @@ pipeline {
             }
             steps {
                 script {
-                    def credentialsId = "combo-${params.GAME_ID}.publishable-key"
-                    withCredentials([string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: credentialsId)]) {
+                    def publishableKeyId = "combo-${params.GAME_ID}.publishable-key"
+                    withCredentials([
+                        string(variable: 'COMBOSDK_PUBLISHABLE_KEY', credentialsId: publishableKeyId)
+                    ]) {
                         callUnity commands: "-executeMethod Builder.UpdateComboSDKSettings"
                     }
                 }
@@ -176,12 +183,18 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                COMBOSDK_ENDPOINT = getEndpoint()
+                COMBOSDK_GAME_ID = "${params.GAME_ID}"
+                SCREEN_ORIENTATION = "${params.SCREEN_ORIENTATION}"
             }
             steps {
                 script {
                     withAndroidSdk("r30.0.2") {
                         withAndroidNdk("r16b") {
-                            callUnity commands: "-executeMethod Builder.BuildAndroidDemo"
+                            def buildKeyId = "combo-${params.GAME_ID}.build-key"
+                            withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
+                                callUnity commands: "-executeMethod Builder.BuildAndroidDemo"
+                            }
                         }
                     }
                 }

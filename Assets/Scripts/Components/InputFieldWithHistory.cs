@@ -11,7 +11,7 @@ public class InputFieldWithHistory : MonoBehaviour
 
     public string playerPrefs;
 
-    public List<string> historyRecords = new List<string>();
+    public List<string> historyRecords;
     private int dropdownSelectedIndex = -1;
 
     void Start()
@@ -63,12 +63,13 @@ public class InputFieldWithHistory : MonoBehaviour
         if (PlayerPrefs.HasKey(playerPrefs))
         {
             string historyString = PlayerPrefs.GetString(playerPrefs);
-            historyRecords = new List<string>(historyString.Split(';'));
+            historyRecords = new List<string>(new HashSet<string>(historyString.Split(';')));
         }
     }
 
     private void SaveHistoryRecords()
     {
+        historyRecords = new List<string>(new HashSet<string>(historyRecords));  // 去重
         string historyString = string.Join(";", historyRecords.ToArray());
         PlayerPrefs.SetString(playerPrefs, historyString);
         PlayerPrefs.Save();
@@ -76,11 +77,11 @@ public class InputFieldWithHistory : MonoBehaviour
 
     private void OnSaveInput(string newText)
     {
-        if(string.IsNullOrEmpty(newText))
+        if (string.IsNullOrEmpty(newText))
         {
-            if(dropdownSelectedIndex != -1 && dropdownSelectedIndex <= historyRecords.Count)
+            if (dropdownSelectedIndex != -1 && dropdownSelectedIndex <= historyRecords.Count)
             {
-                if(dropdownSelectedIndex - 1 < 0) return;
+                if (dropdownSelectedIndex - 1 < 0) return;
                 historyRecords.RemoveAt(dropdownSelectedIndex - 1);
                 dropdownSelectedIndex = -1;
                 SaveHistoryRecords();
@@ -91,6 +92,9 @@ public class InputFieldWithHistory : MonoBehaviour
         if (!historyRecords.Contains(newText))
         {
             historyRecords.Add(newText);
+
+            historyRecords = new List<string>(new HashSet<string>(historyRecords));
+            
             SaveHistoryRecords();
             UpdateDropdownOptions(historyRecords);
         }

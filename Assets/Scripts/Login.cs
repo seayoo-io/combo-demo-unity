@@ -16,13 +16,17 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Button openShortLinkBtn;
+    public Button smallBtn;
+    public Button middleBtn;
+    public Button bigBtn;
 
     private int loginRetryCount = 0;
     private string lastError = "";
 
-    void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+    public static void SetupByAfterAssembliesLoaded()
     {
-        EventSystem.Register(this);
         ComboSDK.OnKickOut(result =>
         {
             if (result.IsSuccess)
@@ -37,12 +41,31 @@ public class Login : MonoBehaviour
                     SceneManager.LoadScene("Login");
                 }
             }
+            else
+            {
+                Log.E(result.Error.DetailMessage);
+                Application.Quit();
+            }
         });
+    }
+
+    void Awake()
+    {
+        EventSystem.Register(this);
+
+        if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            smallBtn.interactable = false;
+            middleBtn.interactable = false;
+            bigBtn.interactable = false;
+        }
+
+
     }
     void Start()
     {
         CheckAnnouncements();
-        if(GameManager.Instance.sdkIsLogin)
+        if (GameManager.Instance.sdkIsLogin)
         {
             ShowEnterGameBtn();
             return;
@@ -57,7 +80,8 @@ public class Login : MonoBehaviour
         {
             LoginInit();
         }
-        if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
+        if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
+        {
             contactSupportBtn.gameObject.SetActive(false);
         }
     }
@@ -101,7 +125,20 @@ public class Login : MonoBehaviour
 
     public void OnEnterGame()
     {
-        ServerView.Instantiate();
+        if (GameManager.Instance.config.createRoleEnabled)
+        {
+            ServerView.Instantiate();
+        }
+        else
+        {
+            Log.I("ServerList is not show");
+            SceneManager.LoadScene("Game");
+            Role role = PlayerController.GetDefaultRole();
+            GameManager.Instance.SetupDefaultRole(role);
+            var newPlayer = PlayerController.SpawnPlayer(role);
+            PlayerController.PlayerEnterGame(PlayerController.GetPlayer());
+            DontDestroyOnLoad(newPlayer);
+        }
     }
 
     public void OnLogout()
@@ -167,7 +204,7 @@ public class Login : MonoBehaviour
         }
     }
 
-    public void OnContactSupport() 
+    public void OnContactSupport()
     {
         ComboSDK.ContactSupport();
     }
@@ -189,6 +226,30 @@ public class Login : MonoBehaviour
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
     }
+
+    public void OpenShortLink()
+    {
+        UIController.ShowShortLinkView();
+    }
+
+    public void SmallWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(600, 400, false);
+    }
+
+    public void MiddleWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        Screen.SetResolution(1280, 720, false);
+    }
+
+    public void BigWindow()
+    {
+        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        Screen.fullScreen = true;
+    }
+
 
     private void LoginGame(Action onSuccess, Action onFail)
     {
@@ -287,10 +348,23 @@ public class Login : MonoBehaviour
 
     private void ShowEnterGameBtn()
     {
-        enterGameBtn.gameObject.SetActive(true);
-        loginBtn.gameObject.SetActive(false);
-        logoutBtn.gameObject.SetActive(true);
-        switchAccountBtn.gameObject.SetActive(true);
+        GameManager.Instance.GetGameConfig(() =>
+        {
+            var btnText = enterGameBtn.GetComponentInChildren<Text>();
+            btnText.text = GameManager.Instance.config.createRoleEnabled ? "选择服务器" : "进入游戏";
+            enterGameBtn.interactable = true;
+            enterGameBtn.gameObject.SetActive(true);
+            loginBtn.gameObject.SetActive(false);
+            logoutBtn.gameObject.SetActive(true);
+            switchAccountBtn.gameObject.SetActive(true);
+        }, () =>
+        {
+            enterGameBtn.interactable = false;
+            enterGameBtn.gameObject.SetActive(false);
+            loginBtn.gameObject.SetActive(true);
+            logoutBtn.gameObject.SetActive(false);
+            switchAccountBtn.gameObject.SetActive(false);
+        });
     }
 
     [EventSystem.BindEvent]
@@ -305,7 +379,7 @@ public class Login : MonoBehaviour
     private void CheckAnnouncements(string profile = null, int? level = null)
     {
         var opts = new CheckAnnouncementsOptions();
-        if(profile != null)
+        if (profile != null)
         {
             opts = new CheckAnnouncementsOptions()
             {
@@ -313,11 +387,37 @@ public class Login : MonoBehaviour
                 Level = (int)level
             };
         }
-        ComboSDK.CheckAnnouncements(opts, res =>{
-            if(res.IsSuccess)
+        ComboSDK.CheckAnnouncements(opts, res =>
+        {
+            if (res.IsSuccess)
             {
                 var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
                 image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+
+                if (!res.Data.newAnnouncementsAvailable)
+                {
+                    return;
+                }
+
+                var announcementOpts = new OpenAnnouncementsOptions()
+                {
+                    Width = 100,
+                    Height = 100,
+                };
+                Log.I($"OpenAnnouncementsOptions: 未登录状态");
+
+                ComboSDK.OpenAnnouncements(announcementOpts, result =>
+                {
+                    if (result.IsSuccess)
+                    {
+                        OpenAnnouncementsEvent.Invoke();
+                        Log.I("公告打开成功");
+                    }
+                    else
+                    {
+                        Toast.Show($"公告打开失败：{result.Error.Message}");
+                    }
+                });
             }
             else
             {

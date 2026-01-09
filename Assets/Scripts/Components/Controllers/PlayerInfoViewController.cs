@@ -11,6 +11,7 @@ public static class PlayerInfoViewController
         var playerInfoView = PlayerInfoView.Instantiate();
         InitView(playerInfoView);
         playerInfoView.SetCopyCallback(() => OnCopy());
+        playerInfoView.SetCopyComboIdCallback(() => OnCopyComboId());
         playerInfoView.SetManageAccountCallback(() => OnManageAccount());
         playerInfoView.SetChangePasswordCallback(() => OnChangePassword());
         playerInfoView.SetDeleteAccountCallback(() => OnDeleteAccount());
@@ -28,14 +29,16 @@ public static class PlayerInfoViewController
     public static void OnCopy()
     {
         string playerId;
-         if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
-        {
-            playerId = ComboSDK.SeayooAccount.UserId;
-        }
-        else
-        {
-            playerId = ComboSDK.GetLoginInfo().comboId;
-        }
+        playerId = ComboSDK.SeayooAccount.UserId;
+
+        UnityEngine.GUIUtility.systemCopyBuffer = playerId;
+        Toast.Show("复制成功");
+    }
+    
+    public static void OnCopyComboId()
+    {
+        string playerId;
+        playerId = ComboSDK.GetLoginInfo().comboId;
 
         UnityEngine.GUIUtility.systemCopyBuffer = playerId;
         Toast.Show("复制成功");
@@ -63,23 +66,24 @@ public static class PlayerInfoViewController
 
     private static void InitView(PlayerInfoView view)
     {
-        string accountName;
         string playerId;
+        string seayooId;
         if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
         {
-            accountName = "世游通行证 ID :";
-            playerId = ComboSDK.SeayooAccount.UserId;
+            playerId = ComboSDK.GetLoginInfo().comboId;
+            seayooId = ComboSDK.SeayooAccount.UserId;
             view.manageAccountBtn.gameObject.SetActive(true);
             view.changePasswordBtn.gameObject.SetActive(true);
             view.deleteAccountBtn.gameObject.SetActive(true);
-            Log.I($"GetUserInfo: ${accountName} = {playerId}");
+            Log.I($"GetUserInfo: 世游通行证 ID : = {seayooId}, Combo ID : = {playerId}");
         }
         else
         {
             var info = ComboSDK.GetLoginInfo();
             playerId = info.comboId;
-            accountName = "Combo ID :";
-            Log.I($"GetUserInfo: ${accountName} = {playerId}," + $"identityToken = {info.identityToken}");
+            seayooId = "无";
+            view.copyBtn.gameObject.SetActive(false);
+            Log.I($"GetUserInfo: Combo ID : = {playerId}," + $"identityToken = {info.identityToken}");
         }
 
         if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
@@ -87,8 +91,15 @@ public static class PlayerInfoViewController
             view.contactSupportBtn.gameObject.SetActive(false);
         }
 
+        bool createRoleEnabled = GameManager.Instance.config.createRoleEnabled;
+        view.changeRoleBtn.gameObject.SetActive(createRoleEnabled);
+        view.addBtn.gameObject.SetActive(createRoleEnabled);
+        view.subBtn.gameObject.SetActive(createRoleEnabled);
+        view.levelText.interactable = createRoleEnabled;
+
         view.SetPlayerId(playerId);
-        view.SetAccountName(accountName);
+        view.SetSeayooId(seayooId);
+        view.SetIdp($"idp : {ComboSDK.GetLoginInfo().idp}");
         view.SetRole(PlayerController.GetPlayer().role);
         view.SetServer(GameManager.Instance.ZoneName, GameManager.Instance.ServerName);
         
