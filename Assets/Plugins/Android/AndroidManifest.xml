@@ -5,13 +5,14 @@
     package="com.unity3d.player"
     xmlns:tools="http://schemas.android.com/tools">
     <application>
-        <activity android:name="com.unity3d.player.UnityPlayerActivity"
+        <activity android:name="com.crasheye.client.api.unity3d.DemoActivity"
                   android:theme="@style/UnityThemeSelector">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+            <meta-data android:name="Crasheye_appkey" android:value="appkey" />
         </activity>
     </application>
 </manifest>
