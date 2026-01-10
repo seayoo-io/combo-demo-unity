@@ -185,7 +185,7 @@ public class Builder : EditorWindow
         var publishableKey = Environment.GetEnvironmentVariable("COMBOSDK_PUBLISHABLE_KEY");
         var endpoint = Environment.GetEnvironmentVariable("COMBOSDK_ENDPOINT");
 #if UNITY_IOS
-        var enableIOSPostBuild = Environment.GetEnvironmentVariable("ENABLE_IOS_POST_BUILD") ?? "true";
+        var enableIOSPostBuild = false;
         var iosComboSDK = Environment.GetEnvironmentVariable("COMBO_SDK_PATH");
 #elif UNITY_ANDROID
         var keepRenderingOnPause = Environment.GetEnvironmentVariable("ENABLE_KEEP_RENDERING_ON_PAUSE") ?? "false";
