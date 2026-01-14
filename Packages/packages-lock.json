@@ -12,7 +12,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "39e40b33bfd41c989c69b21cef8d44379ca2123b"
+      "hash": "b88856b1eba3b9418ac6e44b2d0aaabd8bdccdac"
     },
     "com.seayoo.sdk": {
       "version": "file:com.seayoo.sdk",
