@@ -12,7 +12,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
-            <meta-data android:name="Crasheye_appkey" android:value="appkey" />
+            <meta-data android:name="Crasheye_appkey" android:value="4whg30ys" />
         </activity>
     </application>
 </manifest>

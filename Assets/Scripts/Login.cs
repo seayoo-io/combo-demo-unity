@@ -64,6 +64,17 @@ public class Login : MonoBehaviour
     }
     void Start()
     {
+#if UNITY_ANDROID
+        // 程序入口还需要初始化捕获脚本异常
+        Crasheye.RegisterLogCallback();
+#endif
+
+#if UNITY_IPHONE
+        /**
+        * iOS 初始化是在Unity里完成 
+        */
+        Crasheye.StartInitCrasheye("y4gkw1x1");
+#endif
         CheckAnnouncements();
         if (GameManager.Instance.sdkIsLogin)
         {
