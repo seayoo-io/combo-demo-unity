@@ -1,10 +1,13 @@
 package com.crasheye.client.api.unity3d;
 
+import android.content.ComponentName;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.seayoo.sdk.ComboSDKMainActivity;
 import com.unity3d.player.UnityPlayerActivity;
 import com.xsj.crasheye.Crasheye;
 
@@ -17,8 +20,13 @@ public class DemoActivity extends UnityPlayerActivity {
         super.onCreate(savedInstanceState);
         
         try {
-            ApplicationInfo info = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-            Crasheye_appkey = info.metaData.getString("Crasheye_appkey");
+            ActivityInfo activityInfo = getPackageManager().getActivityInfo(
+                new ComponentName(this, ComboSDKMainActivity.class),
+                PackageManager.GET_META_DATA
+            );
+
+            Bundle bundle = activityInfo.metaData;
+            Crasheye_appkey = bundle.getString("Crasheye_appkey");
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
