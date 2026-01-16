@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm233', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu', 'huya', 'hykb', 'douyin_cloud']
+DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm233', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu', 'huya', 'hykb', 'douyin_cloud', 'douyin_ug']
 
 def JDK_VERSION = 'amazon-corretto-11.0.21.9.1'
 
