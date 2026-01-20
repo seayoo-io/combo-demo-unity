@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Combo;
 using UnityEngine;
 
@@ -34,6 +35,7 @@ public class GamerManager : MonoBehaviour
             {"role_id", role.roleId},
             {"role_name", role.roleName},
             {"role_level", role.roleLevel.ToString()},
+            {"avatar_url", $"{Path.Combine(Application.persistentDataPath, $"coverImg.jpg")}"}
         };
         ComboSDK.OpenShortLink(shortLink, gameData, result =>{
             if(result.IsSuccess)
