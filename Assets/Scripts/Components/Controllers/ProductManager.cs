@@ -112,13 +112,20 @@ public class ProductManager : MonoBehaviour
                         else
                         {
                             var err = r.Error;
-                            Toast.Show("购买失败：" + err.Message);
+                            
                             if (err.Code == ErrorCode.UserCancelled)
                             {
+                                Toast.Show(err.Message);
                                 Log.I("用户取消购买：" + err.DetailMessage);
+                            }
+                            else if(err.Code == ErrorCode.Pending)
+                            {
+                                Toast.Show(err.Message);
+                                Log.I("支付状态未知：" + err.DetailMessage);
                             }
                             else
                             {
+                                Toast.Show("购买失败：" + err.Message);
                                 Log.E("购买失败：" + err.DetailMessage);
                             }
                         }
