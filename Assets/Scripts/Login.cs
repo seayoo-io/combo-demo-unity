@@ -24,9 +24,9 @@ public class Login : MonoBehaviour
     private int loginRetryCount = 0;
     private string lastError = "";
 
-    void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+    public static void SetupByAfterAssembliesLoaded()
     {
-        EventSystem.Register(this);
         ComboSDK.OnKickOut(result =>
         {
             if (result.IsSuccess)
@@ -41,19 +41,31 @@ public class Login : MonoBehaviour
                     SceneManager.LoadScene("Login");
                 }
             }
+            else
+            {
+                Log.E(result.Error.DetailMessage);
+                Application.Quit();
+            }
         });
+    }
 
-        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+    void Awake()
+    {
+        EventSystem.Register(this);
+
+        if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
         {
             smallBtn.interactable = false;
             middleBtn.interactable = false;
             bigBtn.interactable = false;
         }
+
+
     }
     void Start()
     {
         CheckAnnouncements();
-        if(GameManager.Instance.sdkIsLogin)
+        if (GameManager.Instance.sdkIsLogin)
         {
             ShowEnterGameBtn();
             return;
@@ -68,7 +80,8 @@ public class Login : MonoBehaviour
         {
             LoginInit();
         }
-        if(!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT)) {
+        if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
+        {
             contactSupportBtn.gameObject.SetActive(false);
         }
     }
@@ -191,7 +204,7 @@ public class Login : MonoBehaviour
         }
     }
 
-    public void OnContactSupport() 
+    public void OnContactSupport()
     {
         ComboSDK.ContactSupport();
     }
@@ -214,7 +227,8 @@ public class Login : MonoBehaviour
         image.gameObject.SetActive(false);
     }
 
-    public void OpenShortLink(){
+    public void OpenShortLink()
+    {
         UIController.ShowShortLinkView();
     }
 
@@ -365,7 +379,7 @@ public class Login : MonoBehaviour
     private void CheckAnnouncements(string profile = null, int? level = null)
     {
         var opts = new CheckAnnouncementsOptions();
-        if(profile != null)
+        if (profile != null)
         {
             opts = new CheckAnnouncementsOptions()
             {
@@ -373,11 +387,37 @@ public class Login : MonoBehaviour
                 Level = (int)level
             };
         }
-        ComboSDK.CheckAnnouncements(opts, res =>{
-            if(res.IsSuccess)
+        ComboSDK.CheckAnnouncements(opts, res =>
+        {
+            if (res.IsSuccess)
             {
                 var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
                 image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+
+                if (!res.Data.newAnnouncementsAvailable)
+                {
+                    return;
+                }
+
+                var announcementOpts = new OpenAnnouncementsOptions()
+                {
+                    Width = 100,
+                    Height = 100,
+                };
+                Log.I($"OpenAnnouncementsOptions: 未登录状态");
+
+                ComboSDK.OpenAnnouncements(announcementOpts, result =>
+                {
+                    if (result.IsSuccess)
+                    {
+                        OpenAnnouncementsEvent.Invoke();
+                        Log.I("公告打开成功");
+                    }
+                    else
+                    {
+                        Toast.Show($"公告打开失败：{result.Error.Message}");
+                    }
+                });
             }
             else
             {

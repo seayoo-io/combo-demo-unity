@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu']
+DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm233', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu', 'huya', 'hykb', 'douyin_cloud', 'douyin_ug']
 
 def JDK_VERSION = 'amazon-corretto-11.0.21.9.1'
 
@@ -35,8 +35,8 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo-cli_main_darwin_arm64.zip"
-    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
+    def comboZip = "combo-cli_${CLI_NAME}_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
     unzip comboZip
 }
 
@@ -76,7 +76,7 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'zero', 'jxfs', 'jxrf', 'ggd'], description: 'GAME_ID')
+        choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup', 'zero', 'jxfs', 'jxrf', 'ggd', 'magicrecipe', 'ab2', 'mori'], description: 'GAME_ID')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
         choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境(注意：游戏项目只能在 prod 环境下打包)')
         extendedChoice(
@@ -95,6 +95,10 @@ pipeline {
         string(name: 'UNITY_SDK_PROJECT_NAME',
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
+            trim: true)
+        string(name: 'CLI_NAME',
+            defaultValue: "main",
+            description: 'cli branch name',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
         booleanParam(name: 'ENABLE_KEEP_RENDERING_ON_PAUSE',

@@ -17,6 +17,7 @@ def downloadUnitySDK() {
 
     def files = findFiles glob: unitySDKZip
     unzip zipFile: files[0].name, dir: env.UNITY_SDK_PATH, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def writeComboYaml(buildKey) {
@@ -27,22 +28,25 @@ combo:
   game-id: ${gameId}
   build-key: ${buildKey}
   endpoint: ${endpoint}
+  sdk-release-url: https://sdk.seayoo.com/debug
 """
 }
 
-def downloadFrameworks() {
-    def frameworkZip = "*.zip"
-    copyArtifacts projectName: params.IOS_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
+// def downloadFrameworks() {
+//     def frameworkZip = "*.zip"
+//     copyArtifacts projectName: params.IOS_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
 
-    def files = findFiles glob: frameworkZip
-    unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
-}
+//     def files = findFiles glob: frameworkZip
+//     unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
+//     sh "rm -f ${files[0].name}"
+// }
 
-def downloadComboSDKJson() {
+def assembleXcodeProject() {
     sh '''
+        rm -rf ~/Library/Developer/Xcode/DerivedData
+        rm -rf ~/.combo/sdk
         chmod +x ./combo
-        ./combo ios setup
-        mv *.json ComboSDK/
+        ./combo ios setup --xcode-autoconf --xcode-project ${BUILD_DIR}
     '''
 }
 
@@ -61,9 +65,10 @@ def installComboCLI() {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
-    def comboZip = "combo-cli_main_darwin_arm64.zip"
-    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
+    def comboZip = "combo-cli_${CLI_NAME}_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
     unzip zipFile: comboZip, quiet: true
+    sh "rm -f ${comboZip}"
 }
 
 def getComboCredentialsId(String credentialSuffix) {
@@ -157,6 +162,10 @@ pipeline {
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
+        string(name: 'CLI_NAME',
+            defaultValue: "main",
+            description: 'cli branch name',
+            trim: true)
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
         choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
         booleanParam(name: 'CLEAN_WS',
@@ -164,7 +173,7 @@ pipeline {
             description: 'When checked, will clean workspace.')
     }
     environment {
-        UNITY_ROOT = getUnityRoot('2021.4.45f1')
+        UNITY_ROOT = getUnityRoot('2021.3.45f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
         COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
@@ -222,8 +231,8 @@ pipeline {
                 script {
                     loadEnvironmentParams()
                     installComboCLI()
-                    downloadFrameworks()
-                    downloadComboSDKJson()
+                    // downloadFrameworks()
+                    // downloadComboSDKJson()
                 }
             }
         }
@@ -231,7 +240,7 @@ pipeline {
             environment {
                 COMBOSDK_GAME_ID = "${params.GAME_ID}"
                 COMBOSDK_ENDPOINT = getEndpoint()
-                ENABLE_IOS_POST_BUILD = "true"
+                ENABLE_IOS_POST_BUILD = "false"
             }
             steps {
                 script {
@@ -259,6 +268,13 @@ pipeline {
                     withCredentials([string(variable: 'COMBOSDK_BUILD_KEY', credentialsId: buildKeyId)]) {
                         callUnity commands: "-executeMethod Builder.BuildIOSDemo"
                     }
+                }
+            }
+        }
+        stage('Assemble Xcode') {
+            steps {
+                script {
+                    assembleXcodeProject()
                 }
             }
         }
