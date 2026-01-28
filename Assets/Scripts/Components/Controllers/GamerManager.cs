@@ -35,7 +35,7 @@ public class GamerManager : MonoBehaviour
             {"role_id", role.roleId},
             {"role_name", role.roleName},
             {"role_level", role.roleLevel.ToString()},
-            {"avatar_url", $"{Path.Combine(Application.persistentDataPath, $"coverImg.jpg")}"}
+            {"avatar_url", "https://dev.seayooassets.com/web/dev/assets/thematic.png"}
         };
         ComboSDK.OpenShortLink(shortLink, gameData, result =>{
             if(result.IsSuccess)
