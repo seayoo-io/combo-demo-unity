@@ -61,6 +61,19 @@ public static class ButtonManager
             {ButtonType.PreloadAdButton, true},
             {ButtonType.ShowAdButton, true},
             {ButtonType.PurchaseButton, true}};
+    #elif UNITY_WEBGL
+        private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
+            {ButtonType.LogoutButton, false}, 
+            {ButtonType.ClearButton, false}, 
+            {ButtonType.SentryCaptureButton, true}, 
+            {ButtonType.SentryCrashButton, true},
+            {ButtonType.DataReportButton, false},
+            {ButtonType.LinkShareButton, true},
+            {ButtonType.OnlineShareButton, true},
+            {ButtonType.LocalShareButton, true},
+            {ButtonType.PreloadAdButton, true},
+            {ButtonType.ShowAdButton, true},
+            {ButtonType.PurchaseButton, true}};
     #endif
 
     private static float brightness = 0.5f;
