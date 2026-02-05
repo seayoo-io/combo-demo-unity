@@ -109,7 +109,6 @@ public class AdManager : MonoBehaviour
                 Toast.Show($"广告 {opts.placementId} 显示失败\n{err.Message}");
                 Log.E("广告显示失败: " + err.DetailMessage);
             }
-            OnPreloadAd(placementId, scenarioId);
         });
     }
 
