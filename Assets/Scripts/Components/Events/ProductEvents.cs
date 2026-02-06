@@ -17,6 +17,8 @@ public class RequestUpdateCoinEvent : Event<RequestUpdateCoinEvent> {
 
 public class ConfirmPurchaseEvent : Event<ConfirmPurchaseEvent> {
     public string productId;
+    public string productName;
+    public string producrDesc;
 }
 
 public class ModifyProductQuantityEvent : Event<ModifyProductQuantityEvent> {
