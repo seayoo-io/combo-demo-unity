@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Combo;
 using Newtonsoft.Json;
 using TapSDK.Core;
@@ -77,7 +78,11 @@ public class ProductManager : MonoBehaviour
         }
         else
         {
-            OnPurchase(evt.productId, evt.productName, 1, null);
+            ShowProductDescView((text) =>
+            {
+                OnPurchase(evt.productId, evt.productName, 1, text);
+            });
+            
         }
     }
 
@@ -135,7 +140,7 @@ public class ProductManager : MonoBehaviour
                             {
                                 ComboSDK.ReportDouyinCustomEvent("active_pay_failed", new Dictionary<string, string>()
                                 {
-                                    {"game_user_id_define", PlayerController.GetRoleInfo(PlayerController.GetPlayer()).roleId},
+                                    {"game_user_id_define", ComboSDK.GetLoginInfo().comboId},
                                     {"game_order_id", info.orderId},
                                     {"total_amount", info.amount.ToString()},
                                     {"product_id", productId},
@@ -170,5 +175,12 @@ public class ProductManager : MonoBehaviour
         productQuantityView.SetCancelCallback(() => productQuantityView.Destroy());
         productQuantityView.SetQuitCallback(() => productQuantityView.Destroy());
         productQuantityView.Show();
+    }
+
+    private void ShowProductDescView(Action<string> action)
+    {
+        var productDescView = ProductDescView.Instantiate();
+        productDescView.confirmAction = action;
+        productDescView.Show();
     }
 }
