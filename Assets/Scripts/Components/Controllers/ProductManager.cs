@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Combo;
 using Newtonsoft.Json;
-using TapSDK.Core;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
