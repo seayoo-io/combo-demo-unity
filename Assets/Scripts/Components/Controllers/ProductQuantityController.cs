@@ -29,12 +29,12 @@ public class ProductQuantityController : MonoBehaviour
     [EventSystem.BindEvent]
     void HandlePurchaseEvent(ConfirmPurchaseEvent evt)
     {
-        OnPurchase(evt.productId);
+        OnPurchase(evt.productId, evt.productName, evt.producrDesc);
     }
 
-    public void OnPurchase(string productId)
+    public void OnPurchase(string productId, string productName, string producrDesc)
     {
-        ProductManager.productManager.OnPurchase(productId, productQuantity);
+        ProductManager.productManager.OnPurchase(productId, productName, productQuantity, producrDesc);
     }
 
     public void OnAddProductQuantity()

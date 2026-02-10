@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Combo;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -75,11 +77,15 @@ public class ProductManager : MonoBehaviour
         }
         else
         {
-            OnPurchase(evt.productId, 1);
+            ShowProductDescView((text) =>
+            {
+                OnPurchase(evt.productId, evt.productName, 1, text);
+            });
+            
         }
     }
 
-    public void OnPurchase(string productId, int quantity)
+    public void OnPurchase(string productId, string productName, int quantity, string desc)
     {
         if (string.IsNullOrEmpty(productId))
         {
@@ -92,7 +98,7 @@ public class ProductManager : MonoBehaviour
             quantity,
             orderToken =>
             {
-                var opts = new PurchaseOptions { orderToken = orderToken };
+                var opts = new PurchaseOptions { orderToken = orderToken, productDescription = desc };
                 ComboSDK.Purchase(
                     opts,
                     r =>
@@ -128,6 +134,19 @@ public class ProductManager : MonoBehaviour
                                 Toast.Show("购买失败：" + err.Message);
                                 Log.E("购买失败：" + err.DetailMessage);
                             }
+                            JWTProductInfo info = JWTParser.Parse<JWTProductInfo>(orderToken);
+                            if(ComboSDK.IsFeatureAvailable(Feature.REPORT_DOUYIN_CUSTOM_EVENT))
+                            {
+                                ComboSDK.ReportDouyinCustomEvent("active_pay_failed", new Dictionary<string, string>()
+                                {
+                                    {"game_user_id_define", ComboSDK.GetLoginInfo().comboId},
+                                    {"game_order_id", info.orderId},
+                                    {"total_amount", info.amount.ToString()},
+                                    {"product_id", productId},
+                                    {"product_name", productName},
+                                    {"product_desc", desc}
+                                });
+                            }
                         }
                     }
                 );
@@ -155,5 +174,12 @@ public class ProductManager : MonoBehaviour
         productQuantityView.SetCancelCallback(() => productQuantityView.Destroy());
         productQuantityView.SetQuitCallback(() => productQuantityView.Destroy());
         productQuantityView.Show();
+    }
+
+    private void ShowProductDescView(Action<string> action)
+    {
+        var productDescView = ProductDescView.Instantiate();
+        productDescView.confirmAction = action;
+        productDescView.Show();
     }
 }

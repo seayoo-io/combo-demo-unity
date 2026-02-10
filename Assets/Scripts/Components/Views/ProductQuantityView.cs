@@ -13,6 +13,7 @@ internal class ProductQuantityView : View<ProductQuantityView>
     public Text productNameTxt;
     public Text productPriceTxt;
     public Text CurrentPriceTxt;
+    public InputField producrDescText;
     public Image productImg;
     private Action OnQuit;
     private Action OnCancel;
@@ -51,6 +52,8 @@ internal class ProductQuantityView : View<ProductQuantityView>
     public void OnConfirmPurchaseEvent(){
         ConfirmPurchaseEvent.Invoke(new ConfirmPurchaseEvent {
             productId = productIdTxt.text,
+            productName = productNameTxt.text,
+            producrDesc = producrDescText.text
         });
     }
 
