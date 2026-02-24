@@ -48,7 +48,7 @@ public static class ButtonManager
             {ButtonType.PreloadAdButton, true},
             {ButtonType.ShowAdButton, true},
             {ButtonType.PurchaseButton, true}};
-    #elif UNITY_IOS
+    #elif UNITY_IOS || UNITY_WEBGL
         private static Dictionary<ButtonType, bool> enableButton = new Dictionary<ButtonType, bool>{
             {ButtonType.LogoutButton, true}, 
             {ButtonType.ClearButton, false}, 

@@ -1,0 +1,20 @@
+{
+  "appid": "ttcb54bde95537cb4207",
+  "projectname": "combo-demo",
+  "unity": {
+    "build": {
+      "webgl": "C:\\shiyou-workspace\\combo-demo-unity\\outputs\\ttminigame\\webgl_package-20260224_180256.zip",
+      "native": {
+        "il2cpp": "",
+        "apk": "",
+        "fullApk": ""
+      },
+      "instantGame": ""
+    },
+    "publishType": "AndroidNativeOnly",
+    "starkSdkVersion": "Without StarkSDK",
+    "unityToolsVersion": null,
+    "unityEngineVersion": "2021.3.45f1c1",
+    "arch": "both"
+  }
+}
