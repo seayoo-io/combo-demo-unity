@@ -98,7 +98,7 @@ public class ProductManager : MonoBehaviour
             quantity,
             orderToken =>
             {
-                var opts = new PurchaseOptions { orderToken = orderToken, productDescription = desc };
+                var opts = new PurchaseOptions { orderToken = orderToken };
                 ComboSDK.Purchase(
                     opts,
                     r =>
