@@ -107,7 +107,7 @@ public class ProductManager : MonoBehaviour
                             {
                                 PurchaseSuccessEvent.Invoke(new PurchaseSuccessEvent { productId = productId });
                             }
-                            RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent());
+                            RequestUpdateCoinEvent.Invoke(new RequestUpdateCoinEvent { needPolling = true });
                         }
                         else
                         {

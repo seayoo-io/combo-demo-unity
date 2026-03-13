@@ -13,6 +13,7 @@ public class CoinUpdatedEvent : Event<CoinUpdatedEvent> {
 
 public class RequestUpdateCoinEvent : Event<RequestUpdateCoinEvent> {
     public int coinOffset = 0;
+    public bool needPolling = false;
 }
 
 public class ConfirmPurchaseEvent : Event<ConfirmPurchaseEvent> {

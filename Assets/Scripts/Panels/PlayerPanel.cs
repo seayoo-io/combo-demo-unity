@@ -24,7 +24,47 @@ public class PlayerPanel : MonoBehaviour
 
     [EventSystem.BindEvent]
     private void OnRequestUpdateCoin(RequestUpdateCoinEvent evt) {
-        UpdateCoin(evt.coinOffset);
+        if (evt.needPolling)
+        {
+            UpdateCoinWithPolling(evt.coinOffset);
+        }
+        else
+        {
+            UpdateCoin(evt.coinOffset);
+        }
+    }
+
+    private void UpdateCoinWithPolling(int offset)
+    {
+        extraCount += offset;
+        StartCoroutine(UpdateCoinCoroutine());
+    }
+
+    private IEnumerator UpdateCoinCoroutine()
+    {
+        // 调用三次 GetPlayerItems，间隔 2 秒
+        for (int i = 0; i < 3; i++)
+        {
+            GameClient.GetPlayerItems(data =>
+            {
+                int newCount = 0;
+                playerItemPanel.gameObject.SetActive(true);
+
+                foreach (var item in data)
+                {
+                    newCount += item.itemCount;
+                }
+                newCount += extraCount;
+                GameManager.Instance.gold = newCount;
+                SetCoin(newCount, false);
+                CoinUpdatedEvent.Invoke(new CoinUpdatedEvent{ coin = newCount });
+            });
+
+            if (i < 2)
+            {
+                yield return new WaitForSeconds(2f);
+            }
+        }
     }
 
     private void UpdateCoin(bool firstLaunch = false)
