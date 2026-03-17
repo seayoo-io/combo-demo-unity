@@ -52,7 +52,8 @@ public class ComboSDKConfig
             "xiaomi_ads",
             "vivo_ads",
             "huawei_ads",
-            "4399_ads"
+            "4399_ads",
+            "minigame_douyin_ads"
         };
         supportAds = domains.Exists(domain => adsDomains.Contains(domain));
     }

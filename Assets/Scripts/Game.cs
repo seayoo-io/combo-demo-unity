@@ -164,7 +164,8 @@ public class Game : MonoBehaviour
         Button taskBtn = rightControlPanel.Find("task_btn")?.GetComponent<Button>();
         if (taskBtn != null)
         {
-            taskBtn.gameObject.SetActive(GameManager.Instance.sdkConfig.supportAds);
+            // taskBtn.gameObject.SetActive(GameManager.Instance.sdkConfig.supportAds);
+            taskBtn.gameObject.SetActive(true);
         }
     }
 }
