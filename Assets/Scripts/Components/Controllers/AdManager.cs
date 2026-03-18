@@ -74,7 +74,8 @@ public class AdManager : MonoBehaviour
             placementId = placementId,
             scenarioId = scenarioId
         };
-        UIController.ShowLoading();
+        UIController.ShowLoading(); 
+        Log.I($"[AdsManager] ShowAd PlacementId: {opts.placementId} ScenarioId: {scenarioId}");
         ComboSDK.ShowAd(opts, r =>
         {
             UIController.HideLoading();
