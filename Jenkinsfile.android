@@ -2,7 +2,7 @@
 
 DISTRO_LIST = ['android', 'xiaomi', 'google_play', 'vivo', 'uc', 'oppo', 'huawei', 'taptap', 'honor', 'm4399', 'bilibili', 'yingyongbao', 'douyin', 'promo_kuaishou', 'promo_douyin', 'promo_tencent', 'leidian', 'maowo', 'lenovo', 'meizu', 'coolpad', 'nubia', 'meituo', 'juefeng', 'mumu']
 
-def JDK_VERSION = 'amazon-corretto-11.0.21.9.1'
+def JDK_VERSION = 'amazon-corretto-17.0.15.6.1'
 
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
