@@ -49,7 +49,7 @@
       "hash": "070a82f72afb76fed86b4f5f95a87cebe5d46a82"
     },
     "com.seayoo.sdk": {
-      "version": "file:com.seayoo.sdk",
+      "version": "file:combo-sdk-unity",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
