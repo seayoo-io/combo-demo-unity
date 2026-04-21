@@ -19,8 +19,8 @@ MonoBehaviour:
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
-    relativeDST: C:/shiyou-workspace/combo-demo-unity/outputs/weixinminigame
-    DST: C:/shiyou-workspace/combo-demo-unity/outputs/weixinminigame
+    relativeDST: /Users/chengxiaokang/codebase/gitlab/unitysdk/tuanjie/combo-demo-unity/outputs/wx-minigame
+    DST: /Users/chengxiaokang/codebase/gitlab/unitysdk/tuanjie/combo-demo-unity/outputs/wx-minigame
     StreamCDN: 
     bundleHashLength: 32
     bundlePathIdentifier: StreamingAssets;
