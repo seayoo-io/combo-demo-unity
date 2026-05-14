@@ -1,4 +1,6 @@
 ﻿using Combo;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,6 +14,7 @@ public class Game : MonoBehaviour
 {
     public PlayerPanel playerPanel;
     public Button openAnnouncementsBtn;
+    public Button getAnnouncementsBtn;
     public Image roleImage;
     public Transform leftControlPanel;
     public Transform rightControlPanel;
@@ -81,6 +84,54 @@ public class Game : MonoBehaviour
     public void OpenAnnouncement()
     {
         UIController.ShowAnnouncementParameterView(true);
+    }
+
+    // 使用 GetAnnouncements 方案打开公告（真实数据），供 Scene 中按钮直接绑定
+    public void GetAnnouncementsMock()
+    {
+        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
+        var opts = new GetAnnouncementsOptions
+        {
+            Profile = role.roleId,
+            Level = role.roleLevel,
+        };
+
+        UIController.ShowLoading();
+        ComboSDK.GetAnnouncements(opts, result =>
+        {
+            UIController.HideLoading();
+            if (result.IsSuccess)
+            {
+                var items = result.Data.Announcements;
+                Log.D($"[GetAnnouncements] count={items.Count}");
+                foreach (var a in items)
+                    Log.D($"[GetAnnouncements] id={a.Id} title={a.Title} subtitle={a.Subtitle} format={a.Format} lang={a.Lang} publishedAt={a.PublishedAt} content={a.Content}");
+
+                var announcements = items
+                    .Select(a => new AnnouncementData
+                    {
+                        Id = a.Id,
+                        Title = a.Title,
+                        Subtitle = a.Subtitle,
+                        Content = a.Content,
+                        Format = a.Format,
+                        Lang = a.Lang,
+                        PublishedAt = a.PublishedAt,
+                    })
+                    .ToList();
+                UIController.ShowAnnouncementView(announcements);
+            }
+            else
+            {
+                Toast.Show($"获取公告失败：{result.Error.Message}");
+            }
+        });
+    }
+
+    // 使用 Mock 数据打开公告，用于本地测试（保留，不删除）
+    public void GetAnnouncementsWithMockData()
+    {
+        UIController.ShowAnnouncementView();
     }
 
     public void OpenStatusView()
