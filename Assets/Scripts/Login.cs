@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Combo;
 using ThinkingData.Analytics;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Button getAnnouncementsBtn;
     public Button openShortLinkBtn;
     public Button smallBtn;
     public Button middleBtn;
@@ -218,6 +220,42 @@ public class Login : MonoBehaviour
     public void OpenAnnouncement()
     {
         UIController.ShowAnnouncementParameterView(false);
+    }
+
+    // 使用 GetAnnouncements 方案打开公告（真实数据），供 Scene 中按钮直接绑定
+    public void GetAnnouncementsMock()
+    {
+        var opts = new GetAnnouncementsOptions();
+        UIController.ShowLoading();
+        ComboSDK.GetAnnouncements(opts, result =>
+        {
+            UIController.HideLoading();
+            if (result.IsSuccess)
+            {
+                var items = result.Data.Announcements;
+                Log.D($"[GetAnnouncements] count={items.Count}");
+                foreach (var a in items)
+                    Log.D($"[GetAnnouncements] id={a.Id} title={a.Title} subtitle={a.Subtitle} format={a.Format} lang={a.Lang} publishedAt={a.PublishedAt} content={a.Content}");
+
+                var announcements = items
+                    .Select(a => new AnnouncementData
+                    {
+                        Id = a.Id,
+                        Title = a.Title,
+                        Subtitle = a.Subtitle,
+                        Content = a.Content,
+                        Format = a.Format,
+                        Lang = a.Lang,
+                        PublishedAt = a.PublishedAt,
+                    })
+                    .ToList();
+                UIController.ShowAnnouncementView(announcements);
+            }
+            else
+            {
+                Toast.Show($"获取公告失败：{result.Error.Message}");
+            }
+        });
     }
 
     [EventSystem.BindEvent]
