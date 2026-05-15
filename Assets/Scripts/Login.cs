@@ -17,6 +17,7 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Button getAnnouncementsBtn;
     public Button openShortLinkBtn;
     public Button smallBtn;
     public Button middleBtn;
@@ -226,7 +227,6 @@ public class Login : MonoBehaviour
     {
         var opts = new GetAnnouncementsOptions();
         UIController.ShowLoading();
-        Log.I($"GetAnnouncementsOptions: 未登录状态");
         ComboSDK.GetAnnouncements(opts, result =>
         {
             UIController.HideLoading();
