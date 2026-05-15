@@ -250,6 +250,10 @@ public class Login : MonoBehaviour
                     })
                     .ToList();
                 UIController.ShowAnnouncementView(announcements);
+                var openAnnoImage = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                if (openAnnoImage != null) openAnnoImage.gameObject.SetActive(false);
+                var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+                if (getAnnoImage != null) getAnnoImage.gameObject.SetActive(false);
             }
             else
             {
@@ -263,6 +267,9 @@ public class Login : MonoBehaviour
     {
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
+        var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+        if (getAnnoImage != null)
+            getAnnoImage.gameObject.SetActive(false);
     }
 
     public void OpenShortLink()
@@ -431,6 +438,9 @@ public class Login : MonoBehaviour
             {
                 var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
                 image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+                var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+                if (getAnnoImage != null)
+                    getAnnoImage.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
 
                 // if (!res.Data.newAnnouncementsAvailable)
                 // {

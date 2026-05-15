@@ -120,6 +120,10 @@ public class Game : MonoBehaviour
                     })
                     .ToList();
                 UIController.ShowAnnouncementView(announcements);
+                var openAnnoImage = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                if (openAnnoImage != null) openAnnoImage.gameObject.SetActive(false);
+                var getAnnoImage2 = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+                if (getAnnoImage2 != null) getAnnoImage2.gameObject.SetActive(false);
             }
             else
             {
@@ -149,6 +153,9 @@ public class Game : MonoBehaviour
     {
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
+        var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+        if (getAnnoImage != null)
+            getAnnoImage.gameObject.SetActive(false);
     }
 
     [EventSystem.BindEvent]
@@ -176,6 +183,9 @@ public class Game : MonoBehaviour
             {
                 var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
                 image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+                var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+                if (getAnnoImage != null)
+                    getAnnoImage.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
             }
             else
             {
