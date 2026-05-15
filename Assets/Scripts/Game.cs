@@ -14,7 +14,6 @@ public class Game : MonoBehaviour
 {
     public PlayerPanel playerPanel;
     public Button openAnnouncementsBtn;
-    public Button getAnnouncementsBtn;
     public Image roleImage;
     public Transform leftControlPanel;
     public Transform rightControlPanel;
