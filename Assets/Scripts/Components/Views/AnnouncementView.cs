@@ -390,6 +390,7 @@ internal class AnnouncementView : View<AnnouncementView>
         {
             rawImage.texture = cached;
             rawImage.color = Color.white;
+            AdjustImageHeight(rawImage, cached);
             yield break;
         }
 
@@ -407,12 +408,22 @@ internal class AnnouncementView : View<AnnouncementView>
                 _textureCache[url] = tex;
                 rawImage.texture = tex;
                 rawImage.color = Color.white;
+                AdjustImageHeight(rawImage, tex);
             }
             else
             {
                 Debug.LogWarning($"[AnnouncementView] 图片加载失败: {url} error={req.error}");
             }
         }
+    }
+
+    private void AdjustImageHeight(RawImage rawImage, Texture2D tex)
+    {
+        var le = rawImage.GetComponent<LayoutElement>();
+        if (le == null || tex.width == 0) return;
+        float containerWidth = contentContainer.rect.width;
+        if (containerWidth <= 0) containerWidth = 500;
+        le.preferredHeight = containerWidth * tex.height / tex.width;
     }
 
     // 创建表格块 GameObject（VerticalLayoutGroup 嵌套 HorizontalLayoutGroup）
