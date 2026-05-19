@@ -34,7 +34,7 @@ internal class AnnouncementCellView : View<AnnouncementCellView>
     public void SetData(AnnouncementData announcementData)
     {
         Data = announcementData;
-        titleText.text = announcementData.Title;
+        titleText.text = announcementData.Subtitle;
         dateText.text = DateTimeOffset.FromUnixTimeSeconds(announcementData.PublishedAt)
             .LocalDateTime.ToString("yyyy-MM-dd");
     }
