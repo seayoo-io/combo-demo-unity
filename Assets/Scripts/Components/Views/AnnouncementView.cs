@@ -408,6 +408,10 @@ internal class AnnouncementView : View<AnnouncementView>
                 rawImage.texture = tex;
                 rawImage.color = Color.white;
             }
+            else
+            {
+                Debug.LogWarning($"[AnnouncementView] 图片加载失败: {url} error={req.error}");
+            }
         }
     }
 
