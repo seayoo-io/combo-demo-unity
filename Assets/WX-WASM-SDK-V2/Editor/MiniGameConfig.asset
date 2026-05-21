@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProjectConf:
     projectName: demo
-    Appid: wxd6d9be885354383a
-    CDN: https://s3.shiyou.kingsoft.com/apps/demo/
+    Appid: wxfa79a771298e4676
+    CDN: https://s3-wuhan.kingamer.cn/apps/demo
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
-    relativeDST: /Users/chengxiaokang/codebase/gitlab/unitysdk/tuanjie/combo-demo-unity/outputs/wx-minigame
-    DST: /Users/chengxiaokang/codebase/gitlab/unitysdk/tuanjie/combo-demo-unity/outputs/wx-minigame
+    relativeDST: /Users/chengxiaokang/codebase/gitlab/unitysdk/combo-demo-unity/outputs/wx-minigame
+    DST: /Users/chengxiaokang/codebase/gitlab/unitysdk/combo-demo-unity/outputs/wx-minigame
     StreamCDN: 
     bundleHashLength: 32
     bundlePathIdentifier: StreamingAssets;
@@ -67,6 +67,7 @@ MonoBehaviour:
     iOSAutoGCInterval: 10000
     enableIOSPerformancePlus: 0
     enableiOSMetal: 0
+    enableEmscriptenGLX: 0
     brotliMT: 1
     enableWasm2023: 0
   CompressTexture:
