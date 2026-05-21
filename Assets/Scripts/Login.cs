@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Combo;
 using ThinkingData.Analytics;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class Login : MonoBehaviour
     public Button contactSupportBtn;
     public Button switchAccountBtn;
     public Button openAnnouncementsBtn;
+    public Button getAnnouncementsBtn;
     public Button openShortLinkBtn;
     public Button smallBtn;
     public Button middleBtn;
@@ -220,11 +222,54 @@ public class Login : MonoBehaviour
         UIController.ShowAnnouncementParameterView(false);
     }
 
+    // 使用 GetAnnouncements 方案打开公告（真实数据），供 Scene 中按钮直接绑定
+    public void GetAnnouncementsMock()
+    {
+        var opts = new GetAnnouncementsOptions();
+        UIController.ShowLoading();
+        ComboSDK.GetAnnouncements(opts, result =>
+        {
+            UIController.HideLoading();
+            if (result.IsSuccess)
+            {
+                var items = result.Data.Announcements;
+                Log.D($"[GetAnnouncements] count={items.Count}");
+                foreach (var a in items)
+                    Log.D($"[GetAnnouncements] id={a.Id} title={a.Title} subtitle={a.Subtitle} format={a.Format} lang={a.Lang} publishedAt={a.PublishedAt} content={a.Content}");
+
+                var announcements = items
+                    .Select(a => new AnnouncementData
+                    {
+                        Id = a.Id,
+                        Title = a.Title,
+                        Subtitle = a.Subtitle,
+                        Content = a.Content,
+                        Format = a.Format,
+                        Lang = a.Lang,
+                        PublishedAt = a.PublishedAt,
+                    })
+                    .ToList();
+                UIController.ShowAnnouncementView(announcements);
+                var openAnnoImage = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
+                if (openAnnoImage != null) openAnnoImage.gameObject.SetActive(false);
+                var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+                if (getAnnoImage != null) getAnnoImage.gameObject.SetActive(false);
+            }
+            else
+            {
+                Toast.Show($"获取公告失败：{result.Error.Message}");
+            }
+        });
+    }
+
     [EventSystem.BindEvent]
     void OpenAnnouncement(OpenAnnouncementsEvent evt)
     {
         var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
         image.gameObject.SetActive(false);
+        var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+        if (getAnnoImage != null)
+            getAnnoImage.gameObject.SetActive(false);
     }
 
     public void OpenShortLink()
@@ -393,31 +438,34 @@ public class Login : MonoBehaviour
             {
                 var image = FindImageByTag(openAnnouncementsBtn.transform, "announcement");
                 image.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
+                var getAnnoImage = FindImageByTag(getAnnouncementsBtn.transform, "announcement");
+                if (getAnnoImage != null)
+                    getAnnoImage.gameObject.SetActive(res.Data.newAnnouncementsAvailable);
 
-                if (!res.Data.newAnnouncementsAvailable)
-                {
-                    return;
-                }
+                // if (!res.Data.newAnnouncementsAvailable)
+                // {
+                //     return;
+                // }
 
-                var announcementOpts = new OpenAnnouncementsOptions()
-                {
-                    Width = 100,
-                    Height = 100,
-                };
-                Log.I($"OpenAnnouncementsOptions: 未登录状态");
+                // var announcementOpts = new OpenAnnouncementsOptions()
+                // {
+                //     Width = 100,
+                //     Height = 100,
+                // };
+                // Log.I($"OpenAnnouncementsOptions: 未登录状态");
 
-                ComboSDK.OpenAnnouncements(announcementOpts, result =>
-                {
-                    if (result.IsSuccess)
-                    {
-                        OpenAnnouncementsEvent.Invoke();
-                        Log.I("公告打开成功");
-                    }
-                    else
-                    {
-                        Toast.Show($"公告打开失败：{result.Error.Message}");
-                    }
-                });
+                // ComboSDK.OpenAnnouncements(announcementOpts, result =>
+                // {
+                //     if (result.IsSuccess)
+                //     {
+                //         OpenAnnouncementsEvent.Invoke();
+                //         Log.I("公告打开成功");
+                //     }
+                //     else
+                //     {
+                //         Toast.Show($"公告打开失败：{result.Error.Message}");
+                //     }
+                // });
             }
             else
             {

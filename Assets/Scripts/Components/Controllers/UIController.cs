@@ -108,6 +108,24 @@ public static class UIController
         view.Show();
     }
 
+    // 显示公告视图（Mock 数据），使用 GetAnnouncements 方案渲染
+    public static void ShowAnnouncementView()
+    {
+        AnnouncementView.DestroyAll();
+        var view = AnnouncementView.Instantiate();
+        view.Populate();
+        view.Show();
+    }
+
+    // 显示公告视图（真实数据），传入 ComboSDK.GetAnnouncements 返回的数据
+    public static void ShowAnnouncementView(System.Collections.Generic.List<AnnouncementData> announcements)
+    {
+        AnnouncementView.DestroyAll();
+        var view = AnnouncementView.Instantiate();
+        view.Populate(announcements);
+        view.Show();
+    }
+
     public static void ShowRedeemGiftCodeView()
     {
         WebViewParameterView.DestroyAll();
