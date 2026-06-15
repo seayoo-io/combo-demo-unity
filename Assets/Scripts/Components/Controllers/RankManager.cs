@@ -144,6 +144,14 @@ public class RankManager : MonoBehaviour
     [EventSystem.BindEvent]
     public void Complain(ComplainEvent evt)
     {
+        var isComplainAvailable = ComboSDK.IsFeatureAvailable(Feature.COMPLAIN);
+        if (!isComplainAvailable)
+        {
+            Toast.Show("当前平台不支持游戏内举报");
+            Log.I("当前平台不支持游戏内举报，已跳过 Complain 调用");
+            return;
+        }
+
         var opts = new ComplainOptions()
         {
             TargetType = evt.targetType,
@@ -156,6 +164,7 @@ public class RankManager : MonoBehaviour
             Width = evt.width,
             Height = evt.height
         };
+        Log.I($"Complain TargetType: {opts.TargetType} TargetId: {opts.TargetId} TargetName: {opts.TargetName} Category: {opts.Category} ServerId: {opts.ServerId} RoleId: {opts.RoleId} RoleName: {opts.RoleName} Context: {opts.Context} Width: {opts.Width} Height: {opts.Height}");
         ComboSDK.Complain(opts, result =>{
             if(result.IsSuccess)
             {
