@@ -79,6 +79,12 @@ namespace Networking
             // Each resolved IP gets its own ServicePoint (connection pool). Mono's default
             // of 2 concurrent connections per ServicePoint throttles parallel requests.
             ServicePointManager.DefaultConnectionLimit = 16;
+
+            // 关闭 Expect: 100-continue。默认开启时，POST 会先发 header 再等服务端回
+            // "100 Continue" 才发 body；若服务端/CDN 不回 100，客户端会死等（不受
+            // HttpWebRequest.Timeout 约束），表现为 POST 卡几分钟才恢复。GET 无 body 不受影响。
+            // 对 REST/JSON 小 body 请求关闭它无副作用。
+            ServicePointManager.Expect100Continue = false;
         }
 
         // ===================================================================
@@ -255,6 +261,8 @@ namespace Networking
             req.AllowAutoRedirect = false;
             req.KeepAlive = true;
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            // 每请求显式关 Expect:100-continue（双保险，避免 ServicePoint 级设置被覆盖）。
+            req.ServicePoint.Expect100Continue = false;
 
             ApplyHeaders(req, headers);
 
