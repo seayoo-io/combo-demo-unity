@@ -74,44 +74,16 @@ namespace Networking
             "Proxy-Connection", "Date", "Expect",
         };
 
-        // 线程池/连接池配置。用 BeforeSplashScreen（Unity C# 最早执行点）确保在任何网络请求
-        // —— 尤其商城页一次性发起的大量商品图标请求 —— 之前就完成扩容。
-        //
-        // 不放静态构造函数：静态构造仅在「第一次访问本类」时触发，可能恰好和首个请求洪峰同时，
-        // 来不及扩容。提前到启动入口可消除该时序窗口。
+        // 连接池/线程池配置。每个请求经 ThreadPool.QueueUserWorkItem 在一个 worker 线程上做
+        // 同步阻塞 I/O，占线程直到完成/超时；HttpWebRequest 这种「每请求占一线程」模型不擅长
+        // 大规模并发。商城页的大量图标已改走 UnityWebRequest（异步、不占 ThreadPool），剩下的
+        // API 请求是零散的，这里只做基础扩容，给可能的少量并发留足余量。
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         static void InitNetworkingPool()
         {
-            // 每个目标 IP 一个 ServicePoint（连接池）。Mono 默认每池 2 个并发连接，限制并行请求。
+            // 每个目标 IP 一个 ServicePoint（连接池）。Mono 默认每池仅 2 个并发连接，会限制并行请求。
             ServicePointManager.DefaultConnectionLimit = 256;
-
-            // ★ 关键：增大 ThreadPool 最小线程数。
-            // 每个请求经 ThreadPool.QueueUserWorkItem 在一个 worker 线程上做阻塞 I/O，
-            // 占线程直到完成/超时。Android IL2CPP 上 ThreadPool 默认 worker 线程数很少，
-            // 且按需增长每秒只加 1-2 个——商城页大量图标图片同时请求时，线程池瞬间被占满，
-            // 后续请求（如点支付的 create-order）排队等线程，表现为卡几十秒。
-            // 预置足够的最小线程数，让突发并发请求立即有线程执行，不必等池缓慢扩容。
-            //
-            // 注：这是按可预见的并发峰值（商品数量级）设的上限值，非动态自适应——
-            // 若未来单页并发请求数超过此值仍可能排队。本质上 HttpWebRequest 的「每请求占一线程
-            // 阻塞 I/O」模型不擅长大规模并发；如并发量进一步增长，应考虑让图片等可大量并发的
-            // 资源请求改走 UnityWebRequest（异步 I/O，不占 ThreadPool）。
-            // 注意：SetMinThreads 要求 min ≤ max，否则整个调用被静默忽略（min 保持默认 8）。
-            // IL2CPP/Mono 默认 maxWorker 约 200，所以必须先把 max 抬高，再设 min，否则 min=256 > max 被拒。
-            const int TargetThreads = 256;
-            ThreadPool.GetMaxThreads(out int curMaxW, out int curMaxIO);
-            ThreadPool.SetMaxThreads(Math.Max(curMaxW, TargetThreads), Math.Max(curMaxIO, TargetThreads));
-
-            ThreadPool.GetMinThreads(out int curMinW, out int curMinIO);
-            ThreadPool.SetMinThreads(Math.Max(curMinW, TargetThreads), Math.Max(curMinIO, TargetThreads));
-
-            ThreadPool.GetMinThreads(out int afterMinW, out int afterMinIO);
-            ThreadPool.GetMaxThreads(out int afterMaxW, out int afterMaxIO);
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] pool configured: minWorker={afterMinW} maxWorker={afterMaxW} minIO={afterMinIO} maxIO={afterMaxIO} connLimit={ServicePointManager.DefaultConnectionLimit}");
         }
-
-        // [HTTPDNS-DIAG] 当前正在执行（占用 ThreadPool 线程做阻塞 I/O）的请求数。
-        static int _inFlight;
 
         // ===================================================================
         // Public API — operation style
@@ -134,20 +106,10 @@ namespace Networking
         {
             var op = new HttpRequestOperation();
 
-            // [HTTPDNS-DIAG] 入队时刻 + 当时池内可用 worker 线程数。
-            var enqueueAt = System.Diagnostics.Stopwatch.GetTimestamp();
-            ThreadPool.GetAvailableThreads(out int availAtEnqueue, out _);
-            ThreadPool.GetMinThreads(out int minW, out _);
-            ThreadPool.GetMaxThreads(out int maxW, out _);
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] ENQUEUE {method} {url} availWorkers={availAtEnqueue} min={minW} max={maxW} inFlight={_inFlight}");
-
+            // 整个请求（HTTPDNS 解析 + 阻塞 I/O）放到 ThreadPool worker 线程上跑，主线程协程
+            // 逐帧轮询 op.keepWaiting，不阻塞主线程。
             ThreadPool.QueueUserWorkItem(_ =>
             {
-                // [HTTPDNS-DIAG] 任务真正开始执行的延迟 = 排队等线程的时间；inFlight = 当前并发占用数。
-                long startDelayMs = (System.Diagnostics.Stopwatch.GetTimestamp() - enqueueAt) * 1000 / System.Diagnostics.Stopwatch.Frequency;
-                int inFlight = System.Threading.Interlocked.Increment(ref _inFlight);
-                ThreadPool.GetAvailableThreads(out int availNow, out int ioNow);
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] START {method} {url} queuedFor={startDelayMs}ms inFlight={inFlight} availWorkers={availNow}");
                 try
                 {
                     op.SetResponse(Execute(url, method, body, contentType, headers, timeoutMs));
@@ -160,11 +122,6 @@ namespace Networking
                         Error = ErrorType.DataProcessingError,
                         ErrorMessage = e.Message,
                     });
-                }
-                finally
-                {
-                    int remaining = System.Threading.Interlocked.Decrement(ref _inFlight);
-                    UnityEngine.Debug.Log($"[HTTPDNS-DIAG] DONE  {method} {url} inFlight={remaining}");
                 }
             });
 
