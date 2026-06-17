@@ -263,6 +263,10 @@ namespace Networking
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             // 每请求显式关 Expect:100-continue（双保险，避免 ServicePoint 级设置被覆盖）。
             req.ServicePoint.Expect100Continue = false;
+            // 禁用系统代理探测：Android 上 Mono 默认读取系统 HTTP 代理配置，代理探测/连接
+            // 在部分环境会卡固定超时（~20-30s）。本方案本就不依赖系统代理（HTTPDNS 直连 IP），
+            // 显式置 null 跳过代理解析。
+            req.Proxy = null;
 
             ApplyHeaders(req, headers);
 
