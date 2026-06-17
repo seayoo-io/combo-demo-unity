@@ -198,8 +198,12 @@ namespace Networking
         {
             var candidates = new List<string>();
 
+            // [HTTPDNS-DIAG] 临时对照实验：create-order 强制走 direct（原域名+系统DNS，不替换IP）。
+            // 若 direct 不卡 → 问题在「连IP+Host覆盖」组合；若 direct 仍卡 → 与HTTPDNS路径无关。
+            bool forceDirectForDiag = uri.AbsolutePath.Contains("create-order");
+
             // Only resolve real domains — a hop to an IP-literal URL goes direct.
-            if (Uri.CheckHostName(uri.Host) == UriHostNameType.Dns)
+            if (!forceDirectForDiag && Uri.CheckHostName(uri.Host) == UriHostNameType.Dns)
             {
                 var dns = HttpDns.ResolveSync(uri.Host);
                 if (dns?.IPv6 != null) candidates.AddRange(dns.IPv6);

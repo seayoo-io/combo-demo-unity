@@ -92,8 +92,7 @@ public class ProductManager : MonoBehaviour
             Toast.Show("商品 Id 为空");
             return;
         }
-        // [HTTPDNS-DIAG] 临时注释：验证 create-order 卡 25s 是否与此 Loading 上下文相关。
-        // UIController.ShowLoading();
+        UIController.ShowLoading();
         GameClient.CreateOrder(
             productId,
             quantity,
