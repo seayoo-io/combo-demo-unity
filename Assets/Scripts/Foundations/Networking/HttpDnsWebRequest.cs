@@ -77,16 +77,22 @@ namespace Networking
         static HttpDnsWebRequest()
         {
             // 每个目标 IP 一个 ServicePoint（连接池）。Mono 默认每池 2 个并发连接，限制并行请求。
-            ServicePointManager.DefaultConnectionLimit = 64;
+            ServicePointManager.DefaultConnectionLimit = 256;
 
             // ★ 关键：增大 ThreadPool 最小线程数。
             // 每个请求经 ThreadPool.QueueUserWorkItem 在一个 worker 线程上做阻塞 I/O，
             // 占线程直到完成/超时。Android IL2CPP 上 ThreadPool 默认 worker 线程数很少，
-            // 且按需增长每秒只加 1-2 个——商品页几十个图标图片同时请求时，线程池瞬间被占满，
+            // 且按需增长每秒只加 1-2 个——商品页大量图标图片同时请求时，线程池瞬间被占满，
             // 后续请求（如点支付的 create-order）排队等线程，表现为卡几十秒。
             // 预置足够的最小线程数，让突发并发请求立即有线程执行，不必等池缓慢扩容。
+            //
+            // 注：这是按可预见的并发峰值（商品数量级）设的上限值，非动态自适应——
+            // 若未来单页并发请求数超过此值仍可能排队。本质上 HttpWebRequest 的「每请求占一线程
+            // 阻塞 I/O」模型不擅长大规模并发；如并发量进一步增长，应考虑让图片等可大量并发的
+            // 资源请求改走 UnityWebRequest（异步 I/O，不占 ThreadPool）。
+            const int MinThreads = 256;
             ThreadPool.GetMinThreads(out int curWorker, out int curIO);
-            ThreadPool.SetMinThreads(Math.Max(curWorker, 64), Math.Max(curIO, 64));
+            ThreadPool.SetMinThreads(Math.Max(curWorker, MinThreads), Math.Max(curIO, MinThreads));
         }
 
         // ===================================================================
