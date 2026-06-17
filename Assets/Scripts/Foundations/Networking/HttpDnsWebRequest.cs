@@ -258,17 +258,17 @@ namespace Networking
 
             ApplyHeaders(req, headers);
 
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {via} headers applied, body={body?.Length ?? 0}B");
+            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} headers applied, body={body?.Length ?? 0}B");
 
             if (body != null && body.Length > 0)
             {
                 if (contentType != null)
                     req.ContentType = contentType;
                 req.ContentLength = body.Length;
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {via} before GetRequestStream");
+                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} before GetRequestStream");
                 using (var rs = req.GetRequestStream())
                     rs.Write(body, 0, body.Length);
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {via} after GetRequestStream (body written)");
+                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} after GetRequestStream (body written)");
             }
             else if (method != "GET")
             {
@@ -276,13 +276,13 @@ namespace Networking
                 req.ContentLength = 0;
             }
 
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {via} before GetResponse");
+            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} before GetResponse");
 
             HttpWebResponse resp;
             try
             {
                 resp = (HttpWebResponse)req.GetResponse();
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {via} after GetResponse, status={(int)resp.StatusCode}");
+                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} after GetResponse, status={(int)resp.StatusCode}");
             }
             catch (WebException we) when (we.Response is HttpWebResponse errorResponse)
             {
