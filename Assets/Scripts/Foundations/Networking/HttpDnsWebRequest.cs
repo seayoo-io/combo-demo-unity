@@ -96,9 +96,14 @@ namespace Networking
             // 若未来单页并发请求数超过此值仍可能排队。本质上 HttpWebRequest 的「每请求占一线程
             // 阻塞 I/O」模型不擅长大规模并发；如并发量进一步增长，应考虑让图片等可大量并发的
             // 资源请求改走 UnityWebRequest（异步 I/O，不占 ThreadPool）。
-            const int MinThreads = 256;
-            ThreadPool.GetMinThreads(out int curWorker, out int curIO);
-            ThreadPool.SetMinThreads(Math.Max(curWorker, MinThreads), Math.Max(curIO, MinThreads));
+            // 注意：SetMinThreads 要求 min ≤ max，否则整个调用被静默忽略（min 保持默认 8）。
+            // IL2CPP/Mono 默认 maxWorker 约 200，所以必须先把 max 抬高，再设 min，否则 min=256 > max 被拒。
+            const int TargetThreads = 256;
+            ThreadPool.GetMaxThreads(out int curMaxW, out int curMaxIO);
+            ThreadPool.SetMaxThreads(Math.Max(curMaxW, TargetThreads), Math.Max(curMaxIO, TargetThreads));
+
+            ThreadPool.GetMinThreads(out int curMinW, out int curMinIO);
+            ThreadPool.SetMinThreads(Math.Max(curMinW, TargetThreads), Math.Max(curMinIO, TargetThreads));
 
             ThreadPool.GetMinThreads(out int afterMinW, out int afterMinIO);
             ThreadPool.GetMaxThreads(out int afterMaxW, out int afterMaxIO);
