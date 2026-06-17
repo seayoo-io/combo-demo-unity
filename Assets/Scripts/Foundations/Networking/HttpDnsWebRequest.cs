@@ -139,7 +139,10 @@ namespace Networking
             ThreadPool.GetAvailableThreads(out int availAtEnqueue, out _);
             ThreadPool.GetMinThreads(out int minW, out _);
             ThreadPool.GetMaxThreads(out int maxW, out _);
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] ENQUEUE {method} {url} availWorkers={availAtEnqueue} min={minW} max={maxW}");
+            // liveThreads = 进程真实活线程总数（含 Unity 主/渲染/音频等）。关注它随积压涨不涨：
+            // 若 availWorkers 还很大但 liveThreads 卡在十几不动，说明池根本没在补 worker 线程。
+            int liveThreads = System.Diagnostics.Process.GetCurrentProcess().Threads.Count;
+            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] ENQUEUE {method} {url} availWorkers={availAtEnqueue} min={minW} max={maxW} liveThreads={liveThreads} inFlight={_inFlight}");
 
             ThreadPool.QueueUserWorkItem(_ =>
             {
