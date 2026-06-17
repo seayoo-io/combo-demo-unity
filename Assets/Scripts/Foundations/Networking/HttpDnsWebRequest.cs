@@ -288,38 +288,6 @@ namespace Networking
                 req.ContentLength = 0;
             }
 
-            // [HTTPDNS-DIAG] 分段计时：把 GetResponse 的 25s 钉死到 DNS / TCP / TLS 哪一段。
-            {
-                var swDns = System.Diagnostics.Stopwatch.StartNew();
-                try
-                {
-                    var addrs = System.Net.Dns.GetHostAddresses(attemptUri.Host);
-                    swDns.Stop();
-                    UnityEngine.Debug.Log($"[HTTPDNS-DIAG] DNS {attemptUri.Host} resolved in {swDns.ElapsedMilliseconds}ms, count={addrs.Length}, first={(addrs.Length > 0 ? addrs[0].ToString() : "none")}");
-                }
-                catch (Exception dnsEx)
-                {
-                    swDns.Stop();
-                    UnityEngine.Debug.LogWarning($"[HTTPDNS-DIAG] DNS {attemptUri.Host} FAILED in {swDns.ElapsedMilliseconds}ms: {dnsEx.Message}");
-                }
-
-                var swTcp = System.Diagnostics.Stopwatch.StartNew();
-                try
-                {
-                    using (var probe = new System.Net.Sockets.TcpClient())
-                    {
-                        var connectTask = probe.ConnectAsync(attemptUri.Host, attemptUri.Port);
-                        bool done = connectTask.Wait(30000);
-                        swTcp.Stop();
-                        UnityEngine.Debug.Log($"[HTTPDNS-DIAG] TCP connect {attemptUri.Host}:{attemptUri.Port} {(done ? "OK" : "TIMEOUT")} in {swTcp.ElapsedMilliseconds}ms");
-                    }
-                }
-                catch (Exception tcpEx)
-                {
-                    swTcp.Stop();
-                    UnityEngine.Debug.LogWarning($"[HTTPDNS-DIAG] TCP connect {attemptUri.Host} FAILED in {swTcp.ElapsedMilliseconds}ms: {tcpEx.Message}");
-                }
-            }
 
             UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} before GetResponse");
 

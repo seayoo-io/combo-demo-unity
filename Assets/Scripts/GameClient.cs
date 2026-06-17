@@ -515,12 +515,17 @@ public static class GameClient
 
     // 获取商品图片
     public static void GetProductImg(string url, Action<Texture2D> action){
+        // [HTTPDNS-DIAG] 临时禁用商品图片并发请求，验证 create-order 卡顿是否由几十个图片请求
+        // 同时占满 ThreadPool/连接池导致。验证完恢复。
+        return;
+#pragma warning disable CS0162
         HttpRequest.Get(new HttpRequestOptions {
             url = url,
             headers = Headers()
         }, resp => {
             action.Invoke(resp.Body.ToImage());
         });
+#pragma warning restore CS0162
     }
 
     // 获取服务器列表
