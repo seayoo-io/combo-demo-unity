@@ -354,6 +354,8 @@ namespace Networking
             {
                 if (string.IsNullOrEmpty(pair.Key)) continue;
 
+                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] header {pair.Key} len={pair.Value?.Length ?? 0} value=\"{pair.Value}\"");
+
                 if (RestrictedHeaders.Contains(pair.Key))
                 {
                     // Host / Content-Type / Content-Length are owned by DoRequest itself.
