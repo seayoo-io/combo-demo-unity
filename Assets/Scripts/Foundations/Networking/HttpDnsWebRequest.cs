@@ -141,7 +141,7 @@ namespace Networking
                 // [HTTPDNS-DIAG] 任务真正开始执行的延迟 = 排队等线程的时间；inFlight = 当前并发占用数。
                 long startDelayMs = (System.Diagnostics.Stopwatch.GetTimestamp() - enqueueAt) * 1000 / System.Diagnostics.Stopwatch.Frequency;
                 int inFlight = System.Threading.Interlocked.Increment(ref _inFlight);
-                ThreadPool.GetAvailableThreads(out int availNow, out _);
+                ThreadPool.GetAvailableThreads(out int availNow, out int ioNow);
                 UnityEngine.Debug.Log($"[HTTPDNS-DIAG] START {method} {url} queuedFor={startDelayMs}ms inFlight={inFlight} availWorkers={availNow}");
                 try
                 {
