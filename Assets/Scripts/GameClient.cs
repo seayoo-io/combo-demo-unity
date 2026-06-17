@@ -517,12 +517,8 @@ public static class GameClient
 
     // 获取商品图片
     public static void GetProductImg(string url, Action<Texture2D> action){
-        HttpRequest.Get(new HttpRequestOptions {
-            url = url,
-            headers = Headers()
-        }, resp => {
-            action.Invoke(resp.Body.ToImage());
-        });
+        // CDN 图片走 UnityWebRequest（异步、不占 ThreadPool worker），不经 HttpDnsWebRequest。
+        HttpRequest.GetImage(url, Headers(), action);
     }
 
     // 获取服务器列表

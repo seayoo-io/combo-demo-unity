@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Networking
 {
@@ -39,6 +40,36 @@ namespace Networking
         public static void Post(HttpRequestOptions options, Action<HttpResponse> callback)
         {
             HttpRequestCaller.Instance.StartCoroutine(PostCoroutine(options, callback));
+        }
+
+        // 图片等 CDN 静态资源专用：走 UnityWebRequest（异步 I/O，不占 ThreadPool worker 线程）。
+        // 不走 HttpDnsWebRequest——CDN 图片不需要 HTTPDNS，原域名直拉 SNI 天然正确；且大量
+        // 并发图片若走 HttpWebRequest 同步阻塞会占满 ThreadPool，饿死 create-order 等 API 请求。
+        private const int ImageTimeoutSec = 15;
+        public static void GetImage(string url, Dictionary<string, string> headers, Action<Texture2D> callback)
+        {
+            HttpRequestCaller.Instance.StartCoroutine(GetImageCoroutine(url, headers, callback));
+        }
+
+        private static IEnumerator GetImageCoroutine(string url, Dictionary<string, string> headers, Action<Texture2D> callback)
+        {
+            using (var req = UnityWebRequestTexture.GetTexture(url))
+            {
+                req.timeout = ImageTimeoutSec;
+                if (headers != null)
+                    foreach (var kv in headers)
+                        req.SetRequestHeader(kv.Key, kv.Value);
+
+                yield return req.SendWebRequest();
+
+                Texture2D tex = null;
+                if (req.result == UnityWebRequest.Result.Success)
+                    tex = DownloadHandlerTexture.GetContent(req);
+                else
+                    Debug.LogWarning($"{TAG} GET(image) {url} => {req.result}: {req.error}");
+
+                callback?.Invoke(tex);
+            }
         }
 
         // options.timeout 单位是秒（沿用原 UnityWebRequest.timeout 语义）；
