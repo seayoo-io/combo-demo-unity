@@ -76,15 +76,17 @@ namespace Networking
 
         static HttpDnsWebRequest()
         {
-            // Each resolved IP gets its own ServicePoint (connection pool). Mono's default
-            // of 2 concurrent connections per ServicePoint throttles parallel requests.
-            ServicePointManager.DefaultConnectionLimit = 16;
+            // 每个目标 IP 一个 ServicePoint（连接池）。Mono 默认每池 2 个并发连接，限制并行请求。
+            ServicePointManager.DefaultConnectionLimit = 64;
 
-            // 关闭 Expect: 100-continue。默认开启时，POST 会先发 header 再等服务端回
-            // "100 Continue" 才发 body；若服务端/CDN 不回 100，客户端会死等（不受
-            // HttpWebRequest.Timeout 约束），表现为 POST 卡几分钟才恢复。GET 无 body 不受影响。
-            // 对 REST/JSON 小 body 请求关闭它无副作用。
-            ServicePointManager.Expect100Continue = false;
+            // ★ 关键：增大 ThreadPool 最小线程数。
+            // 每个请求经 ThreadPool.QueueUserWorkItem 在一个 worker 线程上做阻塞 I/O，
+            // 占线程直到完成/超时。Android IL2CPP 上 ThreadPool 默认 worker 线程数很少，
+            // 且按需增长每秒只加 1-2 个——商品页几十个图标图片同时请求时，线程池瞬间被占满，
+            // 后续请求（如点支付的 create-order）排队等线程，表现为卡几十秒。
+            // 预置足够的最小线程数，让突发并发请求立即有线程执行，不必等池缓慢扩容。
+            ThreadPool.GetMinThreads(out int curWorker, out int curIO);
+            ThreadPool.SetMinThreads(Math.Max(curWorker, 64), Math.Max(curIO, 64));
         }
 
         // ===================================================================
@@ -261,26 +263,16 @@ namespace Networking
             req.AllowAutoRedirect = false;
             req.KeepAlive = true;
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            // 每请求显式关 Expect:100-continue（双保险，避免 ServicePoint 级设置被覆盖）。
-            req.ServicePoint.Expect100Continue = false;
-            // 禁用系统代理探测：Android 上 Mono 默认读取系统 HTTP 代理配置，代理探测/连接
-            // 在部分环境会卡固定超时（~20-30s）。本方案本就不依赖系统代理（HTTPDNS 直连 IP），
-            // 显式置 null 跳过代理解析。
-            req.Proxy = null;
 
             ApplyHeaders(req, headers);
-
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} headers applied, body={body?.Length ?? 0}B");
 
             if (body != null && body.Length > 0)
             {
                 if (contentType != null)
                     req.ContentType = contentType;
                 req.ContentLength = body.Length;
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} before GetRequestStream");
                 using (var rs = req.GetRequestStream())
                     rs.Write(body, 0, body.Length);
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} after GetRequestStream (body written)");
             }
             else if (method != "GET")
             {
@@ -288,14 +280,10 @@ namespace Networking
                 req.ContentLength = 0;
             }
 
-
-            UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} before GetResponse");
-
             HttpWebResponse resp;
             try
             {
                 resp = (HttpWebResponse)req.GetResponse();
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] {method} {attemptUri.AbsolutePath} via={via} after GetResponse, status={(int)resp.StatusCode}");
             }
             catch (WebException we) when (we.Response is HttpWebResponse errorResponse)
             {
@@ -350,8 +338,6 @@ namespace Networking
             foreach (var pair in headers)
             {
                 if (string.IsNullOrEmpty(pair.Key)) continue;
-
-                UnityEngine.Debug.Log($"[HTTPDNS-DIAG] header {pair.Key} len={pair.Value?.Length ?? 0} value=\"{pair.Value}\"");
 
                 if (RestrictedHeaders.Contains(pair.Key))
                 {
