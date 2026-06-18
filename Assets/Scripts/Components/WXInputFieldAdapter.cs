@@ -63,8 +63,8 @@ public class WXInputFieldAdapter : MonoBehaviour, IPointerClickHandler, IPointer
         
         WX.ShowKeyboard(new ShowKeyboardOption()
         {
-            defaultValue = "xxx",
-            maxLength = 20,
+            defaultValue = _inputField.text,
+            maxLength = _inputField.characterLimit > 0 ? _inputField.characterLimit : 200,
             confirmType = "go"
         });
 
