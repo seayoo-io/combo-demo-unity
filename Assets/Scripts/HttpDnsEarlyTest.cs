@@ -38,6 +38,7 @@ public static class HttpDnsEarlyTest
     {
         "api.seayoo.com",
         "ggd.seayooassets.com",
+        "ggd-5.dev.seayooassets.com"
     };
 
     // BeforeSceneLoad：Unity C# 最早执行点。此时第一个场景尚未加载，无任何 MonoBehaviour。
