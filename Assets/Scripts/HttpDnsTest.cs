@@ -24,6 +24,7 @@ public class HttpDnsTest : MonoBehaviour
         "api.seayoo.com",
         "ggd.seayooassets.com",
         "account.ggd.seayoogames.cn",
+        "ggd-5.dev.seayooassets.com"
     };
 
     void Start()
