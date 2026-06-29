@@ -122,7 +122,8 @@ public class Builder : EditorWindow
         buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
         buildPlayerOptions.target = BuildTarget.Android;
 #if UNITY_2019_1_OR_NEWER
-        buildPlayerOptions.options = BuildOptions.AllowDebugging;
+        // AllowDebugging 必须配合 Development 一起使用，否则 BuildPlayer 会抛 ArgumentException
+        buildPlayerOptions.options = BuildOptions.Development | BuildOptions.AllowDebugging;
 #else
         buildPlayerOptions.options = BuildOptions.AcceptExternalModificationsToPlayer; // 这个选项会导出Android工程，而不是构建APK
 #endif
@@ -149,7 +150,8 @@ public class Builder : EditorWindow
         buildPlayerOptions.locationPathName = exportPath; // 设置输出路径
         buildPlayerOptions.target = BuildTarget.iOS;
 #if UNITY_2019_1_OR_NEWER
-        buildPlayerOptions.options = BuildOptions.AllowDebugging;
+        // AllowDebugging 必须配合 Development 一起使用，否则 BuildPlayer 会抛 ArgumentException
+        buildPlayerOptions.options = BuildOptions.Development | BuildOptions.AllowDebugging;
 #else
         buildPlayerOptions.options = BuildOptions.AcceptExternalModificationsToPlayer; // 这个选项会导出Android工程，而不是构建APK
 #endif
