@@ -31,5 +31,8 @@ ComboSDK v{ComboSDK.GetVersion()} with {GameUtils.GetPlatformName()}SDK v{ComboS
 #if UNITY_ANDROID
         metaText.text += $" - Variant:{ComboSDK.GetVariant()} - Subvariant:{ComboSDK.GetSubvariant()}";
 #endif
+#if UNITY_IOS
+        metaText.text += $" - IsJailBroken:{IOSRuntime.IsJailBroken} - BuildType:{IOSRuntime.BuildType}";
+#endif
     }
 }
