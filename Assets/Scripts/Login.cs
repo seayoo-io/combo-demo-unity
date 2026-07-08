@@ -26,10 +26,8 @@ public class Login : MonoBehaviour
     private int loginRetryCount = 0;
     private string lastError = "";
 
-#if UNITY_IOS
     private Text jailBreakText;
     private Text buildTypeText;
-#endif
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
     public static void SetupByAfterAssembliesLoaded()
@@ -67,14 +65,11 @@ public class Login : MonoBehaviour
             bigBtn.interactable = false;
         }
 
-#if UNITY_IOS
         var panel = loginBtn.transform.parent;
         jailBreakText = CreateInfoText(panel, "JailBrokenText", "is_jail_broken: " + IOSRuntime.IsJailBroken, 130);
         buildTypeText = CreateInfoText(panel, "BuildTypeText", "build_type: " + IOSRuntime.BuildType, 105);
-#endif
     }
 
-#if UNITY_IOS
     private Text CreateInfoText(Transform parent, string name, string content, float yOffset)
     {
         var go = new GameObject(name, typeof(RectTransform));
@@ -95,7 +90,6 @@ public class Login : MonoBehaviour
         text.color = Color.gray;
         return text;
     }
-#endif
     void Start()
     {
         CheckAnnouncements();
@@ -361,12 +355,10 @@ public class Login : MonoBehaviour
                 );
                 var loginProperties = new Dictionary<string, object>
                 {
-                    { "role_name", "test_player" }
+                    { "role_name", "test_player" },
+                    { "is_jail_broken", IOSRuntime.IsJailBroken },
+                    { "build_type", IOSRuntime.BuildType }
                 };
-#if UNITY_IOS
-                loginProperties["is_jail_broken"] = IOSRuntime.IsJailBroken;
-                loginProperties["build_type"] = IOSRuntime.BuildType;
-#endif
                 TDAnalytics.Track("sdk_login", loginProperties);
                 GameClientLogin(result);
                 GameManager.Instance.sdkIsLogin = true;
