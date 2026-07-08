@@ -26,6 +26,11 @@ public class Login : MonoBehaviour
     private int loginRetryCount = 0;
     private string lastError = "";
 
+#if UNITY_IOS
+    private Text jailBreakText;
+    private Text buildTypeText;
+#endif
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
     public static void SetupByAfterAssembliesLoaded()
     {
@@ -62,8 +67,35 @@ public class Login : MonoBehaviour
             bigBtn.interactable = false;
         }
 
-
+#if UNITY_IOS
+        var panel = loginBtn.transform.parent;
+        jailBreakText = CreateInfoText(panel, "JailBrokenText", "is_jail_broken: " + IOSRuntime.IsJailBroken, 0);
+        buildTypeText = CreateInfoText(panel, "BuildTypeText", "build_type: " + IOSRuntime.BuildType, 1);
+#endif
     }
+
+#if UNITY_IOS
+    private Text CreateInfoText(Transform parent, string name, string content, int siblingIndex)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0.5f, 0f);
+        rt.anchorMax = new Vector2(0.5f, 0f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = new Vector2(0, -20 - siblingIndex * 25);
+        rt.sizeDelta = new Vector2(400, 25);
+
+        var text = go.AddComponent<Text>();
+        text.text = content;
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.fontSize = 16;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.color = Color.gray;
+        return text;
+    }
+#endif
     void Start()
     {
         CheckAnnouncements();
