@@ -69,13 +69,13 @@ public class Login : MonoBehaviour
 
 #if UNITY_IOS
         var panel = loginBtn.transform.parent;
-        jailBreakText = CreateInfoText(panel, "JailBrokenText", "is_jail_broken: " + IOSRuntime.IsJailBroken, 0);
-        buildTypeText = CreateInfoText(panel, "BuildTypeText", "build_type: " + IOSRuntime.BuildType, 1);
+        jailBreakText = CreateInfoText(panel, "JailBrokenText", "is_jail_broken: " + IOSRuntime.IsJailBroken, 130);
+        buildTypeText = CreateInfoText(panel, "BuildTypeText", "build_type: " + IOSRuntime.BuildType, 105);
 #endif
     }
 
 #if UNITY_IOS
-    private Text CreateInfoText(Transform parent, string name, string content, int siblingIndex)
+    private Text CreateInfoText(Transform parent, string name, string content, float yOffset)
     {
         var go = new GameObject(name, typeof(RectTransform));
         go.transform.SetParent(parent, false);
@@ -84,7 +84,7 @@ public class Login : MonoBehaviour
         rt.anchorMin = new Vector2(0.5f, 0f);
         rt.anchorMax = new Vector2(0.5f, 0f);
         rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = new Vector2(0, -20 - siblingIndex * 25);
+        rt.anchoredPosition = new Vector2(0, yOffset);
         rt.sizeDelta = new Vector2(400, 25);
 
         var text = go.AddComponent<Text>();
