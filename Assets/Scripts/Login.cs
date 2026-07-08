@@ -327,10 +327,15 @@ public class Login : MonoBehaviour
                 Log.I(
                     $"登录成功: COMBOID - {result.loginInfo.comboId}; TOKEN - {result.loginInfo.identityToken}"
                 );
-                TDAnalytics.Track(
-                    "sdk_login",
-                    new Dictionary<string, object>() { { "role_name", "test_player" } }
-                );
+                var loginProperties = new Dictionary<string, object>
+                {
+                    { "role_name", "test_player" }
+                };
+#if UNITY_IOS
+                loginProperties["is_jail_broken"] = IOSRuntime.IsJailBroken;
+                loginProperties["build_type"] = IOSRuntime.BuildType;
+#endif
+                TDAnalytics.Track("sdk_login", loginProperties);
                 GameClientLogin(result);
                 GameManager.Instance.sdkIsLogin = true;
                 UIController.ShowLoading();
