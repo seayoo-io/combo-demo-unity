@@ -12,6 +12,8 @@ public enum ShareType
 }
 public class SharePlatformViewController : MonoBehaviour
 {
+    private const string QQLinkCoverUrl = "https://a0.seayooassets.com/kms/10/8ed01884e80e03e14a0deabf813616.png";
+
     public Button systemBtn;
     public Button taptapBtn;
     public Button agoraBtn;
@@ -164,6 +166,9 @@ public class SharePlatformViewController : MonoBehaviour
                 }
                 break;
             case ShareType.Link:
+                string linkCoverUrl = shareTarget == ShareTarget.QQ
+                    ? QQLinkCoverUrl
+                    : linkShareOptions.LinkCoverUrl;
                 if(shareScene == null)
                 {
                     opts = new LinkShareOptions { 
@@ -171,7 +176,7 @@ public class SharePlatformViewController : MonoBehaviour
                         Title = linkShareOptions.Title,
                         Text = linkShareOptions.Text,
                         LinkUrl = linkShareOptions.LinkUrl,
-                        LinkCoverUrl = linkShareOptions.LinkCoverUrl,
+                        LinkCoverUrl = linkCoverUrl,
                     };
                 }
                 else
@@ -181,7 +186,7 @@ public class SharePlatformViewController : MonoBehaviour
                         Title = linkShareOptions.Title,
                         Text = linkShareOptions.Text,
                         LinkUrl = linkShareOptions.LinkUrl,
-                        LinkCoverUrl = linkShareOptions.LinkCoverUrl,
+                        LinkCoverUrl = linkCoverUrl,
                         Scene = (ShareScene)shareScene,
                     };
                 }

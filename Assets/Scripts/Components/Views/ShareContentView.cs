@@ -100,7 +100,7 @@ internal class ShareContentView : View<ShareContentView>
                 title = linkTitle.text,
                 contents = linkContent.text,
                 linkUrl = "https://ggd.seayoo.com/app?roomId=70000560&type=invite",
-                linkCoverUrl = null
+                linkCoverUrl = coverUrl
             });
         });
     }
