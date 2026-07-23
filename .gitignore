@@ -98,3 +98,5 @@ ComboSDK.json.meta
 #TapTap
 /Assets/TapTap
 /Assets/TapTap.meta
+# webgl 小游戏装配脚本的本机配置（各机器的 webgl SDK 仓库路径、S3 凭据都不同）
+/.claude/skills/webgl-minigame-build/config.local.json
