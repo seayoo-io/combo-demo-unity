@@ -14,9 +14,46 @@ description: 装配微信 / 抖音小游戏工程，把 Unity 导出的 WebGL �
 | 报错 | 该做什么 |
 | --- | --- |
 | `未找到 aws CLI` | 直接帮用户装上。**三个平台装法完全不同，先确认用户是 Windows / macOS / Linux 再动手**，各自的命令见 `references/troubleshooting.md`。装完用 `aws --version` 确认能跑 |
-| `以下端点没有可用的 S3 凭据` | 主动向用户索取凭据并写进 `config.local.json`。武汉、北京**凭据不同要分别要**；要的是 Access Key 不是登录密码 |
+| `尚未创建本机配置文件` / `配置文件缺少必要参数` | 按下面「配置向导」逐项问用户，拿到后生成配置文件并**自动继续**原来的构建 |
 
 安装类操作若需要改动用户的全局环境（如 `brew update`），**先问用户**。详细做法和注意事项都在 `references/troubleshooting.md`。
+
+## 配置向导
+
+脚本在开跑前会把**本次操作需要、但还没配的参数一次性全部列出**（按需：装配抖音不会问 S3 凭据，没传 `--local-sdk` 不会问 SDK 路径），每项都带「用途 / 获取方式 / 形如」。遇到这个报错时按下面走完，不要让用户自己去建文件。
+
+### 步骤
+
+1. **把脚本列出的参数逐个问用户**。用 AskUserQuestion，**一次问一个**，问的时候带上脚本给出的「用途」和「获取方式」，让用户知道这个值是干什么的、去哪儿找。不要一次性甩一堆问题，也不要让他自己拼 JSON。
+2. **边问边确认合理性**，明显不对的当场指出来，别等写进文件跑失败了才发现：
+   - S3 的 Access Key 是控制台「密钥管理」生成的随机串，**不是登录用户名**。用户给了个像人名/邮箱的值，先跟他确认。
+   - 武汉和北京是**两个独立后台，凭据不同**，不能拿同一组填两边。
+   - 路径必须是绝对路径；Windows 上要用正斜杠 `C:/Users/me/webgl` 或双反斜杠，JSON 里单反斜杠是转义符。
+3. **生成配置文件**。**必须用 python 读出已有 JSON、改完再写回**，不要整个覆盖——用户可能已经配了一部分，覆盖会把它冲掉：
+
+   ```python
+   import json, pathlib
+   p = pathlib.Path(".claude/skills/webgl-minigame-build/config.local.json")
+   cfg = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+   cfg["webglSdkDir"] = "<用户给的路径>"
+   eps = cfg.setdefault("s3", {}).setdefault("endpoints", [])
+   by_name = {e.get("name"): e for e in eps if isinstance(e, dict)}
+   for name, ak, sk in [("wuhan", "<AK>", "<SK>"), ("beijing", "<AK>", "<SK>")]:
+       ep = by_name.get(name)
+       if ep is None:
+           ep = {"name": name}; eps.append(ep)
+       ep["accessKeyId"], ep["secretAccessKey"] = ak, sk
+   p.write_text(json.dumps(cfg, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+   ```
+
+4. **写完不要回显凭据**，只说「已写入配置文件」。这个文件已在 `.gitignore` 中。
+5. **自动重跑原来的构建命令**，把流程继续下去——用户要的是「装配微信」，不是「配好文件」。**不要停在这里等他再说一次。**
+
+### 注意
+
+- 只问脚本列出来的那几项。`endpointUrl`、`s3.target`、`region`、`acl` 都有内置默认值，不要拿去烦用户。
+- 用户明确不想配的话有退路：`--skip-step3` 跳过上传、去掉 `--local-sdk` 改用线上产物。但别主动往这上面引导，那是降级方案。
+- 用户说「凭据我不方便给你」时，告诉他可以自己设端点专属环境变量 `S3_WUHAN_ACCESS_KEY_ID` / `S3_WUHAN_SECRET_ACCESS_KEY`、`S3_BEIJING_*`，脚本同样认，优先级还更高。
 
 ## 文件布局
 
