@@ -79,17 +79,18 @@ aws --version
 
 1. 用 AskUserQuestion 之类的方式向用户要凭据。**两个端点的凭据不一样，必须分别要**，说清楚哪个是武汉、哪个是北京。报错信息里会列出到底缺哪个端点——只缺一个就只要那一个。
    - 要的是 **Access Key ID / Secret Access Key**（S3 控制台「密钥管理」里生成的），**不是控制台的登录用户名/密码**。用户给的若是用户名密码形式，拿去调 S3 会直接 `InvalidAccessKeyId`，先跟他确认清楚，别写进配置文件。
-2. 写入 `.claude/skills/webgl-minigame-build/config.json` 的 `s3.endpoints`。**用 python 读出 JSON、改完再写回**，不要整个文件覆盖，否则会丢掉 `webglSdkDir` 等已有配置。
+2. 写入 `.claude/skills/webgl-minigame-build/config.local.json` 的 `s3.endpoints`。**用 python 读出 JSON、改完再写回**，不要整个文件覆盖，否则会丢掉 `webglSdkDir` 等已有配置。
 3. 不要写进 `~/.aws/credentials`——那是用户的全局配置，可能已经有别的 profile，不该被这个项目污染。
 4. **不要把凭据回显到对话里**，写完只说"已写入配置文件"。配置文件已在 `.gitignore` 中，确认无误后重跑构建命令。
 
 ## 排查失败
 
 - **`未找到导出目录 ...`**：前置的 Unity 导出没做。Unity 导出目前只能人工操作，直接告诉用户需要先在 Unity 里导出，不要尝试用命令行代跑。
-- **`未找到 game.js`**：`outputs/` 下的工程是残缺的或导出到了别的路径，让用户确认 Unity 的导出目标目录。
+- **`... 下没有 game.js`**：`outputs/` 下的工程是残缺的或导出到了别的路径，让用户确认 Unity 的导出目标目录。
 - **`未找到 Combo CLI`**：需要安装 Combo CLI 并配置 `~/.combo/combo.yaml`。
-- **`未找到 webgl SDK 仓库: ...`**：`config.json` 里的 `webglSdkDir` 没配或配错。新机器上常见原因是还没创建这个文件。
-- **`配置文件解析失败`**：`config.json` 不是合法 JSON，上一行有 python 给出的具体位置。
+- **`未找到 webgl SDK 仓库: ...`**：`config.local.json` 里的 `webglSdkDir` 没配或配错。新机器上常见原因是还没创建这个文件。
+  - 若报错里同时提示**「路径里含有控制字符」**，那是 Windows 路径的反斜杠没转义。JSON 中 `\t` `\n` `\b` 都是合法转义，所以 `"C:\temp\new\build"` 解析时**不报错**、却被静默改成了乱码。让用户改成正斜杠 `"C:/Users/me/webgl"`（推荐）或双反斜杠 `"C:\\Users\\me\\webgl"`，Windows 两种都认。
+- **`配置文件不是合法的 JSON`**：`config.local.json` 语法有误，报错下一行会给出具体的行列位置。
 - **步骤 1 报错**：通常是 profile 或网络问题。脚本调用的是 PATH 里的 `Combo`，用默认 profile。`Combo` 本身支持 `-p <profile>`，但**脚本还没有透传这个参数**——需要指定 profile 时给脚本加一个选项，不要绕开脚本手工执行，否则本机与 CI 的行为会分叉。
 - **步骤 2 报缺文件或目录不存在**：`combo/dist` 是空的，或步骤 1 没跑过导致 `combosdk/` 不存在。
 - **步骤 3 提示「StreamingAssets 路径异常，拒绝删除」**：这是 `rm -rf` 前的安全护栏，说明解析出的路径不在 `outputs/` 下，检查 `--distro` 与目录布局。
