@@ -87,7 +87,7 @@ description: 装配微信 / 抖音小游戏工程，把 Unity 导出的 WebGL �
 }
 ```
 
-- `webglSdkDir`：webgl SDK 仓库的本地路径，步骤 2 用它找编译产物。**必填**（除非不用 `--local-sdk`）。
+- `webglSdkDir`：webgl SDK 仓库的本地**绝对路径**，步骤 2 用它找编译产物。**必填**（除非不用 `--local-sdk`）。Windows 上要写成 `"C:/Users/me/webgl"` 或 `"C:\\Users\\me\\webgl"`——JSON 里单反斜杠是转义符，直接粘贴资源管理器的路径会出错。
 - `s3.endpoints`：步骤 3 上传用。两个端点的 `endpointUrl` 和 `s3.target`（`s3://apps/demo`）都有内置默认值，通常**只需要填 `accessKeyId` / `secretAccessKey`**。按 `name` 与默认端点合并，所以省略 `endpointUrl` 是正常写法。
 - 每个端点还可选 `profile`（改用 `~/.aws/credentials` 里的 profile）、`region`、`acl`（桶不是公共读时才需要）。
 - 不想把凭据写进文件时，可以改用端点专属环境变量 `S3_WUHAN_ACCESS_KEY_ID` / `S3_WUHAN_SECRET_ACCESS_KEY`、`S3_BEIJING_*`（优先级高于配置文件）。

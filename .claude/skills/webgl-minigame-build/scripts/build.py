@@ -127,6 +127,28 @@ def die(msg: str) -> "BuildError":
 # ---------------------------------------------------------------- 外部命令
 
 
+def describe_bad_path(raw: str) -> str:
+    """检查路径里是否混入了控制字符，是的话返回提示文案，否则返回空串。
+
+    Windows 用户容易在 JSON 里直接写 "C:\\Users\\me\\webgl" 的单反斜杠形式。
+    JSON 把反斜杠当转义符，其中 \t \n \b \f \r 都是合法转义，于是
+    "C:\temp\new\build" 会被静默解析成 "C:<TAB>emp<LF>ew<BS>uild"——
+    解析不报错，只是路径变成了乱码，最后表现为莫名其妙的「未找到 webgl SDK 仓库」。
+    这里识别出这种情况并直接告诉用户怎么改，省得他对着路径看半天。
+    """
+    bad = {c for c in raw if ord(c) < 32}
+    if not bad:
+        return ""
+    names = {"\t": "\\t", "\n": "\\n", "\r": "\\r", "\b": "\\b", "\f": "\\f"}
+    shown = "、".join(sorted(names.get(c, repr(c)) for c in bad))
+    return (
+        f"路径里含有控制字符（{shown}），几乎可以确定是 JSON 中的反斜杠没有转义。\n"
+        "  JSON 把反斜杠当转义符，Windows 路径要写成下面两种形式之一:\n"
+        '      "webglSdkDir": "C:/Users/me/webgl"          （正斜杠，推荐）\n'
+        '      "webglSdkDir": "C:\\\\Users\\\\me\\\\webgl"      （双反斜杠）'
+    )
+
+
 def is_within(path: Path, parent: Path) -> bool:
     """path 是否落在 parent 目录内。Path.is_relative_to 要 Python 3.9+，这里自己实现以兼容 3.8。"""
     try:
@@ -320,13 +342,16 @@ class Builder:
         self.combosdk_dir = self.native_dir / "combosdk"
 
         # webgl SDK 仓库路径，优先级：--sdk-dir > 配置文件的 webglSdkDir > 同级布局兜底
+        # 原始字符串留一份，路径不存在时用它诊断（比如 Windows 上反斜杠没转义）
         self.sdk_dir: Path | None = None
+        self.sdk_dir_raw = ""
         if args.local_sdk:
             raw = args.sdk_dir or self.config.get("webglSdkDir") or ""
+            self.sdk_dir_raw = str(raw)
             if not raw:
                 sibling = repo_root.parent.parent / "webgl"
                 raw = str(sibling)
-            self.sdk_dir = Path(raw)
+            self.sdk_dir = Path(str(raw).strip())
 
         # 当前端点的凭据，由 upload_to_endpoint 设置、_aws 使用。
         # 两个端点的凭据不同，因此每次切换端点都要重新解析，不能复用上一个端点的值。
@@ -350,10 +375,16 @@ class Builder:
         if self.args.local_sdk:
             if not self.sdk_dir or not self.sdk_dir.is_dir():
                 log_error(f"未找到 webgl SDK 仓库: {self.sdk_dir}")
-                log_error(f"请在 {self.config.path} 中配置 webglSdkDir，或使用 --sdk-dir 指定。内容形如:")
-                log_error('    {')
-                log_error('      "webglSdkDir": "/path/to/webgl"')
-                log_error('    }')
+                hint = describe_bad_path(self.sdk_dir_raw)
+                if hint:
+                    for line in hint.split("\n"):
+                        log_error("  " + line if not line.startswith(" ") else line)
+                else:
+                    log_error(f"请在 {self.config.path} 中配置 webglSdkDir，或使用 --sdk-dir 指定。内容形如:")
+                    log_error('    {')
+                    log_error('      "webglSdkDir": "/path/to/webgl"       # macOS / Linux')
+                    log_error('      "webglSdkDir": "C:/Users/me/webgl"    # Windows，用正斜杠或双反斜杠')
+                    log_error('    }')
                 raise BuildError("")  # 详情已在上面逐行打印
             if not (self.sdk_dir / "package.json").is_file():
                 raise die(f"{self.sdk_dir} 不是 webgl SDK 仓库（缺少 package.json）")

@@ -47,7 +47,13 @@ Unity 导出本身**不在**这套流程里，需要你先在 Unity 里做完。
 }
 ```
 
-- **`webglSdkDir`**：本地 webgl SDK 仓库的路径。只有用 `--local-sdk`（也就是想调试本地 SDK 改动）时才需要。
+- **`webglSdkDir`**：本地 webgl SDK 仓库的**绝对路径**。只有用 `--local-sdk`（也就是想调试本地 SDK 改动）时才需要。
+  - ⚠️ **Windows 上不能直接粘贴资源管理器里的路径**。JSON 把反斜杠当转义符，`"C:\Users\me\webgl"` 会解析失败；更糟的是 `"C:\temp\new\build"` 这种**不会报错**，但 `\t` `\n` `\b` 会被当成制表符、换行、退格，路径被静默改成乱码。两种正确写法：
+    ```json
+    "webglSdkDir": "C:/Users/me/webgl"        // 正斜杠，推荐
+    "webglSdkDir": "C:\\Users\\me\\webgl"     // 双反斜杠
+    ```
+    Windows 本身两种都认，脚本会照常工作。真写错了脚本也会直接告诉你哪里错了。
 - **`s3.endpoints`**：只有装配**微信**时才需要。两个端点的地址和存储桶路径脚本里都有默认值，通常**只需要填这两组 Key**。
 - ⚠️ **武汉和北京是两个独立后台，凭据不一样**，要分别去各自的控制台生成，不能填同一组。
 - ⚠️ 要的是 **Access Key ID / Secret Access Key**（控制台「密钥管理」里生成的），**不是登录用的用户名密码**。填错会直接报 `InvalidAccessKeyId`。
