@@ -98,6 +98,7 @@ _COLOR = _supports_color()
 _C_INFO = "\033[0;32m" if _COLOR else ""
 _C_WARN = "\033[0;33m" if _COLOR else ""
 _C_ERROR = "\033[0;31m" if _COLOR else ""
+_C_HINT = "\033[0;36m" if _COLOR else ""
 _C_OFF = "\033[0m" if _COLOR else ""
 
 
@@ -113,10 +114,29 @@ def log_error(msg: str) -> None:
     print(f"{_C_ERROR}[ERROR]{_C_OFF} {msg}", file=sys.stderr, flush=True)
 
 
+def log_hint(msg: str = "") -> None:
+    """友好提示，用于「首次使用还没配好」这类需要用户补信息、但并非出错的场景。
+    走 stdout、用青色，与红色的 [ERROR] 区分开——它不是报错，是引导。
+    传空串时打印一个干净的空行（不带前缀）。
+    """
+    if msg:
+        print(f"{_C_HINT}[配置]{_C_OFF}  {msg}", flush=True)
+    else:
+        print(flush=True)
+
+
 class BuildError(Exception):
     """流程中止。在 main 里统一捕获并打印，避免到处 sys.exit 打断调用栈。
 
     消息为空串表示详情已经用 log_error 逐行打印过了，main 不再重复输出一遍。
+    """
+
+
+class ConfigNeeded(BuildError):
+    """需要用户补配置才能继续——是引导，不是报错。
+
+    提示已由 report_missing_config 用 log_hint 友好打印，main 捕获后静默返回，
+    不再叠加任何 [ERROR] 输出。
     """
 
 
@@ -380,17 +400,17 @@ class Builder:
         self.webgl_dir = self.export_dir / "webgl"
         self.combosdk_dir = self.native_dir / "combosdk"
 
-        # webgl SDK 仓库路径，优先级：--sdk-dir > 配置文件的 webglSdkDir > 同级布局兜底
+        # webgl SDK 仓库路径，优先级：--sdk-dir > 配置文件的 webglSdkDir。
+        # 两者都没有则视为缺失，由 collect_missing_config 引导用户提供——
+        # 不做任何基于本机目录布局的兜底猜测，那样只对特定机器成立、无法通用。
         # 原始字符串留一份，路径不存在时用它诊断（比如 Windows 上反斜杠没转义）
         self.sdk_dir: Path | None = None
         self.sdk_dir_raw = ""
         if args.local_sdk:
             raw = args.sdk_dir or self.config.get("webglSdkDir") or ""
             self.sdk_dir_raw = str(raw)
-            if not raw:
-                sibling = repo_root.parent.parent / "webgl"
-                raw = str(sibling)
-            self.sdk_dir = Path(str(raw).strip())
+            if raw:
+                self.sdk_dir = Path(str(raw).strip())
 
         # 当前端点的凭据，由 upload_to_endpoint 设置、_aws 使用。
         # 两个端点的凭据不同，因此每次切换端点都要重新解析，不能复用上一个端点的值。
@@ -407,25 +427,23 @@ class Builder:
         """
         missing = []
 
-        # webglSdkDir：仅 --local-sdk 且没有 --sdk-dir 时需要
+        # webglSdkDir：仅 --local-sdk 且没有 --sdk-dir 时需要，必须由用户显式提供
         if self.args.local_sdk and not self.args.sdk_dir:
             if not self.config.get("webglSdkDir"):
-                # 同级布局兜底路径存在的话就不算缺，脚本能自己找到
-                sibling = self.repo_root.parent.parent / "webgl"
-                if not (sibling / "package.json").is_file():
-                    missing.append(config_item("webglSdkDir"))
+                missing.append(config_item("webglSdkDir"))
 
-        # S3 凭据：仅微信且要执行步骤 3 时需要
+        # S3 凭据：仅微信且要执行步骤 3 时需要，必须显式提供
+        # 只认三种显式来源：配置文件里的 accessKeyId/secretAccessKey、端点专属环境变量、
+        # 或配置里显式写的 profile。不因机器上碰巧有 ~/.aws 就假设凭据可用——
+        # 那是一种基于本机环境的猜测，只对特定机器成立、无法通用。
         if self.args.step3 and self.distro == "minigame_weixin":
-            aws_home = Path.home() / ".aws"
-            has_aws_home = (aws_home / "credentials").is_file() or (aws_home / "config").is_file()
             for ep in self.config.endpoints():
                 name, url = ep["name"], ep["endpointUrl"]
                 ak, sk, _ = resolve_credentials(ep)
                 if ak and sk:
                     continue
-                if ep.get("profile") or has_aws_home:
-                    continue  # 交给 aws 默认凭据链，check_aws_credentials 会给出告警
+                if ep.get("profile"):
+                    continue  # 用户显式指定了 profile，交给 aws 按 profile 取凭据
                 for field in ("accessKeyId", "secretAccessKey"):
                     item = config_item(f"s3.{field}", name=name, url=url)
                     # key 带上端点名，两个端点的四个参数才区分得开
@@ -435,37 +453,30 @@ class Builder:
         return missing
 
     def report_missing_config(self, missing: list) -> None:
-        """把缺失的参数连同用途一并打印出来，供使用者（或 Claude）逐项补齐。"""
-        exists = self.config.path.is_file()
-        log_error(("配置文件缺少必要参数: " if exists else "尚未创建本机配置文件: ") + str(self.config.path))
-        log_error(f"本次操作需要下面 {len(missing)} 个参数，逐项补齐后重跑即可:")
+        """友好地列出还差哪些参数，请用户提供。这不是报错，是首次使用的正常引导，
+        所以走 log_hint（青色 [配置]）而不是 [ERROR]。"""
+        if self.config.path.is_file():
+            log_hint(f"快好了，还差 {len(missing)} 个参数就能开始，提供一下我来帮你补进配置：")
+        else:
+            log_hint(f"第一次用，先配一下就好。请提供下面 {len(missing)} 个参数，我来帮你创建配置文件：")
         for i, item in enumerate(missing, 1):
-            log_error("")
-            log_error(f"  [{i}] {item['key']} —— {item['title']}")
-            log_error(f"      用途: {item['why']}")
-            log_error(f"      获取: {item['how']}")
-            log_error(f"      形如: {item['example']}")
-        log_error("")
-        log_error("  配置文件格式:")
-        log_error("    {")
-        log_error('      "webglSdkDir": "<路径>",')
-        log_error('      "s3": { "endpoints": [')
-        log_error('        { "name": "wuhan",   "accessKeyId": "<AK>", "secretAccessKey": "<SK>" },')
-        log_error('        { "name": "beijing", "accessKeyId": "<AK>", "secretAccessKey": "<SK>" }')
-        log_error("      ] }")
-        log_error("    }")
-        log_error("")
-        log_error("  该文件已在 .gitignore 中，不会被提交。")
-        log_error("  只想跳过上传可加 --skip-step3；不用本地 SDK 产物则去掉 --local-sdk。")
+            log_hint()
+            log_hint(f"  {i}. {item['title']}")
+            log_hint(f"     用途：{item['why']}")
+            log_hint(f"     获取：{item['how']}")
+            log_hint(f"     形如：{item['example']}")
+        log_hint()
+        log_hint(f"把这几个值发给我就行，我会写入 {self.config.path.name}（在 .gitignore 中，不会提交）。")
+        log_hint("（只想跳过 CDN 上传可加 --skip-step3；不想用本地 SDK 产物则去掉 --local-sdk）")
 
     # ------------------------------------------------------------ 前置检查
 
     def check_prerequisites(self) -> None:
-        # 配置缺失一次性全部报出，避免补一个、再被拦一次
+        # 配置缺失时友好列出所需参数、请用户提供，这不是报错而是首次使用的引导
         missing = self.collect_missing_config()
         if missing:
             self.report_missing_config(missing)
-            raise BuildError("")  # 详情已在上面逐行打印
+            raise ConfigNeeded("")  # 提示已用 log_hint 友好打印，main 静默返回
 
         if not self.export_dir.is_dir():
             raise die(f"未找到导出目录 {self.export_dir}，请先在 Unity 中导出 WebGL 工程（前置步骤）")
@@ -512,27 +523,19 @@ class Builder:
         """逐个端点确认凭据可解析，有端点凑不齐就直接失败并给出配置方式。
 
         好过跑到上传时才被 aws 拒绝——那时前两步已经白跑了。
+        缺凭据通常已在 collect_missing_config 的配置向导里被拦下，这里主要覆盖
+        「配了 profile 但 profile 无效」等绕过向导的边界情况。
+        只认显式来源：配置文件的 accessKeyId/secretAccessKey、端点专属环境变量、
+        或显式 profile；不因机器上有 ~/.aws 就假设凭据可用（那对不同机器不通用）。
         """
-        missing, fallback = [], []
-        aws_home = Path.home() / ".aws"
-        has_aws_home = (aws_home / "credentials").is_file() or (aws_home / "config").is_file()
-
+        missing = []
         for ep in self.config.endpoints():
             ak, sk, source = resolve_credentials(ep)
             if ak and sk:
                 continue
             if source.startswith("profile"):
-                continue
-            # 没有端点专属配置，但机器上有 ~/.aws。放行交给 aws 的默认凭据链去试，
-            # 但要提醒：两个端点是不同后台、凭据不同，同一份默认凭据不可能两边都对。
-            if has_aws_home:
-                fallback.append(ep["name"])
-                continue
+                continue  # 用户显式指定了 profile，交给 aws 按 profile 取凭据
             missing.append(ep["name"])
-
-        if fallback:
-            log_warn(f"以下端点没有专属凭据配置，将回退到 aws 默认凭据链: {' '.join(fallback)}")
-            log_warn("  两个端点凭据不同，默认凭据大概率只对其中一个有效，建议按端点分别配置")
 
         if not missing:
             return
@@ -541,7 +544,7 @@ class Builder:
         log_error("两个端点是各自独立的后台，凭据不同，需要分别配置。任选一种方式:")
         log_error(f"  1. 在 {self.config.path} 的 s3.endpoints 中按端点配置 accessKeyId / secretAccessKey")
         log_error("  2. 导出端点专属环境变量，如 S3_WUHAN_ACCESS_KEY_ID / S3_WUHAN_SECRET_ACCESS_KEY")
-        log_error("  3. 在 s3.endpoints 中按端点配置 profile，凭据写在 ~/.aws/credentials")
+        log_error("  3. 在 s3.endpoints 中按端点配置 profile（进阶用法，凭据写在 ~/.aws/credentials）")
         log_error("  临时不想上传可加 --skip-step3 跳过步骤 3")
         raise BuildError("")  # 详情已在上面逐行打印
 
@@ -1064,6 +1067,10 @@ def main(argv=None) -> int:
 
     try:
         Builder(args, skill_dir, repo_root).run()
+    except ConfigNeeded:
+        # 需要用户补配置，不是失败。提示已友好打印，用专门的退出码 2 与真正的错误区分，
+        # 便于调用方（或 Claude）判断这是「等你给参数」而非「跑挂了」。
+        return 2
     except BuildError as err:
         msg = str(err)
         if msg:
