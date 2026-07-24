@@ -322,6 +322,45 @@ def resolve_credentials(endpoint: dict) -> tuple[str, str, str]:
     return "", "", "aws 默认凭据链"
 
 
+# ---------------------------------------------------------------- 配置向导
+
+# 每个配置项的说明。缺配置时按这里的文案告诉用户「这是什么、去哪拿」，
+# 而不是只甩一句「配置缺失」让他自己猜。
+# key 用点号路径表示嵌套位置，endpoint 类的用 s3.endpoints[<名字>].<字段> 形式。
+CONFIG_SPEC = {
+    "webglSdkDir": {
+        "title": "webgl SDK 仓库在本机的绝对路径",
+        "why": "步骤 2 要从 <该路径>/combo/dist 取本地编译出的 SDK 产物",
+        "how": "就是你 clone 的 webgl 仓库所在目录，里面应该有 package.json",
+        "example": "macOS/Linux: /Users/me/codebase/webgl   Windows: C:/Users/me/webgl",
+    },
+    "s3.accessKeyId": {
+        "title": "{name} S3 的 Access Key ID",
+        "why": "步骤 3 要把 wasm/data 大文件上传到 {name} 的 S3（{url}）",
+        "how": "在 {name} S3 控制台的「密钥管理 / AccessKey」里生成，不是控制台的登录用户名",
+        "example": "3AI2AEIZIXAWJURBBCC0 这样的一串字符",
+    },
+    "s3.secretAccessKey": {
+        "title": "{name} S3 的 Secret Access Key",
+        "why": "与 Access Key ID 配对使用",
+        "how": "生成 Access Key 时一并给出，通常只显示一次，注意保存",
+        "example": "比 Access Key ID 更长的一串随机字符",
+    },
+}
+
+
+def config_item(key: str, **fmt) -> dict:
+    """按 CONFIG_SPEC 生成一条配置项说明，fmt 用于填充端点名等占位符。"""
+    spec = CONFIG_SPEC[key.split("[")[0] if "[" not in key else key]
+    return {
+        "key": key,
+        "title": spec["title"].format(**fmt),
+        "why": spec["why"].format(**fmt),
+        "how": spec["how"].format(**fmt),
+        "example": spec["example"].format(**fmt),
+    }
+
+
 # ---------------------------------------------------------------- 构建器
 
 
@@ -358,9 +397,76 @@ class Builder:
         self._ep_ak = ""
         self._ep_sk = ""
 
+    # ------------------------------------------------------------ 配置检查
+
+    def collect_missing_config(self) -> list:
+        """收集本次操作需要、但配置文件里还没有的参数。
+
+        只报本次真正用得上的：没传 --local-sdk 就不问 webglSdkDir，
+        装配抖音就不问 S3 凭据。一次性全部列出，避免用户补一个、再被拦一次。
+        """
+        missing = []
+
+        # webglSdkDir：仅 --local-sdk 且没有 --sdk-dir 时需要
+        if self.args.local_sdk and not self.args.sdk_dir:
+            if not self.config.get("webglSdkDir"):
+                # 同级布局兜底路径存在的话就不算缺，脚本能自己找到
+                sibling = self.repo_root.parent.parent / "webgl"
+                if not (sibling / "package.json").is_file():
+                    missing.append(config_item("webglSdkDir"))
+
+        # S3 凭据：仅微信且要执行步骤 3 时需要
+        if self.args.step3 and self.distro == "minigame_weixin":
+            aws_home = Path.home() / ".aws"
+            has_aws_home = (aws_home / "credentials").is_file() or (aws_home / "config").is_file()
+            for ep in self.config.endpoints():
+                name, url = ep["name"], ep["endpointUrl"]
+                ak, sk, _ = resolve_credentials(ep)
+                if ak and sk:
+                    continue
+                if ep.get("profile") or has_aws_home:
+                    continue  # 交给 aws 默认凭据链，check_aws_credentials 会给出告警
+                for field in ("accessKeyId", "secretAccessKey"):
+                    item = config_item(f"s3.{field}", name=name, url=url)
+                    # key 带上端点名，两个端点的四个参数才区分得开
+                    item["key"] = f"s3.endpoints[{name}].{field}"
+                    item["endpoint"] = name
+                    missing.append(item)
+        return missing
+
+    def report_missing_config(self, missing: list) -> None:
+        """把缺失的参数连同用途一并打印出来，供使用者（或 Claude）逐项补齐。"""
+        exists = self.config.path.is_file()
+        log_error(("配置文件缺少必要参数: " if exists else "尚未创建本机配置文件: ") + str(self.config.path))
+        log_error(f"本次操作需要下面 {len(missing)} 个参数，逐项补齐后重跑即可:")
+        for i, item in enumerate(missing, 1):
+            log_error("")
+            log_error(f"  [{i}] {item['key']} —— {item['title']}")
+            log_error(f"      用途: {item['why']}")
+            log_error(f"      获取: {item['how']}")
+            log_error(f"      形如: {item['example']}")
+        log_error("")
+        log_error("  配置文件格式:")
+        log_error("    {")
+        log_error('      "webglSdkDir": "<路径>",')
+        log_error('      "s3": { "endpoints": [')
+        log_error('        { "name": "wuhan",   "accessKeyId": "<AK>", "secretAccessKey": "<SK>" },')
+        log_error('        { "name": "beijing", "accessKeyId": "<AK>", "secretAccessKey": "<SK>" }')
+        log_error("      ] }")
+        log_error("    }")
+        log_error("")
+        log_error("  该文件已在 .gitignore 中，不会被提交。")
+        log_error("  只想跳过上传可加 --skip-step3；不用本地 SDK 产物则去掉 --local-sdk。")
+
     # ------------------------------------------------------------ 前置检查
 
     def check_prerequisites(self) -> None:
+        # 配置缺失一次性全部报出，避免补一个、再被拦一次
+        missing = self.collect_missing_config()
+        if missing:
+            self.report_missing_config(missing)
+            raise BuildError("")  # 详情已在上面逐行打印
+
         if not self.export_dir.is_dir():
             raise die(f"未找到导出目录 {self.export_dir}，请先在 Unity 中导出 WebGL 工程（前置步骤）")
         if not self.native_dir.is_dir():
