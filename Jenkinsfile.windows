@@ -74,7 +74,7 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo-cli_${CLI_NAME}_windows_amd64.zip"
+    def comboZip = "combo-cli_${CLI_VERSION}_windows_amd64.zip"
     copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
     unzip comboZip
 }
@@ -119,7 +119,11 @@ pipeline {
             trim: true)
         string(name: 'CLI_NAME',
             defaultValue: "main",
-            description: 'cli branch name',
+            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程）',
+            trim: true)
+        string(name: 'CLI_VERSION',
+            defaultValue: "2.27.0-dev",
+            description: 'cli 版本号（用于定位构建产物文件名 combo-cli_<CLI_VERSION>_windows_amd64.zip，取自 combo-cli 仓库 core/version/version.go 中的 CLIVersion）',
             trim: true)
         booleanParam(name: 'CLEAN_WS',
             defaultValue: false,

@@ -65,7 +65,7 @@ def installComboCLI() {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
-    def comboZip = "combo-cli_${CLI_NAME}_darwin_arm64.zip"
+    def comboZip = "combo-cli_${CLI_VERSION}_darwin_arm64.zip"
     copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
     unzip zipFile: comboZip, quiet: true
     sh "rm -f ${comboZip}"
@@ -164,7 +164,11 @@ pipeline {
             trim: true)
         string(name: 'CLI_NAME',
             defaultValue: "main",
-            description: 'cli branch name',
+            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程）',
+            trim: true)
+        string(name: 'CLI_VERSION',
+            defaultValue: "2.27.0-dev",
+            description: 'cli 版本号（用于定位构建产物文件名 combo-cli_<CLI_VERSION>_darwin_arm64.zip，取自 combo-cli 仓库 core/version/version.go 中的 CLIVersion）',
             trim: true)
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
         choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
