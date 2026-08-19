@@ -165,45 +165,20 @@ public class Login : MonoBehaviour
 
     private void CheckAndUpdateGame(Action OnCancel)
     {
-        if (ComboSDK.IsFeatureAvailable(Feature.UPDATE_GAME))
+        // 使用聚合更新接口 UpdateApp，由 SDK 内部判断当前发行版本走渠道更新
+        // 还是跳转浏览器/应用商店下载，不再自行判断 IsFeatureAvailable(UPDATE_GAME)
+        ComboSDK.UpdateApp(result =>
         {
-            ComboSDK.UpdateGame(result =>
+            if (result.IsSuccess)
             {
-                if (result.IsSuccess)
-                {
-                    Toast.Show("更新成功");
-                    CheckAndUpdateGame(OnCancel);
-                }
-                else
-                {
-                    Toast.Show("更新失败：" + result.Error.ToString());
-                    OnCancel.Invoke();
-                }
-            });
-        }
-        else
-        {
-            ComboSDK.GetDownloadUrl(result =>
+                Toast.Show("更新成功");
+            }
+            else
             {
-                if (result.IsSuccess)
-                {
-                    Log.D("GameUpdateUrl: " + result.Data.downloadUrl);
-                    UIController.Alert(UIAlertType.Stackable, "更新游戏", "检测到游戏有新版本，请更新游戏", "确定更新", "取消更新", () =>
-                    {
-                        Application.OpenURL(result.Data.downloadUrl);
-                        CheckAndUpdateGame(OnCancel);
-                    }, () =>
-                    {
-                        OnCancel.Invoke();
-                    });
-                }
-                else
-                {
-                    Log.W("Failed to get game update url:" + result.Error.ToString());
-                    OnCancel.Invoke();
-                }
-            });
-        }
+                Toast.Show("更新失败：" + result.Error.ToString());
+                OnCancel.Invoke();
+            }
+        });
     }
 
     public void OnContactSupport()
