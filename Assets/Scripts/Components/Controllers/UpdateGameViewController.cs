@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Combo;
-using UnityEngine;
 
 public static class UpdateGameViewController
 {
@@ -24,47 +23,25 @@ public static class UpdateGameViewController
     }
 
     private static void ForceUpdate() {
-        // 强制更新 且 SDK UpdateGame可用
-        if (ComboSDK.IsFeatureAvailable(Feature.UPDATE_GAME)) {
-            Log.D("call UpdateGame");
-            ComboSDK.UpdateGame(result => {
-                if (result.IsSuccess) {
-                    Toast.Show("更新成功");
-                    // 强制更新不回调，卡住界面
-                    // UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
-                    //     forceUpdate = true,
-                    //     success = true
-                    // });
-                } else {
-                    Toast.Show("更新失败：" + result.Error.ToString());
-                    UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
-                        forceUpdate = true,
-                        success = false
-                    });
-                }
-            });
-        } else {
-            Log.D("UpdateGame is not available, fallback to GetDownloadUrl");
-            // 强制更新 且 SDK UpdateGame 不可用，回落到 GetDownloadUrl
-            ComboSDK.GetDownloadUrl(result => {
-                if(result.IsSuccess) {
-                    Log.D("GameUpdateUrl: " + result.Data.downloadUrl);
-                    Application.OpenURL(result.Data.downloadUrl);
-                    // 强制更新不回调，卡住界面
-                    // UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
-                    //     forceUpdate = true,
-                    //     success = true
-                    // });
-                } else {
-                    Log.W("Failed to get game update url:" + result.Error.ToString());
-                    Toast.Show("强制更新失败，UpdateGame 不可用且 GetDownloadUrl 失败：" + result.Error.ToString());
-                    // UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
-                    //     forceUpdate = true,
-                    //     success = false
-                    // });
-                }
-            });
-        }
+        // 强制更新：改用聚合更新接口 UpdateApp，由 SDK 内部判断当前发行版本走渠道更新
+        // 还是跳转浏览器/应用商店下载，不再自行判断 IsFeatureAvailable(UPDATE_GAME)
+        Log.D("call UpdateApp");
+        ComboSDK.UpdateApp(result => {
+            if (result.IsSuccess) {
+                Toast.Show("更新成功");
+                // 强制更新不回调，卡住界面
+                // UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
+                //     forceUpdate = true,
+                //     success = true
+                // });
+            } else {
+                Toast.Show("更新失败：" + result.Error.ToString());
+                UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
+                    forceUpdate = true,
+                    success = false
+                });
+            }
+        });
     }
 
     private static void HotUpdate() {
