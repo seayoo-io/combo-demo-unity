@@ -35,9 +35,10 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo-cli_${CLI_VERSION}_darwin_arm64.zip"
-    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
-    unzip comboZip
+    def comboZipGlob = "combo-cli_*_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", selector: lastSuccessful(), filter: comboZipGlob
+    def files = findFiles glob: comboZipGlob
+    unzip files[0].name
 }
 
 def getTargetDistros() {
@@ -98,11 +99,7 @@ pipeline {
             trim: true)
         string(name: 'CLI_NAME',
             defaultValue: "main",
-            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程）',
-            trim: true)
-        string(name: 'CLI_VERSION',
-            defaultValue: "2.27.0-dev",
-            description: 'cli 版本号（用于定位构建产物文件名 combo-cli_<CLI_VERSION>_darwin_arm64.zip，取自 combo-cli 仓库 core/version/version.go 中的 CLIVersion）',
+            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程，并在该分支最近一次成功构建的产物中匹配 combo-cli_*_darwin_arm64.zip）',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
         booleanParam(name: 'ENABLE_KEEP_RENDERING_ON_PAUSE',
