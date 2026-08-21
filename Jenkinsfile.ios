@@ -32,15 +32,6 @@ combo:
 """
 }
 
-// def downloadFrameworks() {
-//     def frameworkZip = "*.zip"
-//     copyArtifacts projectName: params.IOS_PROJECT_NAME, selector: lastSuccessful(), filter: frameworkZip, excludes: "*dsym*.zip"
-
-//     def files = findFiles glob: frameworkZip
-//     unzip zipFile: files[0].name, dir: env.COMBO_SDK_PATH, quiet: true
-//     sh "rm -f ${files[0].name}"
-// }
-
 def assembleXcodeProject() {
     sh '''
         rm -rf ~/Library/Developer/Xcode/DerivedData
@@ -65,10 +56,11 @@ def installComboCLI() {
         writeComboYaml(COMBOSDK_BUILD_KEY)
     }
 
-    def comboZip = "combo-cli_${CLI_VERSION}_darwin_arm64.zip"
-    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", filter: comboZip
-    unzip zipFile: comboZip, quiet: true
-    sh "rm -f ${comboZip}"
+    def comboZipGlob = "combo-cli_*_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", selector: lastSuccessful(), filter: comboZipGlob
+    def files = findFiles glob: comboZipGlob
+    unzip zipFile: files[0].name, quiet: true
+    sh "rm -f ${files[0].name}"
 }
 
 def getComboCredentialsId(String credentialSuffix) {
@@ -154,21 +146,13 @@ pipeline {
             quoteValue: false,
             saveJSONParameterToFile: false
         )
-        string(name: 'IOS_PROJECT_NAME',
-            defaultValue: 'SDK/Client/Combo/ios/main',
-            description: 'iOS 工程的 Jenkins Full project name',
-            trim: true)
         string(name: 'UNITY_SDK_PROJECT_NAME',
             defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
             description: 'Unity SDK 工程的 Jenkins Full project name',
             trim: true)
         string(name: 'CLI_NAME',
             defaultValue: "main",
-            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程）',
-            trim: true)
-        string(name: 'CLI_VERSION',
-            defaultValue: "2.27.0-dev",
-            description: 'cli 版本号（用于定位构建产物文件名 combo-cli_<CLI_VERSION>_darwin_arm64.zip，取自 combo-cli 仓库 core/version/version.go 中的 CLIVersion）',
+            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程，并在该分支最近一次成功构建的产物中匹配 combo-cli_*_darwin_arm64.zip）',
             trim: true)
         choice(name: 'SKIP_EXPORT', choices: ['NO', 'AUTO', 'YES'], description: '是否跳过 Export Project stage ')
         choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: '设置 Demo 横屏幕方向: 横屏/竖屏')
@@ -179,7 +163,6 @@ pipeline {
     environment {
         UNITY_ROOT = getUnityRoot('2021.3.45f1')
         BUILD_DIR = "${env.WORKSPACE}/build"
-        COMBO_SDK_PATH = "${env.WORKSPACE}/ComboSDK"
         IOS_IPA = artifactName(name: "combo-demo", extension: "ipa")
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
         CAPABILITIES = params.CAPABILITIES.toString()
@@ -196,7 +179,6 @@ pipeline {
                         rm -rf *.ipa
                         rm -rf *.zip
                         rm -rf logs/*
-                        rm -rf ${env.COMBO_SDK_PATH}
                         rm -rf ${env.UNITY_SDK_PATH}/com.seayoo.sdk
                     """
                 }
@@ -235,8 +217,6 @@ pipeline {
                 script {
                     loadEnvironmentParams()
                     installComboCLI()
-                    // downloadFrameworks()
-                    // downloadComboSDKJson()
                 }
             }
         }
