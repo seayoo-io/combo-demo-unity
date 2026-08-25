@@ -166,6 +166,13 @@ public class Builder : EditorWindow
 #if UNITY_WEBGL
         var config = UnityUtil.GetEditorConf();
         config.ProjectConf.DST = exportPath;
+        // Jenkins 通过 CDN_TARGET 参数联动选择 CDN，本地手动构建不传这个变量时，
+        // 沿用 MiniGameConfig.asset 里已经配好的 CDN，不强制覆盖。
+        var cdn = Environment.GetEnvironmentVariable("WECHAT_CDN");
+        if (!string.IsNullOrEmpty(cdn))
+        {
+            config.ProjectConf.CDN = cdn;
+        }
         WXConvertCore.DoExport();
 # endif
        

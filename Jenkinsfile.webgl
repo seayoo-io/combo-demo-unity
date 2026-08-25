@@ -2,6 +2,25 @@
 
 DISTRO_LIST = ['minigame_weixin']
 
+// 借用哪个游戏的微信身份做预览：key 是 WECHAT_APP 参数的可选值，
+// value 是该游戏的小游戏 AppID 和上传私钥对应的 Jenkins Credentials（sshUserPrivateKey 类型）。
+// 目前 Demo 自己没有 AppID，借用 zero 项目已有的配置；以后要加新游戏，在这里加一行即可。
+WECHAT_APP_MAP = [
+    'zero': [appid: 'wxd6d9be885354383a', keyCredentialId: 'zero.release.wechat.ssh']
+]
+
+// 微信小游戏包体超限的 wasm/data 大文件，只会传到 CDN_TARGET 参数选中的这一个 S3 后台，
+// 由游戏运行时通过 game.js 里的 DATA_CDN 远程加载，DATA_CDN 也是同一个 CDN_TARGET 决定的
+// （见 Export Project 阶段的 WECHAT_CDN），两边必须保持一致，否则传了也加载不到。
+// 武汉暂时连不通（这台编译机在北京内网，网络权限申请中），CDN_TARGET 默认先选北京。
+// choice 参数默认取第一项，beijing 排在前面即为 CDN_TARGET 的默认值。
+S3_ENDPOINTS = [
+    'beijing': [url: 'https://s3.shiyou.kingsoft.com', credentialId: 'combo-demo.webgl.s3.beijing'],
+    'wuhan':   [url: 'https://s3-wuhan.kingamer.cn',   credentialId: 'combo-demo.webgl.s3.wuhan'],
+]
+S3_TARGET = 's3://apps/demo'
+CDN_FILE_SUFFIXES = ['.webgl.wasm.code.unityweb.wasm.br', '.webgl.data.unityweb.bin.txt']
+
 def callUnity(Map map = [:]) {
     def project = map.get('project', '.')
     def commands = map.get('commands', '')
@@ -39,26 +58,11 @@ combo:
     writeFile file: targetFile, text: yamlContent
 }
 
-def downloadJS() {
-    def jsZipFilter = "*.zip"
-    def artifactsDir = "artifacts"
-
-    copyArtifacts projectName: "${params.WEBGL_PROJECT_NAME}",
-                  selector: lastSuccessful(),
-                  filter: jsZipFilter,
-                  target: artifactsDir
-
-
-    def files = findFiles(glob: "${artifactsDir}/${jsZipFilter}")
-
-    def jsZipFilePath = files[0].path
-    unzip zipFile: jsZipFilePath, dir: env.COMBO_SDK_PATH, quiet: true
-}
-
 def installComboCLI() {
-    def comboZip = "combo-cli_main_darwin_arm64.zip"
-    copyArtifacts projectName: 'SDK/Client/Combo/cli/main', filter: comboZip
-    unzip zipFile: comboZip, quiet: true
+    def comboZipGlob = "combo-cli_*_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", selector: lastSuccessful(), filter: comboZipGlob
+    def files = findFiles glob: comboZipGlob
+    unzip zipFile: files[0].name, quiet: true
     sh "chmod +x ${env.WORKSPACE}/combo"
 }
 
@@ -76,6 +80,32 @@ def getEndpoint() {
 
 def getDemoEndpoint() {
     return (params.TARGET_ENV == "dev") ? "https://combo-demo.dev.seayoo.com" : "https://combo-demo.seayoo.com"
+}
+
+def getWechatApps() {
+    return WECHAT_APP_MAP.keySet() as List
+}
+
+def getCdnFiles(String dir) {
+    def files = []
+    CDN_FILE_SUFFIXES.each { suffix ->
+        files += findFiles(glob: "${dir}/*${suffix}")
+    }
+    return files
+}
+
+def getCdnTargets() {
+    return S3_ENDPOINTS.keySet() as List
+}
+
+// CDN_TARGET 选中的那个 S3 端点对应的完整 CDN 地址，要写进导出的 game.js 的 DATA_CDN，
+// 必须和 Upload CDN 阶段实际上传的端点保持一致，否则游戏运行时加载不到大文件。
+def getCdnUrl() {
+    def endpoint = S3_ENDPOINTS[params.CDN_TARGET]
+    if (endpoint == null) {
+        error "未找到 CDN_TARGET=${params.CDN_TARGET} 对应的 S3 端点配置"
+    }
+    return "${endpoint.url}/${S3_TARGET - 's3://'}"
 }
 
 pipeline {
@@ -96,8 +126,17 @@ pipeline {
     }
     parameters {
         choice(name: 'GAME_ID', choices: ['demo', 'catsnsoup'], description: 'GAME_ID')
+        choice(name: 'WECHAT_APP',
+            choices: getWechatApps(),
+            description: '预览用的微信小游戏身份（借用哪个游戏的 AppID/私钥）')
+        booleanParam(name: 'UPLOAD_TO_WECHAT',
+            defaultValue: true,
+            description: '是否将预览版上传到微信后台生成二维码，不勾选则只导出到 webgl 工程为止')
         choice(name: 'UI_MODE', choices: ['china', 'global'], description: '国内/海外')
         choice(name: 'TARGET_ENV', choices: ['dev', 'prod'], description: '选择线上/测试环境')
+        choice(name: 'CDN_TARGET',
+            choices: getCdnTargets(),
+            description: 'wasm/data 大文件传去哪个 S3，同时决定导出的 game.js 里 DATA_CDN 指向哪；武汉暂时连不通，先选北京')
         extendedChoice(
             name: 'DISTRO',
             type: 'PT_MULTI_SELECT',
@@ -111,13 +150,13 @@ pipeline {
         )
         string(name: 'BUNDLE_VERSION', defaultValue: '1.0.0', description: 'Demo Bundle Version', trim: true)
         choice(name: 'CHECK_UPDATE', choices: ['SKIP_UPDATE', 'HOT_UPDATE', 'FORCE_UPDATE'], description: '模拟游戏的检查更新行为: SKIP_UPDATE-不更新; HOT_UPDATE-热更新; FORCE_UPDATE-强制更新')
-        string(name: 'WEBGL_PROJECT_NAME',
-            defaultValue: 'SDK/Client/Combo/WebGL/main',
-            description: 'WebGL 工程的 Jenkins Full project name',
-            trim: true)
         string(name: 'UNITY_SDK_PROJECT_NAME',
-            defaultValue: "SDK/Client/Combo/unity/${env.BRANCH_NAME}",
+            defaultValue: 'SDK/Client/Combo/unity/main',
             description: 'Unity SDK 工程的 Jenkins Full project name',
+            trim: true)
+        string(name: 'CLI_NAME',
+            defaultValue: "main",
+            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程，并在该分支最近一次成功构建的产物中匹配 combo-cli_*_darwin_arm64.zip）',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
         booleanParam(name: 'CLEAN_WS',
@@ -128,7 +167,6 @@ pipeline {
         UNITY_ROOT = getUnityRoot('2021.3.45f1')
         EXPORT_PATH = "${env.WORKSPACE}/output"
         UNITY_SDK_PATH = "${env.WORKSPACE}/Packages"
-        COMBO_SDK_PATH = "${env.WORKSPACE}/output/minigame/combosdk"
     }
     stages {
         stage('Clean and Setup') {
@@ -139,6 +177,7 @@ pipeline {
                     }
                     sh """
                         rm -rf *.zip
+                        rm -f qrcode.jpg
                         rm -rf logs/*
                         rm -rf ${env.EXPORT_PATH}
                         rm -rf "${env.UNITY_SDK_PATH}/com.seayoo.sdk"
@@ -194,10 +233,47 @@ pipeline {
                 DEMO_ENDPOINT = getDemoEndpoint()
                 BUNDLE_VERSION = "${params.BUNDLE_VERSION}"
                 CHECK_UPDATE = "${params.CHECK_UPDATE}"
+                WECHAT_CDN = getCdnUrl()
             }
             steps {
                 script {
                     callUnity commands: "-executeMethod Builder.BuildWeixinDemo"
+                }
+            }
+        }
+        stage('Upload CDN') {
+            steps {
+                script {
+                    def webglDir = 'output/webgl'
+                    def cdnFiles = getCdnFiles(webglDir)
+                    if (cdnFiles.isEmpty()) {
+                        echo "未找到 wasm/data 大文件，跳过 CDN 上传"
+                        return
+                    }
+
+                    def endpoint = S3_ENDPOINTS[params.CDN_TARGET]
+                    if (endpoint == null) {
+                        error "未找到 CDN_TARGET=${params.CDN_TARGET} 对应的 S3 端点配置"
+                    }
+
+                    withCredentials([usernamePassword(
+                        credentialsId: endpoint.credentialId,
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        cdnFiles.each { file ->
+                            def contentType = file.name.endsWith('.bin.txt') ? 'text/plain' : 'application/octet-stream'
+                            // aws cli 2.23+ 默认给分段上传的请求带校验和 trailer，自建 S3 不认，
+                            // 会报 XAmzContentSHA256Mismatch，这里退回按协议要求才计算校验和。
+                            sh """
+                                export AWS_REQUEST_CHECKSUM_CALCULATION=when_required
+                                export AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
+                                aws s3 cp ${file.path} ${S3_TARGET}/${file.name} \
+                                    --endpoint-url ${endpoint.url} \
+                                    --content-type ${contentType} \
+                                    --only-show-errors
+                            """
+                        }
+                    }
                 }
             }
         }
@@ -221,8 +297,6 @@ pipeline {
         stage('Archive') {
             steps {
                 script {
-                    downloadJS()
-
                     def zipName = artifactName(name: "combo-demo", suffix: "-${params.DISTRO}", extension: "zip")
                     def targetZipPath = "${env.WORKSPACE}/${zipName}"
                     
@@ -231,6 +305,37 @@ pipeline {
                         zip -r ${targetZipPath} .
                     """
                     archiveArtifacts artifacts: 'combo-demo*.zip', onlyIfSuccessful: true
+                }
+            }
+        }
+        stage('Preview to WeChat') {
+            when {
+                expression { return params.UPLOAD_TO_WECHAT }
+            }
+            steps {
+                script {
+                    def wechatApp = WECHAT_APP_MAP[params.WECHAT_APP]
+                    if (wechatApp == null) {
+                        error "未找到 WECHAT_APP=${params.WECHAT_APP} 对应的配置"
+                    }
+
+                    withCredentials([sshUserPrivateKey(credentialsId: wechatApp.keyCredentialId, keyFileVariable: 'WECHAT_UPLOAD_KEY')]) {
+                        withNode('24.11.1') {
+                            sh """
+                                npx --yes miniprogram-ci preview \
+                                    --appid ${wechatApp.appid} \
+                                    --project-type miniGame \
+                                    --project-path ${env.EXPORT_PATH}/minigame \
+                                    --private-key-path \$WECHAT_UPLOAD_KEY \
+                                    --upload-version preview.${env.BUILD_NUMBER} \
+                                    --upload-description preview.${env.BUILD_NUMBER} \
+                                    --qrcode-format image \
+                                    --qrcode-output-dest ${env.WORKSPACE}/qrcode.jpg \
+                                    --robot 2
+                            """
+                        }
+                    }
+                    archiveArtifacts artifacts: 'qrcode.jpg', onlyIfSuccessful: true
                 }
             }
         }
@@ -251,7 +356,7 @@ pipeline {
         }
         always {
             script {
-                currentBuild.displayName = "${BUILD_DISPLAY_NAME} ${params.GAME_ID} ${params.TARGET_ENV}"
+                currentBuild.displayName = "${BUILD_DISPLAY_NAME} ${params.GAME_ID} ${params.CDN_TARGET}"
                 currentBuild.description = "distro: ${params.DISTRO}"
                 zip archive: true, zipFile: 'logs.zip', dir: 'logs'
             }
