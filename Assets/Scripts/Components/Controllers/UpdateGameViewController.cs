@@ -26,6 +26,7 @@ public static class UpdateGameViewController
         // 强制更新：改用聚合更新接口 UpdateApp，由 SDK 内部判断当前发行版本走渠道更新
         // 还是跳转浏览器/应用商店下载，不再自行判断 IsFeatureAvailable(UPDATE_GAME)
         Log.D("call UpdateApp");
+#if !UNITY_WEBGL
         ComboSDK.UpdateApp(result => {
             if (result.IsSuccess) {
                 Toast.Show("更新成功");
@@ -42,6 +43,14 @@ public static class UpdateGameViewController
                 });
             }
         });
+#else
+        // WebGL 平台不支持 UpdateApp 接口（编译期即不可用），网页无需强更 App
+        Toast.Show("WebGL 平台不支持强制更新");
+        UpdateGameFinishedEvent.Invoke(new UpdateGameFinishedEvent {
+            forceUpdate = true,
+            success = false
+        });
+#endif
     }
 
     private static void HotUpdate() {

@@ -163,24 +163,6 @@ public class Login : MonoBehaviour
         });
     }
 
-    private void CheckAndUpdateGame(Action OnCancel)
-    {
-        // 使用聚合更新接口 UpdateApp，由 SDK 内部判断当前发行版本走渠道更新
-        // 还是跳转浏览器/应用商店下载，不再自行判断 IsFeatureAvailable(UPDATE_GAME)
-        ComboSDK.UpdateApp(result =>
-        {
-            if (result.IsSuccess)
-            {
-                Toast.Show("更新成功");
-            }
-            else
-            {
-                Toast.Show("更新失败：" + result.Error.ToString());
-                OnCancel.Invoke();
-            }
-        });
-    }
-
     public void OnContactSupport()
     {
         ComboSDK.ContactSupport();
