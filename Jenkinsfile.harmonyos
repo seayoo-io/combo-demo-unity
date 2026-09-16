@@ -206,8 +206,13 @@ pipeline {
                                 file(variable: 'P12_FILE', credentialsId: p12),
                                 string(variable: 'P12_PASSWORD', credentialsId: p12Id)
                             ]) {
+                                def SIGNING_P12_FILE = P12_FILE
+                                if (!P12_FILE.toLowerCase().endsWith('.p12')) {
+                                    SIGNING_P12_FILE = "${P12_FILE}.p12"
+                                    sh "mv '${P12_FILE}' '${SIGNING_P12_FILE}'"
+                                }                                 
                                 sh """
-                                    ${env.WORKSPACE}/combo harmonyos build --distro ${params.DISTRO} --p12-file ${P12_FILE} --p12-pass ${P12_PASSWORD} --package-format hap --build-mode debug --signing-key debug
+                                    ${env.WORKSPACE}/combo harmonyos build --distro ${params.DISTRO} --p12-file ${SIGNING_P12_FILE} --p12-pass ${P12_PASSWORD} --package-format hap --build-mode debug --signing-key debug
                                 """
                             }
                         }
