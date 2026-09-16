@@ -49,12 +49,15 @@ public static class UIController
         LoadingView.DestroyAll();
     }
 
-    public static void ShowShopView()
+    public static void ShowShopView(string categoryPrefix, string categoryTitle)
     {
         ShopView.DestroyAll();
         var shopView = ShopView.Instantiate();
+        shopView.SetTitle(categoryTitle);
+        shopView.GetComponentInChildren<ProductManager>().categoryFilter = categoryPrefix;
         shopView.SetGoHomeCallback(() => {
             shopView.Destroy();
+            ShowCategoryView();
         });
         shopView.Show();
     }
@@ -62,6 +65,16 @@ public static class UIController
     public static void HideShopView()
     {
         ShopView.DestroyAll();
+    }
+
+    public static void ShowCategoryView()
+    {
+        CategoryView.DestroyAll();
+        var categoryView = CategoryView.Instantiate();
+        categoryView.SetGoHomeCallback(() => {
+            categoryView.Destroy();
+        });
+        categoryView.Show();
     }
 
     public static void ShowRankView()

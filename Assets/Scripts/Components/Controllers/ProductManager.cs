@@ -14,6 +14,8 @@ public class ProductManager : MonoBehaviour
     public Transform parentTransform;
     public PlayerPanel playerPanel;
     public static ProductManager productManager;
+    // 商品分类前缀，为空表示不过滤（展示全部商品）；需要在 Start() 执行前由 UIController.ShowShopView 设置
+    public string categoryFilter;
     private string[] limitProducts;
 
     void Start()
@@ -22,7 +24,10 @@ public class ProductManager : MonoBehaviour
         limitProducts = GameClient.GetLimitProduct();
         GameClient.GetListProduct(data =>
         {
-            foreach (var productInfo in data)
+            var filtered = string.IsNullOrEmpty(categoryFilter)
+                ? data
+                : data.Where(productInfo => productInfo.productName.StartsWith(categoryFilter)).ToArray();
+            foreach (var productInfo in filtered)
             {
                 AppendProductView(productInfo.productId,
                                 productInfo.productName,
