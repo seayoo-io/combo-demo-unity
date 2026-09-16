@@ -59,7 +59,7 @@ public class Game : MonoBehaviour
 
     public void OnShop()
     {
-        UIController.ShowShopView();
+        UIController.ShowCategoryView();
     }
 
     public void OnRank()

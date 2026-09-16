@@ -1,14 +1,12 @@
-﻿using System;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[ViewPrefab("Prefabs/ShopView")]
-internal class ShopView : View<ShopView>
+[ViewPrefab("Prefabs/CategoryView")]
+internal class CategoryView : View<CategoryView>
 {
     public Button homeBtn;
-    public Text titleTxt;
     public Action OnGoHome;
 
     void Awake()
@@ -29,11 +27,6 @@ internal class ShopView : View<ShopView>
     public void SetGoHomeCallback(Action OnGoHome)
     {
         this.OnGoHome = OnGoHome;
-    }
-
-    public void SetTitle(string title)
-    {
-        titleTxt.text = title;
     }
 
     protected override IEnumerator OnHide()
