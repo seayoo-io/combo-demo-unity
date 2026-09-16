@@ -33,9 +33,10 @@ combo:
 }
 
 def installComboCLI() {
-    def comboZip = "combo-cli_${params.CLI_NAME}_darwin_arm64.zip"
-    copyArtifacts projectName: "SDK/Client/Combo/cli/${params.CLI_NAME}", filter: comboZip
-    unzip comboZip
+    def comboZipGlob = "combo-cli_*_darwin_arm64.zip"
+    copyArtifacts projectName: "SDK/Client/Combo/cli/${CLI_NAME}", selector: lastSuccessful(), filter: comboZipGlob
+    def files = findFiles glob: comboZipGlob
+    unzip files[0].name
 }
 
 def getTargetDistros() {
@@ -93,7 +94,7 @@ pipeline {
             trim: true)
         string(name: 'CLI_NAME',
             defaultValue: "main",
-            description: 'Cli 工程的 Jenkins Full project name',
+            description: 'cli branch name（用于定位 SDK/Client/Combo/cli 下对应分支的 Jenkins 工程，并在该分支最近一次成功构建的产物中匹配 combo-cli_*_darwin_arm64.zip）',
             trim: true)
         choice(name: 'BUILD_TYPE', choices: ['release', 'debug'], description: '默认不需要关心')
         choice(name: 'SCREEN_ORIENTATION', choices: ['Landscape', 'Portrait'], description: 'Demo 横屏幕方向')
