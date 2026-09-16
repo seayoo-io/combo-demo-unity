@@ -48,8 +48,15 @@ internal class PlayerInfoView : View<PlayerInfoView>
         deleteAccountBtn.onClick.AddListener(OnDeleteAccountConfigBtn);
         contactSupportBtn.onClick.AddListener(OnContactSupportConfigBtn);
         changeRoleBtn.onClick.AddListener(ChangeRole);
-        SetIcon();
-        var roleInfo = PlayerController.GetPlayer().role;
+        var player = PlayerController.GetPlayer();
+        if (player == null || player.role == null)
+        {
+            Log.E("初始化个人中心视图失败：玩家或角色信息为空");
+            return;
+        }
+
+        var roleInfo = player.role;
+        SetIcon(roleInfo);
         level = roleInfo.roleLevel;
         levelText.text = level.ToString();
         DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(roleInfo.roleCreateTime).LocalDateTime;
@@ -177,31 +184,38 @@ internal class PlayerInfoView : View<PlayerInfoView>
 
     void OnCopyConfigBtn()
     {
-        OnCopy.Invoke();
+        OnCopy?.Invoke();
     }
     void OnCopyComboIdConfigBtn()
     {
-        OnCopyComboId.Invoke();
+        OnCopyComboId?.Invoke();
     }
     void OnCancelConfigBtn()
     {
+        if (OnCancel == null)
+        {
+            Log.E("关闭个人中心失败：关闭回调未设置，执行页面销毁兜底");
+            Destroy();
+            return;
+        }
+
         OnCancel.Invoke();
     }
     void OnManageAccountConfigBtn()
     {
-        OnManageAccount.Invoke();
+        OnManageAccount?.Invoke();
     }
     void OnChangePasswordConfigBtn()
     {
-        OnChangePassword.Invoke();
+        OnChangePassword?.Invoke();
     }
     void OnDeleteAccountConfigBtn()
     {
-        OnDeleteAccount.Invoke();
+        OnDeleteAccount?.Invoke();
     }
     void OnContactSupportConfigBtn()
     {
-        OnContactSupport.Invoke();
+        OnContactSupport?.Invoke();
     }
     public void SetCopyCallback(Action OnCopy)
     {
@@ -242,9 +256,8 @@ internal class PlayerInfoView : View<PlayerInfoView>
     }
 
     // 设置头像
-    private void SetIcon()
+    private void SetIcon(Role role)
     {
-        var role = PlayerController.GetRoleInfo(PlayerController.GetPlayer());
         Sprite sprite;
         GameManager.Instance.RoleDic.TryGetValue((int)role.type, out sprite);
         iconImg.sprite = sprite;

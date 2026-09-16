@@ -39,8 +39,22 @@ public class GameManager : MonoBehaviour
     // 默认角色头像
     public void SetupDefaultRole(Role role)
     {
+        if (role == null)
+        {
+            Log.E("设置默认角色资源失败：角色信息为空");
+            return;
+        }
+
+        var replacingExistingRole = RoleDic.ContainsKey(role.type);
+        Log.I($"开始设置默认角色资源：roleType={role.type}, replacingExistingRole={replacingExistingRole}");
         Sprite sprite = Resources.Load<Sprite>("Textures/itemIcon/Character_Sample01");
-        RoleDic.Add(role.type, sprite);
+        if (sprite == null)
+        {
+            Log.W($"默认角色头像加载失败：roleType={role.type}");
+        }
+
+        RoleDic[role.type] = sprite;
+        Log.I($"默认角色资源设置成功：roleType={role.type}");
     }
 
     // 获取游戏初始化配置
