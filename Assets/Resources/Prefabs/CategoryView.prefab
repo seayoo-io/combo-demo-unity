@@ -637,7 +637,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "选择分类"
+  m_Text: "选择平台"
 --- !u!1 &9000000000000051
 GameObject:
   m_ObjectHideFlags: 0
