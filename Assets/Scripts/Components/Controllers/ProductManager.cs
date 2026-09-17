@@ -14,6 +14,8 @@ public class ProductManager : MonoBehaviour
     public Transform parentTransform;
     public PlayerPanel playerPanel;
     public static ProductManager productManager;
+    // 发行平台前缀，为空表示不过滤（展示全部商品）；需要在 Start() 执行前由 UIController.ShowShopView 设置
+    public string categoryFilter;
     private string[] limitProducts;
 
     void Start()
@@ -22,7 +24,11 @@ public class ProductManager : MonoBehaviour
         limitProducts = GameClient.GetLimitProduct();
         GameClient.GetListProduct(data =>
         {
-            foreach (var productInfo in data)
+            // 商品名称以“平台前缀_”开头即归入该平台，大小写不敏感（如 ios_/iOS_ 均匹配 iOS）
+            var filtered = string.IsNullOrEmpty(categoryFilter)
+                ? data
+                : data.Where(productInfo => productInfo.productName.StartsWith(categoryFilter + "_", StringComparison.OrdinalIgnoreCase)).ToArray();
+            foreach (var productInfo in filtered)
             {
                 AppendProductView(productInfo.productId,
                                 productInfo.productName,
