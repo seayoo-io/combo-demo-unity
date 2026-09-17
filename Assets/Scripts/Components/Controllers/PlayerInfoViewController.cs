@@ -8,8 +8,14 @@ public static class PlayerInfoViewController
 {
     public static void ShowPlayerInfoView()
     {
+        Log.I("开始打开个人中心");
         var playerInfoView = PlayerInfoView.Instantiate();
-        InitView(playerInfoView);
+        if (playerInfoView == null)
+        {
+            Log.E("打开个人中心失败：页面实例化失败");
+            return;
+        }
+
         playerInfoView.SetCopyCallback(() => OnCopy());
         playerInfoView.SetCopyComboIdCallback(() => OnCopyComboId());
         playerInfoView.SetManageAccountCallback(() => OnManageAccount());
@@ -18,7 +24,24 @@ public static class PlayerInfoViewController
         playerInfoView.SetOnContactSupportCallback(() => OnContactSupport());
         playerInfoView.SetCancelCallback(() => playerInfoView.Destroy());
 
-        playerInfoView.Show();
+        try
+        {
+            if (!TryInitView(playerInfoView))
+            {
+                playerInfoView.Destroy();
+                Toast.Show("个人中心数据无效，请重新进入游戏");
+                return;
+            }
+
+            playerInfoView.Show();
+            Log.I("个人中心打开成功");
+        }
+        catch (System.Exception exception)
+        {
+            Log.E($"个人中心初始化失败：exceptionType={exception.GetType().Name}");
+            playerInfoView.Destroy();
+            Toast.Show("个人中心打开失败，请稍后重试");
+        }
     }
 
     public static void HidePlayerInfoView()
@@ -37,10 +60,15 @@ public static class PlayerInfoViewController
     
     public static void OnCopyComboId()
     {
-        string playerId;
-        playerId = ComboSDK.GetLoginInfo().comboId;
+        var loginInfo = ComboSDK.GetLoginInfo();
+        if (loginInfo == null)
+        {
+            Log.E("复制 Combo ID 失败：登录信息为空");
+            Toast.Show("登录信息无效，请重新登录");
+            return;
+        }
 
-        UnityEngine.GUIUtility.systemCopyBuffer = playerId;
+        UnityEngine.GUIUtility.systemCopyBuffer = loginInfo.comboId;
         Toast.Show("复制成功");
     }
 
@@ -64,26 +92,37 @@ public static class PlayerInfoViewController
         ComboSDK.ContactSupport();
     }
 
-    private static void InitView(PlayerInfoView view)
+    private static bool TryInitView(PlayerInfoView view)
     {
-        string playerId;
-        string seayooId;
-        if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT))
+        Log.I("开始初始化个人中心");
+        var player = PlayerController.GetPlayer();
+        if (player == null || player.role == null)
         {
-            playerId = ComboSDK.GetLoginInfo().comboId;
+            Log.E("个人中心初始化失败：玩家或角色信息为空");
+            return false;
+        }
+
+        var loginInfo = ComboSDK.GetLoginInfo();
+        if (loginInfo == null)
+        {
+            Log.E("个人中心初始化失败：登录信息为空");
+            return false;
+        }
+
+        var playerId = loginInfo.comboId;
+        string seayooId;
+        var seayooAccountAvailable = ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT);
+        if (seayooAccountAvailable)
+        {
             seayooId = ComboSDK.SeayooAccount.UserId;
             view.manageAccountBtn.gameObject.SetActive(true);
             view.changePasswordBtn.gameObject.SetActive(true);
             view.deleteAccountBtn.gameObject.SetActive(true);
-            Log.I($"GetUserInfo: 世游通行证 ID : = {seayooId}, Combo ID : = {playerId}");
         }
         else
         {
-            var info = ComboSDK.GetLoginInfo();
-            playerId = info.comboId;
             seayooId = "无";
             view.copyBtn.gameObject.SetActive(false);
-            Log.I($"GetUserInfo: Combo ID : = {playerId}," + $"identityToken = {info.identityToken}");
         }
 
         if (!ComboSDK.IsFeatureAvailable(Feature.CONTACT_SUPPORT))
@@ -99,10 +138,12 @@ public static class PlayerInfoViewController
 
         view.SetPlayerId(playerId);
         view.SetSeayooId(seayooId);
-        view.SetIdp($"idp : {ComboSDK.GetLoginInfo().idp}");
-        view.SetRole(PlayerController.GetPlayer().role);
+        view.SetIdp($"idp : {loginInfo.idp}");
+        view.SetRole(player.role);
         view.SetServer(GameManager.Instance.ZoneName, GameManager.Instance.ServerName);
-        
+
+        Log.I($"个人中心初始化成功：idp={loginInfo.idp}, seayooAccountAvailable={seayooAccountAvailable}");
+        return true;
     }
 
 }
