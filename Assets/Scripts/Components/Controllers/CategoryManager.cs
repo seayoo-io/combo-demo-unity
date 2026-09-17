@@ -3,8 +3,8 @@ using UnityEngine;
 public class CategoryManager : MonoBehaviour
 {
     public Transform parentTransform;
-    // 商品分类前缀，与 ProductManager 里按 productName 做前缀匹配的规则对应
-    private static readonly string[] Categories = { "app_store", "android" };
+    // 发行平台前缀，与 ProductManager 里按 productName 做前缀匹配的规则对应（忽略大小写）
+    private static readonly string[] Categories = { "iOS", "Android", "HarmonyOS", "WebGL", "Windows" };
 
     void Start()
     {
