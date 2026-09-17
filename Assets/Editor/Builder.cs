@@ -339,7 +339,6 @@ public class Builder : EditorWindow
                 }
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.Space();
         }
