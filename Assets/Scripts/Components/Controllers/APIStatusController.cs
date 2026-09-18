@@ -30,7 +30,6 @@ public class APIStatusController : MonoBehaviour
         { "GetDeviceId", "获取设备ID" },
         { "GetVersion", "获取版本" },
         { "GetVersionNative", "获取 Native SDK 版本" },
-        { "IsFeatureAvailable", "检查功能是否可用" },
 #if UNITY_ANDROID || UNITY_IOS
         { "GetAvailableShareTargets", "获取可分享的平台" },
 #endif
@@ -264,19 +263,6 @@ public class APIStatusController : MonoBehaviour
         Log.D("[APIStatusController] GetVersionNative");
         var data = apiList["GetVersionNative"];
         if (ComboSDK.GetVersionNative() == null)
-        {
-            SendEvent(data.api, false);
-        } else
-        {
-            SendEvent(data.api, true);
-        }
-    }
-
-    void IsFeatureAvailable()
-    {
-        Log.D("[APIStatusController] IsFeatureAvailable");
-        var data = apiList["IsFeatureAvailable"];
-        if (ComboSDK.IsFeatureAvailable(Feature.SEAYOO_ACCOUNT) == false)
         {
             SendEvent(data.api, false);
         } else
