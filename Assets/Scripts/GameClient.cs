@@ -87,6 +87,15 @@ public class GameData
     [JsonProperty("updated_at")]
     public long updatedAt;
 }
+
+[Serializable]
+public class ComplainTargetInfo
+{
+    [JsonProperty("target_type")]
+    public string targetType;
+    [JsonProperty("display_name")]
+    public string displayName;
+}
 [Serializable]
 public class Zone
 {
@@ -510,6 +519,54 @@ public static class GameClient
             {
                 
             }
+        });
+    }
+
+    // 获取当前游戏的举报对象；错误通过回调交给表单展示，避免重复 Toast。
+    public static void GetComplainTargets(Action<ComplainTargetInfo[]> onSuccess, Action<string> onError)
+    {
+        Log.I("[Complain] list targets started");
+        HttpRequest.Get(new HttpRequestOptions
+        {
+            url = $"{endpoint}/{gameId}/list-complain-targets",
+            headers = Headers()
+        }, resp =>
+        {
+            if (!resp.IsSuccess)
+            {
+                var message = resp.IsNetworkError ? "网络异常，请检查网络后重试" : "获取举报类型失败，请重试";
+                try
+                {
+                    var error = resp.Body.ToJson<ErrorResponse>();
+                    if (error != null)
+                    {
+                        if (error.error == "invalid headers")
+                            message = "登录状态失效，请重新登录";
+                        else if (!string.IsNullOrEmpty(error.message))
+                            message = error.message;
+                    }
+                }
+                catch (JsonException) { }
+                Log.E($"[Complain] list targets failed, status={resp.StatusCode}");
+                onError(message);
+                return;
+            }
+
+            ComplainTargetInfo[] targets;
+            try
+            {
+                targets = resp.Body.ToJson<ComplainTargetInfo[]>();
+                if (targets == null || Array.Exists(targets, target => target == null || string.IsNullOrWhiteSpace(target.targetType)))
+                    throw new JsonSerializationException("Invalid complain targets response");
+            }
+            catch (JsonException)
+            {
+                Log.E("[Complain] list targets failed, invalid response");
+                onError("举报类型数据格式错误，请重试");
+                return;
+            }
+            Log.I($"[Complain] list targets succeeded, count={targets.Length}");
+            onSuccess(targets);
         });
     }
 

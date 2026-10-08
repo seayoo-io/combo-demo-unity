@@ -76,6 +76,11 @@ public class Game : MonoBehaviour
         UIController.ShowRedeemGiftCodeView();
     }
 
+    public void OnComplain()
+    {
+        UIController.ShowComplainParameterView();
+    }
+
     public void OnPlayerInfo()
     {
         PlayerInfoViewController.ShowPlayerInfoView();
