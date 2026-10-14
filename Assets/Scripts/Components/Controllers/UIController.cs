@@ -145,4 +145,11 @@ public static class UIController
         var view = WebViewParameterView.Instantiate();
         view.SetGift("兑换/打开页面", "礼包码", WebViewType.GIFT);
     }
+
+    public static void ShowComplainParameterView()
+    {
+        ComplainParameterView.DestroyAll();
+        var view = ComplainParameterView.Instantiate();
+        view.Show();
+    }
 }
