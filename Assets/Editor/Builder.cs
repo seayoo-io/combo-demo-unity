@@ -101,6 +101,14 @@ public class Builder : EditorWindow
             case "Portrait":
                 PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
                 break;
+            case "SensorLandscape":
+                // 自动旋转且只允许两个横屏方向，Manifest 中的 screenOrientation 由 AndroidOrientationPostprocessor 固定为 sensorLandscape
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
+                PlayerSettings.allowedAutorotateToLandscapeLeft = true;
+                PlayerSettings.allowedAutorotateToLandscapeRight = true;
+                PlayerSettings.allowedAutorotateToPortrait = false;
+                PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+                break;
         }
         var exportPath = Environment.GetEnvironmentVariable("EXPORT_PATH");
         PlayerSettings.bundleVersion = Environment.GetEnvironmentVariable("BUNDLE_VERSION");
