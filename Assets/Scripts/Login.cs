@@ -183,7 +183,7 @@ public class Login : MonoBehaviour
 
     public void OnContactSupport()
     {
-        ContactSupportController.ContactSupport();
+        ComboSDK.ContactSupport();
     }
 
     public void OnSwitchAccount()
