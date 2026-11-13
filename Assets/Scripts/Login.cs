@@ -186,7 +186,7 @@ void Awake()
 
     public void OnContactSupport()
     {
-        ComboSDK.ContactSupport();
+        ContactSupportController.ContactSupport();
     }
 
     public void OnSwitchAccount()
