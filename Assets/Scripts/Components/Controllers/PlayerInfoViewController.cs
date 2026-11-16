@@ -89,7 +89,7 @@ public static class PlayerInfoViewController
 
     public static void OnContactSupport()
     {
-        ComboSDK.ContactSupport();
+        ContactSupportController.ContactSupport();
     }
 
     private static bool TryInitView(PlayerInfoView view)
