@@ -63,7 +63,7 @@ namespace Networking
         {
             var bodyStr = options.body.ToJson();
             byte[] postData = System.Text.Encoding.UTF8.GetBytes(bodyStr);
-            using (UnityWebRequest webRequest = UnityWebRequest.Post(options.url, "POST"))
+            using (UnityWebRequest webRequest = new UnityWebRequest(options.url, UnityWebRequest.kHttpVerbPOST))
             {
                 options.headers["Content-Type"] = "application/json";
                 options.headers["Accept"] = "application/json";
@@ -75,6 +75,7 @@ namespace Networking
                 webRequest.timeout = options.timeout;
 
                 webRequest.uploadHandler = new UploadHandlerRaw(postData);
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
                 yield return webRequest.SendWebRequest();
 
                 callback?.Invoke(HttpResponse.Create(webRequest, options.headers, bodyStr));
